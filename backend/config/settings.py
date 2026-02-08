@@ -37,9 +37,15 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+        # Third-party
+    "rest_framework",
+    "corsheaders",
+    "drf_spectacular",
+
 ]
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -115,3 +121,40 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = "static/"
+
+# -----------------------------------------------------------------------------
+# Default primary key field type
+# -----------------------------------------------------------------------------
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+
+# -----------------------------------------------------------------------------
+# CORS (React dev server / Vite)
+# -----------------------------------------------------------------------------
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",
+]
+
+# (Opcional, mas deixa pronto caso use cookies/sessão no futuro)
+CORS_ALLOW_CREDENTIALS = True
+
+
+# -----------------------------------------------------------------------------
+# DRF + JWT + Swagger
+# -----------------------------------------------------------------------------
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    ),
+    "DEFAULT_PERMISSION_CLASSES": (
+        "rest_framework.permissions.IsAuthenticated",
+    ),
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+}
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "Ticketing Portal API",
+    "DESCRIPTION": "API for Ticketing Portal (Django + DRF + JWT).",
+    "VERSION": "1.0.0",
+}
+
