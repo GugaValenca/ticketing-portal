@@ -20,7 +20,7 @@ services:
       DJANGO_DEBUG: "1"
       DATABASE_URL: "postgres://ticketing:ticketing@db:5432/ticketing"
     ports:
-      - "8000:8000"
+      - "8001:8000"
     volumes:
       - ./backend:/app
 
