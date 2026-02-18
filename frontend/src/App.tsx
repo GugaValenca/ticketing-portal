@@ -26,32 +26,9 @@ function cx(...classes: Array<string | false | null | undefined>) {
   return classes.filter(Boolean).join(" ");
 }
 
-function RoleBadge({ me }: { me: Me }) {
-  const role = me.is_superuser ? "Superuser" : me.is_staff ? "Staff" : "User";
-  const showStar = me.is_superuser;
-
-  return (
-    <span
-      className={cx(
-        "inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-semibold",
-        me.is_superuser
-          ? "border-amber-200 bg-amber-50 text-amber-800"
-          : me.is_staff
-            ? "border-indigo-200 bg-indigo-50 text-indigo-800"
-            : "border-slate-200 bg-slate-50 text-slate-700",
-      )}
-      title="Role"
-    >
-      {showStar ? <span aria-hidden>⭐</span> : null}
-      {role}
-    </span>
-  );
-}
-
 function StatusBadge({ status }: { status: string }) {
   const s = status.toLowerCase();
   const label = s.replaceAll("_", " ");
-
   const style =
     s === "open"
       ? "border-sky-200 bg-sky-50 text-sky-800"
@@ -126,7 +103,7 @@ function Modal({
         className="absolute inset-0 h-full w-full bg-black/40"
         aria-label="Close modal"
       />
-      <div className="relative mx-auto mt-16 w-full max-w-lg px-4">
+      <div className="relative mx-auto mt-16 w-full max-w-2xl px-4">
         <div className="rounded-2xl border border-slate-200 bg-white shadow-xl">
           <div className="flex items-center justify-between border-b border-slate-200 px-5 py-4">
             <h3 className="text-base font-semibold text-slate-900">{title}</h3>
@@ -143,6 +120,22 @@ function Modal({
     </div>
   );
 }
+
+type SortKey = "newest" | "oldest" | "priority" | "status";
+type PageSize = 10 | 20 | 50;
+
+const PRIORITY_ORDER: Record<string, number> = {
+  urgent: 0,
+  high: 1,
+  medium: 2,
+  low: 3,
+};
+const STATUS_ORDER: Record<string, number> = {
+  open: 0,
+  in_progress: 1,
+  resolved: 2,
+  closed: 3,
+};
 
 export default function App() {
   const [me, setMe] = useState<Me | null>(null);
@@ -163,8 +156,15 @@ export default function App() {
   const [createError, setCreateError] = useState<string | null>(null);
   const [creating, setCreating] = useState(false);
 
+  // Ticket details modal
+  const [isDetailsOpen, setIsDetailsOpen] = useState(false);
+  const [selected, setSelected] = useState<Ticket | null>(null);
+  const [detailsSaving, setDetailsSaving] = useState(false);
+  const [detailsError, setDetailsError] = useState<string | null>(null);
+
   // Filters/search
   const [query, setQuery] = useState("");
+  const [debouncedQuery, setDebouncedQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<
     "all" | "open" | "in_progress" | "resolved" | "closed"
   >("all");
@@ -172,7 +172,18 @@ export default function App() {
     "all" | "low" | "medium" | "high" | "urgent"
   >("all");
 
+  // Sorting + pagination
+  const [sortKey, setSortKey] = useState<SortKey>("newest");
+  const [pageSize, setPageSize] = useState<PageSize>(10);
+  const [page, setPage] = useState(1);
+
   const isLoggedIn = useMemo(() => !!me, [me]);
+
+  // Debounce (300ms)
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedQuery(query), 300);
+    return () => clearTimeout(t);
+  }, [query]);
 
   async function loadMeAndTickets() {
     setLoading(true);
@@ -184,7 +195,7 @@ export default function App() {
       const ticketsRes = await api.get<Ticket[]>("/api/tickets/");
       setTickets(ticketsRes.data);
     } catch {
-      setError("Falhou ao carregar dados. Verifica login/token.");
+      setError("Failed to load data. Please sign in again.");
       setMe(null);
       setTickets([]);
     } finally {
@@ -224,7 +235,7 @@ export default function App() {
     setCreateError(null);
     const title = newTitle.trim();
     if (title.length < 3) {
-      setCreateError("O título precisa ter pelo menos 3 caracteres.");
+      setCreateError("Title must be at least 3 characters.");
       return;
     }
 
@@ -238,7 +249,9 @@ export default function App() {
       setIsCreateOpen(false);
       await loadMeAndTickets();
     } catch {
-      setCreateError("Não consegui criar o ticket. Verifica se tu tá logado.");
+      setCreateError(
+        "Could not create ticket. Please verify you're signed in.",
+      );
     } finally {
       setCreating(false);
     }
@@ -248,12 +261,19 @@ export default function App() {
     setQuery("");
     setStatusFilter("all");
     setPriorityFilter("all");
+    setSortKey("newest");
+    setPage(1);
   }
 
-  const filteredTickets = useMemo(() => {
-    const q = query.trim().toLowerCase();
+  // reset page on filter/sort/pageSize changes
+  useEffect(() => {
+    setPage(1);
+  }, [debouncedQuery, statusFilter, priorityFilter, sortKey, pageSize]);
 
-    return tickets.filter((t) => {
+  const filteredSortedTickets = useMemo(() => {
+    const q = debouncedQuery.trim().toLowerCase();
+
+    const filtered = tickets.filter((t) => {
       const matchesQuery =
         !q ||
         t.title.toLowerCase().includes(q) ||
@@ -261,13 +281,85 @@ export default function App() {
 
       const matchesStatus =
         statusFilter === "all" ? true : t.status === statusFilter;
-
       const matchesPriority =
         priorityFilter === "all" ? true : t.priority === priorityFilter;
 
       return matchesQuery && matchesStatus && matchesPriority;
     });
-  }, [tickets, query, statusFilter, priorityFilter]);
+
+    return [...filtered].sort((a, b) => {
+      if (sortKey === "newest")
+        return (
+          new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        );
+      if (sortKey === "oldest")
+        return (
+          new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+        );
+
+      if (sortKey === "priority") {
+        const ap = PRIORITY_ORDER[a.priority] ?? 99;
+        const bp = PRIORITY_ORDER[b.priority] ?? 99;
+        if (ap !== bp) return ap - bp;
+        return (
+          new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        );
+      }
+
+      const as = STATUS_ORDER[a.status] ?? 99;
+      const bs = STATUS_ORDER[b.status] ?? 99;
+      if (as !== bs) return as - bs;
+      return (
+        new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      );
+    });
+  }, [tickets, debouncedQuery, statusFilter, priorityFilter, sortKey]);
+
+  const total = filteredSortedTickets.length;
+  const totalPages = Math.max(1, Math.ceil(total / pageSize));
+  const safePage = Math.min(page, totalPages);
+  const startIndex = (safePage - 1) * pageSize;
+  const endIndex = Math.min(startIndex + pageSize, total);
+  const pageItems = filteredSortedTickets.slice(startIndex, endIndex);
+
+  function openDetails(ticket: Ticket) {
+    setDetailsError(null);
+    setSelected(ticket);
+    setIsDetailsOpen(true);
+  }
+
+  function closeDetails() {
+    if (detailsSaving) return;
+    setIsDetailsOpen(false);
+    setSelected(null);
+    setDetailsError(null);
+  }
+
+  async function saveDetails(
+    patch: Partial<Pick<Ticket, "status" | "priority">>,
+  ) {
+    if (!selected) return;
+    setDetailsSaving(true);
+    setDetailsError(null);
+
+    try {
+      const res = await api.patch<Ticket>(
+        `/api/tickets/${selected.id}/`,
+        patch,
+      );
+      const updated = res.data;
+
+      // update list locally (fast UI)
+      setTickets((prev) =>
+        prev.map((t) => (t.id === updated.id ? { ...t, ...updated } : t)),
+      );
+      setSelected((prev) => (prev ? { ...prev, ...updated } : prev));
+    } catch {
+      setDetailsError("Could not update this ticket. Please try again.");
+    } finally {
+      setDetailsSaving(false);
+    }
+  }
 
   useEffect(() => {
     if (auth.getTokens()?.access) loadMeAndTickets();
@@ -285,12 +377,13 @@ export default function App() {
 
       <main className="mx-auto max-w-5xl px-4 py-6">
         <div className="rounded-2xl border border-slate-200 bg-white shadow-sm">
+          {/* Auth block */}
           <div className="border-b border-slate-200 p-5 sm:p-6">
             {!isLoggedIn ? (
               <>
-                <h2 className="text-lg font-semibold">Entrar</h2>
+                <h2 className="text-lg font-semibold">Sign in</h2>
                 <p className="mt-1 text-sm text-slate-600">
-                  Use um usuário do seed (ex: GugaTampa / LaisLany / admin).
+                  Use a seeded user (e.g. GugaTampa / LaisLany / admin).
                 </p>
 
                 <form
@@ -328,7 +421,7 @@ export default function App() {
                       disabled={loading}
                       className="inline-flex h-11 items-center justify-center rounded-xl bg-slate-900 px-4 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-800 disabled:opacity-60"
                     >
-                      {loading ? "Entrando..." : "Entrar"}
+                      {loading ? "Signing in..." : "Sign in"}
                     </button>
 
                     {error ? (
@@ -340,26 +433,18 @@ export default function App() {
                 </form>
               </>
             ) : (
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <div className="min-w-0">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <div className="text-sm text-slate-600">Logado como</div>
-                    <div className="truncate text-lg font-semibold">
-                      {me!.username}
-                    </div>
-                    <RoleBadge me={me!} />
-                  </div>
-                  <div className="mt-1 text-sm text-slate-600">
-                    {me!.email || "—"}
-                  </div>
+              <div className="flex items-center justify-between">
+                <div className="text-sm text-slate-600">
+                  {loading ? "Syncing…" : "Ready ✅"}
                 </div>
                 <div className="text-sm text-slate-500">
-                  {loading ? "Sincronizando..." : "Tudo certo ✅"}
+                  {tickets.length} total tickets
                 </div>
               </div>
             )}
           </div>
 
+          {/* Tickets */}
           <div className="p-5 sm:p-6">
             <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
               <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
@@ -368,32 +453,37 @@ export default function App() {
                     Tickets
                   </h2>
                   <p className="mt-1 text-sm text-slate-600">
-                    Busque e filtre rapidamente como num app de verdade.
+                    Search, filter, sort, and paginate like a real product.
                   </p>
                 </div>
 
                 <div className="text-sm text-slate-500">
                   {loading
-                    ? "Carregando..."
-                    : `${filteredTickets.length} de ${tickets.length}`}
+                    ? "Loading..."
+                    : total === 0
+                      ? "No results"
+                      : `Showing ${startIndex + 1}-${endIndex} of ${total}`}
                 </div>
               </div>
 
-              {/* Filters */}
+              {/* Controls */}
               <div className="mt-4 grid gap-3 md:grid-cols-12">
-                <div className="md:col-span-6">
+                <div className="md:col-span-5">
                   <label className="text-xs font-semibold text-slate-600">
-                    Buscar
+                    Search
                   </label>
                   <input
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
-                    placeholder="Buscar por título ou descrição…"
+                    placeholder="Search by title or description…"
                     className="mt-1 h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none transition focus:border-slate-400 focus:ring-2 focus:ring-slate-200"
                   />
+                  <div className="mt-1 text-[11px] text-slate-500">
+                    Debounced (300ms) for a smooth UI.
+                  </div>
                 </div>
 
-                <div className="md:col-span-3">
+                <div className="md:col-span-2">
                   <label className="text-xs font-semibold text-slate-600">
                     Status
                   </label>
@@ -410,7 +500,7 @@ export default function App() {
                   </select>
                 </div>
 
-                <div className="md:col-span-3">
+                <div className="md:col-span-2">
                   <label className="text-xs font-semibold text-slate-600">
                     Priority
                   </label>
@@ -427,17 +517,68 @@ export default function App() {
                   </select>
                 </div>
 
-                <div className="md:col-span-12 flex items-center justify-between gap-2">
-                  <div className="text-xs text-slate-500">
-                    Dica: use os filtros pra simular um painel real de startup.
+                <div className="md:col-span-3">
+                  <label className="text-xs font-semibold text-slate-600">
+                    Sort
+                  </label>
+                  <select
+                    value={sortKey}
+                    onChange={(e) => setSortKey(e.target.value as any)}
+                    className="mt-1 h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none transition focus:border-slate-400 focus:ring-2 focus:ring-slate-200"
+                  >
+                    <option value="newest">Newest</option>
+                    <option value="oldest">Oldest</option>
+                    <option value="priority">Priority</option>
+                    <option value="status">Status</option>
+                  </select>
+                </div>
+
+                <div className="md:col-span-12 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-semibold text-slate-600">
+                      Page size
+                    </span>
+                    <select
+                      value={pageSize}
+                      onChange={(e) =>
+                        setPageSize(Number(e.target.value) as any)
+                      }
+                      className="h-10 rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none transition focus:border-slate-400 focus:ring-2 focus:ring-slate-200"
+                    >
+                      <option value={10}>10</option>
+                      <option value={20}>20</option>
+                      <option value={50}>50</option>
+                    </select>
+
+                    <button
+                      onClick={clearFilters}
+                      className="h-10 rounded-xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-900 hover:bg-slate-50"
+                    >
+                      Reset
+                    </button>
                   </div>
 
-                  <button
-                    onClick={clearFilters}
-                    className="h-10 rounded-xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-900 hover:bg-slate-50"
-                  >
-                    Limpar filtros
-                  </button>
+                  <div className="flex items-center gap-2">
+                    <button
+                      disabled={safePage <= 1}
+                      onClick={() => setPage((p) => Math.max(1, p - 1))}
+                      className="h-10 rounded-xl border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-900 hover:bg-slate-50 disabled:opacity-50"
+                    >
+                      Prev
+                    </button>
+                    <span className="text-sm text-slate-600">
+                      Page <b>{safePage}</b> of <b>{totalPages}</b>
+                    </span>
+                    <button
+                      disabled={safePage >= totalPages}
+                      onClick={() =>
+                        setPage((p) => Math.min(totalPages, p + 1))
+                      }
+                      className="h-10 rounded-xl border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-900 hover:bg-slate-50 disabled:opacity-50"
+                    >
+                      Next
+                    </button>
+                  </div>
                 </div>
               </div>
 
@@ -445,61 +586,65 @@ export default function App() {
               <div className="mt-4">
                 {!isLoggedIn ? (
                   <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700">
-                    Faça login para visualizar seus tickets.
+                    Please sign in to view your tickets.
                   </div>
-                ) : filteredTickets.length === 0 ? (
+                ) : pageItems.length === 0 ? (
                   <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-slate-700">
-                    Nada encontrado com esses filtros.
+                    No tickets match your filters.
                   </div>
                 ) : (
                   <div className="grid gap-3">
-                    {filteredTickets.map((t) => (
-                      <article
+                    {pageItems.map((t) => (
+                      <button
                         key={t.id}
-                        className="rounded-2xl border border-slate-200 bg-white p-4 transition hover:-translate-y-[1px] hover:shadow-md"
+                        onClick={() => openDetails(t)}
+                        className="text-left"
+                        type="button"
                       >
-                        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                          <div className="min-w-0">
-                            <div className="flex flex-wrap items-center gap-2">
-                              <IdPill id={t.id} />
-                              <h3 className="text-base font-semibold text-slate-900">
-                                {t.title}
-                              </h3>
+                        <article className="rounded-2xl border border-slate-200 bg-white p-4 transition hover:-translate-y-[1px] hover:shadow-md">
+                          <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                            <div className="min-w-0">
+                              <div className="flex flex-wrap items-center gap-2">
+                                <IdPill id={t.id} />
+                                <h3 className="text-base font-semibold text-slate-900">
+                                  {t.title}
+                                </h3>
+                              </div>
+
+                              {t.description ? (
+                                <p className="mt-2 text-sm text-slate-700">
+                                  {t.description}
+                                </p>
+                              ) : (
+                                <p className="mt-2 text-sm text-slate-500">
+                                  (no description)
+                                </p>
+                              )}
+
+                              <div className="mt-3 flex flex-wrap gap-2 text-xs text-slate-600">
+                                <span>
+                                  requester:{" "}
+                                  <span className="font-semibold text-slate-800">
+                                    {t.requester_username ?? "-"}
+                                  </span>
+                                </span>
+                                <span>•</span>
+                                <span>
+                                  assignee:{" "}
+                                  <span className="font-semibold text-slate-800">
+                                    {t.assignee_username ?? "-"}
+                                  </span>
+                                </span>
+                              </div>
                             </div>
 
-                            {t.description ? (
-                              <p className="mt-2 text-sm text-slate-700">
-                                {t.description}
-                              </p>
-                            ) : (
-                              <p className="mt-2 text-sm text-slate-500">
-                                (sem descrição)
-                              </p>
-                            )}
-
-                            <div className="mt-3 flex flex-wrap gap-2 text-xs text-slate-600">
-                              <span>
-                                requester:{" "}
-                                <span className="font-semibold text-slate-800">
-                                  {t.requester_username ?? "-"}
-                                </span>
-                              </span>
-                              <span>•</span>
-                              <span>
-                                assignee:{" "}
-                                <span className="font-semibold text-slate-800">
-                                  {t.assignee_username ?? "-"}
-                                </span>
-                              </span>
+                            <div className="flex flex-wrap gap-2 sm:flex-col sm:items-end">
+                              <StatusBadge status={t.status} />
+                              <PriorityBadge priority={t.priority} />
                             </div>
                           </div>
-
-                          <div className="flex flex-wrap gap-2 sm:flex-col sm:items-end">
-                            <StatusBadge status={t.status} />
-                            <PriorityBadge priority={t.priority} />
-                          </div>
-                        </div>
-                      </article>
+                        </article>
+                      </button>
                     ))}
                   </div>
                 )}
@@ -513,16 +658,12 @@ export default function App() {
             </section>
           </div>
         </div>
-
-        <div className="mt-6 text-center text-xs text-slate-500">
-          Próximo: paginação e ordenação (ex: newest, priority, status).
-        </div>
       </main>
 
       {/* Create Ticket Modal */}
       <Modal
         open={isCreateOpen}
-        title="Novo ticket"
+        title="New ticket"
         onClose={() => {
           if (!creating) setIsCreateOpen(false);
         }}
@@ -530,31 +671,31 @@ export default function App() {
         <div className="grid gap-4">
           <div className="grid gap-1.5">
             <label className="text-sm font-semibold text-slate-700">
-              Título
+              Title
             </label>
             <input
               value={newTitle}
               onChange={(e) => setNewTitle(e.target.value)}
-              placeholder="Ex: Erro ao acessar dashboard"
+              placeholder="e.g. Dashboard access error"
               className="h-11 rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none transition focus:border-slate-400 focus:ring-2 focus:ring-slate-200"
             />
           </div>
 
           <div className="grid gap-1.5">
             <label className="text-sm font-semibold text-slate-700">
-              Descrição (opcional)
+              Description (optional)
             </label>
             <textarea
               value={newDescription}
               onChange={(e) => setNewDescription(e.target.value)}
-              placeholder="Descreva o problema…"
+              placeholder="Describe the issue…"
               className="min-h-[96px] rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm outline-none transition focus:border-slate-400 focus:ring-2 focus:ring-slate-200"
             />
           </div>
 
           <div className="grid gap-1.5">
             <label className="text-sm font-semibold text-slate-700">
-              Prioridade
+              Priority
             </label>
             <select
               value={newPriority}
@@ -580,7 +721,7 @@ export default function App() {
               disabled={creating}
               className="h-10 rounded-xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-900 hover:bg-slate-50 disabled:opacity-60"
             >
-              Cancelar
+              Cancel
             </button>
 
             <button
@@ -588,10 +729,126 @@ export default function App() {
               disabled={creating}
               className="h-10 rounded-xl bg-slate-900 px-4 text-sm font-semibold text-white hover:bg-slate-800 disabled:opacity-60"
             >
-              {creating ? "Criando..." : "Criar ticket"}
+              {creating ? "Creating..." : "Create ticket"}
             </button>
           </div>
         </div>
+      </Modal>
+
+      {/* Ticket Details Modal */}
+      <Modal
+        open={isDetailsOpen}
+        title={selected ? `Ticket #${selected.id}` : "Ticket"}
+        onClose={closeDetails}
+      >
+        {!selected ? null : (
+          <div className="grid gap-5">
+            <div>
+              <div className="text-sm text-slate-500">Title</div>
+              <div className="mt-1 text-lg font-semibold text-slate-900">
+                {selected.title}
+              </div>
+
+              <div className="mt-3 text-sm text-slate-500">Description</div>
+              <div className="mt-1 text-sm text-slate-700">
+                {selected.description || "(no description)"}
+              </div>
+
+              <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+                  <div className="text-xs font-semibold text-slate-600">
+                    Requester
+                  </div>
+                  <div className="mt-1 text-sm font-semibold text-slate-900">
+                    {selected.requester_username ?? "-"}
+                  </div>
+                </div>
+
+                <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+                  <div className="text-xs font-semibold text-slate-600">
+                    Assignee
+                  </div>
+                  <div className="mt-1 text-sm font-semibold text-slate-900">
+                    {selected.assignee_username ?? "-"}
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                <div className="grid gap-1.5">
+                  <label className="text-xs font-semibold text-slate-600">
+                    Status
+                  </label>
+                  <select
+                    value={selected.status}
+                    disabled={detailsSaving}
+                    onChange={(e) => saveDetails({ status: e.target.value })}
+                    className="h-11 rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none transition focus:border-slate-400 focus:ring-2 focus:ring-slate-200 disabled:opacity-60"
+                  >
+                    <option value="open">open</option>
+                    <option value="in_progress">in_progress</option>
+                    <option value="resolved">resolved</option>
+                    <option value="closed">closed</option>
+                  </select>
+                  <div className="mt-1">
+                    <StatusBadge status={selected.status} />
+                  </div>
+                </div>
+
+                <div className="grid gap-1.5">
+                  <label className="text-xs font-semibold text-slate-600">
+                    Priority
+                  </label>
+                  <select
+                    value={selected.priority}
+                    disabled={detailsSaving}
+                    onChange={(e) => saveDetails({ priority: e.target.value })}
+                    className="h-11 rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none transition focus:border-slate-400 focus:ring-2 focus:ring-slate-200 disabled:opacity-60"
+                  >
+                    <option value="low">low</option>
+                    <option value="medium">medium</option>
+                    <option value="high">high</option>
+                    <option value="urgent">urgent</option>
+                  </select>
+                  <div className="mt-1">
+                    <PriorityBadge priority={selected.priority} />
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-4 grid gap-2 text-xs text-slate-500">
+                <div>
+                  Created:{" "}
+                  <span className="font-semibold text-slate-700">
+                    {new Date(selected.created_at).toLocaleString()}
+                  </span>
+                </div>
+                <div>
+                  Updated:{" "}
+                  <span className="font-semibold text-slate-700">
+                    {new Date(selected.updated_at).toLocaleString()}
+                  </span>
+                </div>
+              </div>
+
+              {detailsError ? (
+                <div className="mt-4 rounded-xl border border-rose-200 bg-rose-50 p-3 text-sm text-rose-800">
+                  {detailsError}
+                </div>
+              ) : null}
+            </div>
+
+            <div className="flex items-center justify-end gap-2">
+              <button
+                onClick={closeDetails}
+                disabled={detailsSaving}
+                className="h-10 rounded-xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-900 hover:bg-slate-50 disabled:opacity-60"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        )}
       </Modal>
     </div>
   );
