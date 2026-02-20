@@ -137,6 +137,23 @@ const STATUS_ORDER: Record<string, number> = {
   closed: 3,
 };
 
+function StatTile({
+  label,
+  value,
+}: {
+  label: string;
+  value: string | number;
+}) {
+  return (
+    <div className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2">
+      <div className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">
+        {label}
+      </div>
+      <div className="mt-0.5 text-base font-semibold text-slate-900">{value}</div>
+    </div>
+  );
+}
+
 export default function App() {
   const [me, setMe] = useState<Me | null>(null);
   const [tickets, setTickets] = useState<Ticket[]>([]);
@@ -195,7 +212,7 @@ export default function App() {
       const ticketsRes = await api.get<Ticket[]>("/api/tickets/");
       setTickets(ticketsRes.data);
     } catch {
-      setError("Failed to load data. Please sign in again.");
+      setError("Failed to load workspace data. Please sign in again.");
       setMe(null);
       setTickets([]);
     } finally {
@@ -211,7 +228,7 @@ export default function App() {
       await auth.login(username, password);
       await loadMeAndTickets();
     } catch {
-      setError("Login failed. Check username/password.");
+      setError("Login failed. Check your username and password.");
       setLoading(false);
     }
   }
@@ -249,9 +266,7 @@ export default function App() {
       setIsCreateOpen(false);
       await loadMeAndTickets();
     } catch {
-      setCreateError(
-        "Could not create ticket. Please verify you're signed in.",
-      );
+      setCreateError("Could not create ticket. Confirm you are signed in.");
     } finally {
       setCreating(false);
     }
@@ -375,15 +390,16 @@ export default function App() {
         onNewTicket={openCreateModal}
       />
 
-      <main className="mx-auto max-w-5xl px-4 py-6">
+      <main className="mx-auto max-w-6xl px-4 py-6 sm:px-6">
         <div className="rounded-2xl border border-slate-200 bg-white shadow-sm">
           {/* Auth block */}
           <div className="border-b border-slate-200 p-5 sm:p-6">
             {!isLoggedIn ? (
               <>
-                <h2 className="text-lg font-semibold">Sign in</h2>
+                <h2 className="text-lg font-semibold text-slate-900">Sign in</h2>
                 <p className="mt-1 text-sm text-slate-600">
-                  Use a seeded user (e.g. GugaTampa / LaisLany / admin).
+                  Use a seeded user account (for example: GugaTampa, LaisLany, or
+                  admin).
                 </p>
 
                 <form
@@ -415,7 +431,7 @@ export default function App() {
                     />
                   </div>
 
-                  <div className="sm:col-span-2 flex items-center gap-3">
+                  <div className="flex items-center gap-3 sm:col-span-2">
                     <button
                       type="submit"
                       disabled={loading}
@@ -433,13 +449,11 @@ export default function App() {
                 </form>
               </>
             ) : (
-              <div className="flex items-center justify-between">
-                <div className="text-sm text-slate-600">
-                  {loading ? "Syncing…" : "Ready ✅"}
-                </div>
-                <div className="text-sm text-slate-500">
-                  {tickets.length} total tickets
-                </div>
+              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                <StatTile label="Workspace status" value={loading ? "Syncing" : "Ready"} />
+                <StatTile label="Total tickets" value={tickets.length} />
+                <StatTile label="Filtered results" value={total} />
+                <StatTile label="Current page" value={`${safePage} / ${totalPages}`} />
               </div>
             )}
           </div>
@@ -453,33 +467,33 @@ export default function App() {
                     Tickets
                   </h2>
                   <p className="mt-1 text-sm text-slate-600">
-                    Search, filter, sort, and paginate like a real product.
+                    Search, filter, sort, and update tickets in one place.
                   </p>
                 </div>
 
                 <div className="text-sm text-slate-500">
                   {loading
-                    ? "Loading..."
+                    ? "Loading tickets..."
                     : total === 0
-                      ? "No results"
+                      ? "No matching results"
                       : `Showing ${startIndex + 1}-${endIndex} of ${total}`}
                 </div>
               </div>
 
-              {/* Controls */}
-              <div className="mt-4 grid gap-3 md:grid-cols-12">
+              <div className="mt-4 rounded-xl border border-slate-200 bg-slate-50/60 p-3 sm:p-4">
+                <div className="grid gap-3 md:grid-cols-12">
                 <div className="md:col-span-5">
                   <label className="text-xs font-semibold text-slate-600">
-                    Search
+                    Search tickets
                   </label>
                   <input
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
-                    placeholder="Search by title or description…"
+                    placeholder="Search by title or description..."
                     className="mt-1 h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none transition focus:border-slate-400 focus:ring-2 focus:ring-slate-200"
                   />
                   <div className="mt-1 text-[11px] text-slate-500">
-                    Debounced (300ms) for a smooth UI.
+                    Results update after 300ms to keep interactions smooth.
                   </div>
                 </div>
 
@@ -519,7 +533,7 @@ export default function App() {
 
                 <div className="md:col-span-3">
                   <label className="text-xs font-semibold text-slate-600">
-                    Sort
+                    Sort by
                   </label>
                   <select
                     value={sortKey}
@@ -533,7 +547,7 @@ export default function App() {
                   </select>
                 </div>
 
-                <div className="md:col-span-12 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex flex-col gap-2 md:col-span-12 sm:flex-row sm:items-center sm:justify-between">
                   <div className="flex items-center gap-2">
                     <span className="text-xs font-semibold text-slate-600">
                       Page size
@@ -554,7 +568,7 @@ export default function App() {
                       onClick={clearFilters}
                       className="h-10 rounded-xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-900 hover:bg-slate-50"
                     >
-                      Reset
+                      Reset filters
                     </button>
                   </div>
 
@@ -581,16 +595,16 @@ export default function App() {
                   </div>
                 </div>
               </div>
+              </div>
 
-              {/* List */}
               <div className="mt-4">
                 {!isLoggedIn ? (
                   <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700">
-                    Please sign in to view your tickets.
+                    Sign in to view and manage tickets.
                   </div>
                 ) : pageItems.length === 0 ? (
                   <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-slate-700">
-                    No tickets match your filters.
+                    No tickets match the current filters.
                   </div>
                 ) : (
                   <div className="grid gap-3">
@@ -601,7 +615,7 @@ export default function App() {
                         className="text-left"
                         type="button"
                       >
-                        <article className="rounded-2xl border border-slate-200 bg-white p-4 transition hover:-translate-y-[1px] hover:shadow-md">
+                        <article className="rounded-2xl border border-slate-200 bg-white p-4 transition hover:-translate-y-[1px] hover:border-slate-300 hover:shadow-md">
                           <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                             <div className="min-w-0">
                               <div className="flex flex-wrap items-center gap-2">
@@ -617,7 +631,7 @@ export default function App() {
                                 </p>
                               ) : (
                                 <p className="mt-2 text-sm text-slate-500">
-                                  (no description)
+                                  No description provided.
                                 </p>
                               )}
 
@@ -663,7 +677,7 @@ export default function App() {
       {/* Create Ticket Modal */}
       <Modal
         open={isCreateOpen}
-        title="New ticket"
+        title="Create new ticket"
         onClose={() => {
           if (!creating) setIsCreateOpen(false);
         }}
@@ -676,7 +690,7 @@ export default function App() {
             <input
               value={newTitle}
               onChange={(e) => setNewTitle(e.target.value)}
-              placeholder="e.g. Dashboard access error"
+              placeholder="Example: Dashboard access issue"
               className="h-11 rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none transition focus:border-slate-400 focus:ring-2 focus:ring-slate-200"
             />
           </div>
@@ -688,7 +702,7 @@ export default function App() {
             <textarea
               value={newDescription}
               onChange={(e) => setNewDescription(e.target.value)}
-              placeholder="Describe the issue…"
+              placeholder="Describe the issue..."
               className="min-h-[96px] rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm outline-none transition focus:border-slate-400 focus:ring-2 focus:ring-slate-200"
             />
           </div>
@@ -738,7 +752,7 @@ export default function App() {
       {/* Ticket Details Modal */}
       <Modal
         open={isDetailsOpen}
-        title={selected ? `Ticket #${selected.id}` : "Ticket"}
+        title={selected ? `Ticket #${selected.id}` : "Ticket details"}
         onClose={closeDetails}
       >
         {!selected ? null : (
@@ -751,7 +765,7 @@ export default function App() {
 
               <div className="mt-3 text-sm text-slate-500">Description</div>
               <div className="mt-1 text-sm text-slate-700">
-                {selected.description || "(no description)"}
+                {selected.description || "No description provided."}
               </div>
 
               <div className="mt-4 grid gap-3 sm:grid-cols-2">
