@@ -6,10 +6,26 @@ const API_BASE_URL =
 const plainAxios = axios.create({ baseURL: API_BASE_URL });
 
 type TokenPair = { access: string; refresh: string };
+type RetriableRequestConfig = InternalAxiosRequestConfig & { _retry?: boolean };
 
 function getTokens(): TokenPair | null {
   const raw = localStorage.getItem("tokens");
-  return raw ? (JSON.parse(raw) as TokenPair) : null;
+  if (!raw) return null;
+
+  try {
+    const parsed = JSON.parse(raw) as Partial<TokenPair>;
+    if (
+      typeof parsed?.access === "string" &&
+      typeof parsed?.refresh === "string"
+    ) {
+      return { access: parsed.access, refresh: parsed.refresh };
+    }
+  } catch {
+    // Ignore malformed storage and treat as logged out.
+  }
+
+  clearTokens();
+  return null;
 }
 
 function setTokens(tokens: TokenPair) {
@@ -28,7 +44,7 @@ api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
   if (tokens?.access) {
     config.headers.Authorization = `Bearer ${tokens.access}`;
   } else {
-    delete config.headers.Authorization; // ✅ limpa header velho
+    delete config.headers.Authorization; // Clear stale Authorization header
   }
 
   return config;
@@ -55,8 +71,8 @@ async function refreshAccessToken(): Promise<string> {
 
   const newAccess = res.data.access;
 
-  // Se o backend mandar refresh novo (com ROTATE_REFRESH_TOKENS=True),
-  // a gente salva. Se não mandar, mantém o refresh antigo.
+  // If backend returns a rotated refresh token (ROTATE_REFRESH_TOKENS=True),
+  // store it. Otherwise, keep the existing refresh token.
   const newRefresh = res.data.refresh ?? tokens.refresh;
 
   setTokens({ access: newAccess, refresh: newRefresh });
@@ -67,13 +83,13 @@ async function refreshAccessToken(): Promise<string> {
 api.interceptors.response.use(
   (res) => res,
   async (error: AxiosError) => {
-    const originalRequest: any = error.config;
+    const originalRequest = error.config as RetriableRequestConfig | undefined;
 
     const url = (originalRequest?.url || "").toString();
     const isAuthRoute =
       url.includes("/api/token/") || url.includes("/api/token/refresh/");
 
-    // Se falhou em rota de auth, não tenta refresh em cima de refresh/login
+    // If auth routes fail with 401, do not try to refresh on top of login/refresh.
     if (error.response?.status === 401 && isAuthRoute) {
       clearTokens();
       return Promise.reject(error);
