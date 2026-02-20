@@ -84,6 +84,9 @@ api.interceptors.response.use(
   (res) => res,
   async (error: AxiosError) => {
     const originalRequest = error.config as RetriableRequestConfig | undefined;
+    if (!originalRequest) {
+      return Promise.reject(error);
+    }
 
     const url = (originalRequest?.url || "").toString();
     const isAuthRoute =
