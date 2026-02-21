@@ -17,25 +17,25 @@ class Command(BaseCommand):
             username="admin",
             defaults={"email": "admin@example.com", "is_staff": True, "is_superuser": True},
         )
-        if created:
+        if not admin.check_password("Admin@12345"):
             admin.set_password("Admin@12345")
-            admin.save()
+            admin.save(update_fields=["password"])
 
         lais, created = User.objects.get_or_create(
             username="LaisLany",
             defaults={"email": "lais@example.com"},
         )
-        if created:
+        if not lais.check_password("Lais@12345"):
             lais.set_password("Lais@12345")
-            lais.save()
+            lais.save(update_fields=["password"])
 
         guga, created = User.objects.get_or_create(
             username="GugaTampa",
             defaults={"email": "guga@example.com"},
         )
-        if created:
+        if not guga.check_password("Guga@12345"):
             guga.set_password("Guga@12345")
-            guga.save()
+            guga.save(update_fields=["password"])
 
         self.stdout.write(self.style.SUCCESS("Users ensured: admin / LaisLany / GugaTampa"))
 

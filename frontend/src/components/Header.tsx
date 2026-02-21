@@ -37,13 +37,13 @@ function RolePill({ user }: { user: Me }) {
   return (
     <span
       className={cx(
-        "inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-semibold",
+        "inline-flex items-center rounded-full border px-2.5 py-1 text-[11px] font-semibold tracking-wide",
         style,
       )}
     >
       {user.is_superuser ? (
         <span className="mr-1" aria-hidden>
-          ⭐
+          *
         </span>
       ) : null}
       {label}
@@ -67,11 +67,11 @@ function ActionButton({
   title?: string;
 }) {
   const base =
-    "inline-flex h-10 items-center justify-center rounded-xl px-3 text-sm font-semibold transition disabled:opacity-50";
+    "inline-flex h-10 items-center justify-center rounded-xl px-3 text-sm font-semibold transition duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50";
   const style =
     variant === "primary"
-      ? "bg-slate-900 text-white shadow-sm hover:bg-slate-800"
-      : "border border-slate-200 bg-white text-slate-900 hover:bg-slate-50";
+      ? "bg-slate-900 text-white shadow-sm hover:bg-slate-800 active:bg-slate-950"
+      : "border border-slate-200 bg-white text-slate-800 shadow-sm hover:border-slate-300 hover:bg-slate-50";
 
   return (
     <button
@@ -98,31 +98,31 @@ export default function Header({
   onNewTicket: () => void;
 }) {
   return (
-    <header className="sticky top-0 z-40 border-b border-slate-200 bg-white/85 backdrop-blur">
-      <div className="mx-auto max-w-5xl px-4">
-        <div className="flex h-16 items-center justify-between gap-3">
+    <header className="sticky top-0 z-40 border-b border-slate-200/80 bg-white/80 shadow-sm backdrop-blur-xl">
+      <div className="mx-auto max-w-6xl px-4 sm:px-6">
+        <div className="flex min-h-[72px] items-center justify-between gap-3 py-3">
           {/* Brand */}
-          <div className="flex min-w-0 items-center gap-3">
-            <div className="grid h-10 w-10 place-items-center rounded-2xl bg-slate-900 text-white shadow-sm">
-              <span className="text-sm font-black">TP</span>
+          <div className="flex min-w-0 items-center gap-3.5">
+            <div className="grid h-10 w-10 place-items-center rounded-2xl bg-gradient-to-br from-slate-900 to-slate-700 text-white shadow-sm ring-1 ring-slate-800/40">
+              <span className="text-sm font-black tracking-tight">TP</span>
             </div>
 
             <div className="min-w-0">
-              <div className="truncate text-sm font-semibold text-slate-900">
+              <div className="truncate text-[15px] font-semibold tracking-tight text-slate-900">
                 Ticketing Portal
               </div>
               <div className="truncate text-xs text-slate-500">
-                Startup-ready • Django REST + React
+                Customer support workspace for Django REST + React
               </div>
             </div>
           </div>
 
           {/* Right area */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2.5">
             <ActionButton
               onClick={onReload}
               className="hidden sm:inline-flex"
-              title="Refresh"
+              title="Refresh workspace data"
             >
               Refresh
             </ActionButton>
@@ -133,20 +133,20 @@ export default function Header({
               variant="primary"
               title="Create a new ticket"
             >
-              + New Ticket
+              + New ticket
             </ActionButton>
 
             {user ? (
-              <div className="ml-1 flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-2 py-1">
-                <div className="grid h-8 w-8 place-items-center rounded-xl bg-slate-100 text-xs font-bold text-slate-700">
+              <div className="ml-1 flex items-center gap-2 rounded-2xl border border-slate-200/90 bg-white/95 px-2.5 py-1.5 shadow-sm ring-1 ring-slate-100">
+                <div className="grid h-9 w-9 place-items-center rounded-xl bg-slate-100 text-xs font-bold text-slate-700 ring-1 ring-slate-200">
                   {initials(user.username)}
                 </div>
 
-                <div className="hidden min-w-0 sm:block">
-                  <div className="max-w-[160px] truncate text-xs font-semibold text-slate-900">
+                <div className="hidden min-w-0 sm:block sm:max-w-[220px]">
+                  <div className="truncate text-xs font-semibold text-slate-900">
                     {user.username}
                   </div>
-                  <div className="max-w-[160px] truncate text-[11px] text-slate-500">
+                  <div className="truncate text-[11px] text-slate-500">
                     {user.email || "No email"}
                   </div>
                 </div>
@@ -160,11 +160,13 @@ export default function Header({
                   className="h-9 px-3 text-xs"
                   title="Sign out"
                 >
-                  Sign Out
+                  Sign out
                 </ActionButton>
               </div>
             ) : (
-              <span className="text-sm text-slate-600">Not signed in</span>
+              <span className="inline-flex h-9 items-center rounded-full border border-slate-200 bg-white px-3 text-xs font-semibold text-slate-600 shadow-sm">
+                Not signed in
+              </span>
             )}
           </div>
         </div>
