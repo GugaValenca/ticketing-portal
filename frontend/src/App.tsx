@@ -137,19 +137,15 @@ const STATUS_ORDER: Record<string, number> = {
   closed: 3,
 };
 
-function StatTile({
-  label,
-  value,
-}: {
-  label: string;
-  value: string | number;
-}) {
+function StatTile({ label, value }: { label: string; value: string | number }) {
   return (
     <div className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2">
       <div className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">
         {label}
       </div>
-      <div className="mt-0.5 text-base font-semibold text-slate-900">{value}</div>
+      <div className="mt-0.5 text-base font-semibold text-slate-900">
+        {value}
+      </div>
     </div>
   );
 }
@@ -396,10 +392,12 @@ export default function App() {
           <div className="border-b border-slate-200 p-5 sm:p-6">
             {!isLoggedIn ? (
               <>
-                <h2 className="text-lg font-semibold text-slate-900">Sign in</h2>
+                <h2 className="text-lg font-semibold text-slate-900">
+                  Sign in
+                </h2>
                 <p className="mt-1 text-sm text-slate-600">
-                  Use a seeded user account (for example: GugaTampa, LaisLany, or
-                  admin).
+                  Use a seeded user account (for example: GugaTampa, LaisLany,
+                  or admin).
                 </p>
 
                 <form
@@ -450,17 +448,23 @@ export default function App() {
               </>
             ) : (
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-                <StatTile label="Workspace status" value={loading ? "Syncing" : "Ready"} />
+                <StatTile
+                  label="Workspace status"
+                  value={loading ? "Syncing..." : "Workspace ready"}
+                />
                 <StatTile label="Total tickets" value={tickets.length} />
                 <StatTile label="Filtered results" value={total} />
-                <StatTile label="Current page" value={`${safePage} / ${totalPages}`} />
+                <StatTile
+                  label="Current page"
+                  value={`${safePage} / ${totalPages}`}
+                />
               </div>
             )}
           </div>
 
           {/* Tickets */}
           <div className="p-5 sm:p-6">
-            <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+            <section className="rounded-2xl border border-slate-200/80 bg-white/95 p-5 shadow-sm ring-1 ring-slate-100 sm:p-6">
               <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                 <div>
                   <h2 className="text-xl font-semibold text-slate-900">
@@ -482,119 +486,119 @@ export default function App() {
 
               <div className="mt-4 rounded-xl border border-slate-200 bg-slate-50/60 p-3 sm:p-4">
                 <div className="grid gap-3 md:grid-cols-12">
-                <div className="md:col-span-5">
-                  <label className="text-xs font-semibold text-slate-600">
-                    Search tickets
-                  </label>
-                  <input
-                    value={query}
-                    onChange={(e) => setQuery(e.target.value)}
-                    placeholder="Search by title or description..."
-                    className="mt-1 h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none transition focus:border-slate-400 focus:ring-2 focus:ring-slate-200"
-                  />
-                  <div className="mt-1 text-[11px] text-slate-500">
-                    Results update after 300ms to keep interactions smooth.
+                  <div className="md:col-span-5">
+                    <label className="text-xs font-semibold text-slate-600">
+                      Search tickets
+                    </label>
+                    <input
+                      value={query}
+                      onChange={(e) => setQuery(e.target.value)}
+                      placeholder="Search by title or description..."
+                      className="mt-1 h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none transition focus:border-slate-400 focus:ring-2 focus:ring-slate-200"
+                    />
+                    <div className="mt-1 text-[11px] text-slate-500">
+                      Results update after 300ms to keep interactions smooth.
+                    </div>
                   </div>
-                </div>
 
-                <div className="md:col-span-2">
-                  <label className="text-xs font-semibold text-slate-600">
-                    Status
-                  </label>
-                  <select
-                    value={statusFilter}
-                    onChange={(e) => setStatusFilter(e.target.value as any)}
-                    className="mt-1 h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none transition focus:border-slate-400 focus:ring-2 focus:ring-slate-200"
-                  >
-                    <option value="all">All</option>
-                    <option value="open">open</option>
-                    <option value="in_progress">in_progress</option>
-                    <option value="resolved">resolved</option>
-                    <option value="closed">closed</option>
-                  </select>
-                </div>
-
-                <div className="md:col-span-2">
-                  <label className="text-xs font-semibold text-slate-600">
-                    Priority
-                  </label>
-                  <select
-                    value={priorityFilter}
-                    onChange={(e) => setPriorityFilter(e.target.value as any)}
-                    className="mt-1 h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none transition focus:border-slate-400 focus:ring-2 focus:ring-slate-200"
-                  >
-                    <option value="all">All</option>
-                    <option value="low">low</option>
-                    <option value="medium">medium</option>
-                    <option value="high">high</option>
-                    <option value="urgent">urgent</option>
-                  </select>
-                </div>
-
-                <div className="md:col-span-3">
-                  <label className="text-xs font-semibold text-slate-600">
-                    Sort by
-                  </label>
-                  <select
-                    value={sortKey}
-                    onChange={(e) => setSortKey(e.target.value as any)}
-                    className="mt-1 h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none transition focus:border-slate-400 focus:ring-2 focus:ring-slate-200"
-                  >
-                    <option value="newest">Newest</option>
-                    <option value="oldest">Oldest</option>
-                    <option value="priority">Priority</option>
-                    <option value="status">Status</option>
-                  </select>
-                </div>
-
-                <div className="flex flex-col gap-2 md:col-span-12 sm:flex-row sm:items-center sm:justify-between">
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-semibold text-slate-600">
-                      Page size
-                    </span>
+                  <div className="md:col-span-2">
+                    <label className="text-xs font-semibold text-slate-600">
+                      Status
+                    </label>
                     <select
-                      value={pageSize}
-                      onChange={(e) =>
-                        setPageSize(Number(e.target.value) as any)
-                      }
-                      className="h-10 rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none transition focus:border-slate-400 focus:ring-2 focus:ring-slate-200"
+                      value={statusFilter}
+                      onChange={(e) => setStatusFilter(e.target.value as any)}
+                      className="mt-1 h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none transition focus:border-slate-400 focus:ring-2 focus:ring-slate-200"
                     >
-                      <option value={10}>10</option>
-                      <option value={20}>20</option>
-                      <option value={50}>50</option>
+                      <option value="all">All</option>
+                      <option value="open">open</option>
+                      <option value="in_progress">in_progress</option>
+                      <option value="resolved">resolved</option>
+                      <option value="closed">closed</option>
                     </select>
-
-                    <button
-                      onClick={clearFilters}
-                      className="h-10 rounded-xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-900 hover:bg-slate-50"
-                    >
-                      Reset filters
-                    </button>
                   </div>
 
-                  <div className="flex items-center gap-2">
-                    <button
-                      disabled={safePage <= 1}
-                      onClick={() => setPage((p) => Math.max(1, p - 1))}
-                      className="h-10 rounded-xl border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-900 hover:bg-slate-50 disabled:opacity-50"
+                  <div className="md:col-span-2">
+                    <label className="text-xs font-semibold text-slate-600">
+                      Priority
+                    </label>
+                    <select
+                      value={priorityFilter}
+                      onChange={(e) => setPriorityFilter(e.target.value as any)}
+                      className="mt-1 h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none transition focus:border-slate-400 focus:ring-2 focus:ring-slate-200"
                     >
-                      Prev
-                    </button>
-                    <span className="text-sm text-slate-600">
-                      Page <b>{safePage}</b> of <b>{totalPages}</b>
-                    </span>
-                    <button
-                      disabled={safePage >= totalPages}
-                      onClick={() =>
-                        setPage((p) => Math.min(totalPages, p + 1))
-                      }
-                      className="h-10 rounded-xl border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-900 hover:bg-slate-50 disabled:opacity-50"
+                      <option value="all">All</option>
+                      <option value="low">low</option>
+                      <option value="medium">medium</option>
+                      <option value="high">high</option>
+                      <option value="urgent">urgent</option>
+                    </select>
+                  </div>
+
+                  <div className="md:col-span-3">
+                    <label className="text-xs font-semibold text-slate-600">
+                      Sort by
+                    </label>
+                    <select
+                      value={sortKey}
+                      onChange={(e) => setSortKey(e.target.value as any)}
+                      className="mt-1 h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none transition focus:border-slate-400 focus:ring-2 focus:ring-slate-200"
                     >
-                      Next
-                    </button>
+                      <option value="newest">Newest</option>
+                      <option value="oldest">Oldest</option>
+                      <option value="priority">Priority</option>
+                      <option value="status">Status</option>
+                    </select>
+                  </div>
+
+                  <div className="flex flex-col gap-2 md:col-span-12 sm:flex-row sm:items-center sm:justify-between">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-semibold text-slate-600">
+                        Page size
+                      </span>
+                      <select
+                        value={pageSize}
+                        onChange={(e) =>
+                          setPageSize(Number(e.target.value) as any)
+                        }
+                        className="h-10 rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none transition focus:border-slate-400 focus:ring-2 focus:ring-slate-200"
+                      >
+                        <option value={10}>10</option>
+                        <option value={20}>20</option>
+                        <option value={50}>50</option>
+                      </select>
+
+                      <button
+                        onClick={clearFilters}
+                        className="h-10 rounded-xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-900 hover:bg-slate-50"
+                      >
+                        Reset filters
+                      </button>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <button
+                        disabled={safePage <= 1}
+                        onClick={() => setPage((p) => Math.max(1, p - 1))}
+                        className="h-10 rounded-xl border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-900 hover:bg-slate-50 disabled:opacity-50"
+                      >
+                        Prev
+                      </button>
+                      <span className="text-sm text-slate-600">
+                        Page <b>{safePage}</b> of <b>{totalPages}</b>
+                      </span>
+                      <button
+                        disabled={safePage >= totalPages}
+                        onClick={() =>
+                          setPage((p) => Math.min(totalPages, p + 1))
+                        }
+                        className="h-10 rounded-xl border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-900 hover:bg-slate-50 disabled:opacity-50"
+                      >
+                        Next
+                      </button>
+                    </div>
                   </div>
                 </div>
-              </div>
               </div>
 
               <div className="mt-4">
@@ -615,7 +619,7 @@ export default function App() {
                         className="text-left"
                         type="button"
                       >
-                        <article className="rounded-2xl border border-slate-200 bg-white p-4 transition hover:-translate-y-[1px] hover:border-slate-300 hover:shadow-md">
+                        <article className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm transition duration-200 hover:-translate-y-[1px] hover:border-slate-300 hover:shadow-md">
                           <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                             <div className="min-w-0">
                               <div className="flex flex-wrap items-center gap-2">
@@ -769,7 +773,7 @@ export default function App() {
               </div>
 
               <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+                <div className="rounded-xl border border-slate-200 bg-white p-3 shadow-sm">
                   <div className="text-xs font-semibold text-slate-600">
                     Requester
                   </div>
@@ -778,7 +782,7 @@ export default function App() {
                   </div>
                 </div>
 
-                <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+                <div className="rounded-xl border border-slate-200 bg-white p-3 shadow-sm">
                   <div className="text-xs font-semibold text-slate-600">
                     Assignee
                   </div>
