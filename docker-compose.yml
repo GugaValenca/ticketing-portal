@@ -17,7 +17,8 @@ services:
       - db
     environment:
       DJANGO_SECRET_KEY: "dev-secret-key"
-      DJANGO_DEBUG: "1"
+      DEBUG: "1"
+      ALLOWED_HOSTS: "*"
       DATABASE_URL: "postgres://ticketing:ticketing@db:5432/ticketing"
     ports:
       - "8001:8000"
