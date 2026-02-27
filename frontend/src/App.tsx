@@ -156,7 +156,7 @@ export default function App() {
   const [loading, setLoading] = useState(false);
 
   const [username, setUsername] = useState("GugaTampa");
-  const [password, setPassword] = useState("Guga@12345");
+  const [password, setPassword] = useState("@Tampa5000");
   const [error, setError] = useState<string | null>(null);
 
   // Create ticket modal
@@ -406,7 +406,7 @@ export default function App() {
                 >
                   <div className="grid gap-1.5">
                     <label className="text-sm font-medium text-slate-700">
-                      Username
+                      Username or Email
                     </label>
                     <input
                       className="h-11 rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none transition focus:border-slate-400 focus:ring-2 focus:ring-slate-200"
