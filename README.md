@@ -1,4 +1,4 @@
-﻿# Ticketing Portal
+# NexaLink Telecom Service Desk
 
 ![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB)
 ![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white)
@@ -8,8 +8,8 @@
 ![Vercel](https://img.shields.io/badge/deployed%20on-vercel-black?style=for-the-badge&logo=vercel)
 ![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)
 
-A full-stack ticket management platform built with Django REST Framework and React (Vite), focused on practical support workflows.
-It combines authentication, role-aware ticket access, and a clean UI for creating, tracking, and updating tickets.
+A full-stack service desk platform for an internet provider workflow, built with Django REST Framework and React (Vite).
+It combines authentication, role-aware ticket access, and a practical UI for tracking internet service incidents.
 
 ## Live Demo
 
@@ -21,7 +21,7 @@ It combines authentication, role-aware ticket access, and a clean UI for creatin
 
 ## Overview
 
-Ticketing Portal is a job-ready portfolio project designed to demonstrate real fullstack implementation quality:
+NexaLink Telecom Service Desk is a job-ready portfolio project designed to simulate real ISP support operations:
 
 - A React + TypeScript frontend with filtering, sorting, and pagination UX
 - A Django REST API with JWT authentication and permission-aware access rules
@@ -37,16 +37,17 @@ The public demo is focused on the main user workflow. Administrative tools are r
 - Automatic token refresh using Axios interceptors
 - Role-aware ticket access for requester, assignee, and staff/superuser rules
 - Ticket CRUD via DRF ModelViewSet
-- Status and priority updates in the ticket details flow
+- Status updates in the ticket details flow
+- Priority managed by administrators via Django admin
 - Debounced search, status/priority filters, sorting, and pagination
 - API documentation with drf-spectacular (Swagger/OpenAPI)
 - Seed command for development/demo dataset creation
 
 ## Screenshots
 
-![Ticketing Portal - Login](https://via.placeholder.com/1280x720/f8fafc/0f172a?text=Ticketing+Portal+-+Login)
-![Ticketing Portal - Ticket Dashboard](https://via.placeholder.com/1280x720/f1f5f9/0f172a?text=Ticketing+Portal+-+Ticket+Dashboard)
-![Ticketing Portal - Ticket Details](https://via.placeholder.com/1280x720/e2e8f0/0f172a?text=Ticketing+Portal+-+Ticket+Details)
+![NexaLink Service Desk - Login](https://via.placeholder.com/1280x720/f8fafc/0f172a?text=NexaLink+Service+Desk+-+Login)
+![NexaLink Service Desk - Ticket Dashboard](https://via.placeholder.com/1280x720/f1f5f9/0f172a?text=NexaLink+Service+Desk+-+Ticket+Dashboard)
+![NexaLink Service Desk - Ticket Details](https://via.placeholder.com/1280x720/e2e8f0/0f172a?text=NexaLink+Service+Desk+-+Ticket+Details)
 
 ## Installation
 
