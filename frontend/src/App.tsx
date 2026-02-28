@@ -911,14 +911,14 @@ export default function App() {
             </label>
             <select
               value={newPriority}
-              onChange={(e) => setNewPriority(e.target.value as any)}
-              className="h-11 rounded-xl border border-indigo-200 bg-white px-3 text-sm text-slate-900 outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-200"
+              disabled
+              className="h-11 cursor-not-allowed rounded-xl border border-slate-300 bg-slate-100 px-3 text-sm text-slate-600 outline-none"
             >
-              <option value="low">low</option>
               <option value="medium">medium</option>
-              <option value="high">high</option>
-              <option value="urgent">urgent</option>
             </select>
+            <p className="text-xs text-slate-400">
+              Priority is managed by administrators in the admin panel.
+            </p>
           </div>
 
           {createError ? (
@@ -1013,15 +1013,17 @@ export default function App() {
                   </label>
                   <select
                     value={selected.priority}
-                    disabled={detailsSaving}
-                    onChange={(e) => saveDetails({ priority: e.target.value })}
-                    className="h-11 rounded-xl border border-indigo-200 bg-white px-3 text-sm text-slate-900 outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-200 disabled:opacity-60"
+                    disabled
+                    className="h-11 cursor-not-allowed rounded-xl border border-slate-300 bg-slate-100 px-3 text-sm text-slate-600 outline-none"
                   >
                     <option value="low">low</option>
                     <option value="medium">medium</option>
                     <option value="high">high</option>
                     <option value="urgent">urgent</option>
                   </select>
+                  <p className="text-[11px] text-slate-400">
+                    Priority updates are restricted to the admin panel.
+                  </p>
                   <div className="mt-1">
                     <PriorityBadge priority={selected.priority} />
                   </div>
