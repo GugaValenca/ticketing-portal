@@ -57,14 +57,14 @@ function StatusBadge({ status }: { status: string }) {
   const label = s.replaceAll("_", " ");
   const style =
     s === "open"
-      ? "border-sky-300/35 bg-sky-500/15 text-sky-100"
+      ? "border-sky-300 bg-sky-100 text-sky-800"
       : s === "in_progress"
-        ? "border-amber-300/35 bg-amber-500/15 text-amber-100"
+        ? "border-amber-300 bg-amber-100 text-amber-800"
         : s === "resolved"
-          ? "border-emerald-300/35 bg-emerald-500/15 text-emerald-100"
+          ? "border-emerald-300 bg-emerald-100 text-emerald-800"
           : s === "closed"
-            ? "border-slate-300/35 bg-slate-500/15 text-slate-100"
-            : "border-slate-300/35 bg-slate-500/15 text-slate-100";
+            ? "border-slate-300 bg-slate-100 text-slate-700"
+            : "border-slate-300 bg-slate-100 text-slate-700";
 
   return (
     <span
@@ -82,12 +82,12 @@ function PriorityBadge({ priority }: { priority: string }) {
   const p = priority.toLowerCase();
   const style =
     p === "urgent"
-      ? "border-rose-300/35 bg-rose-500/15 text-rose-100"
+      ? "border-rose-300 bg-rose-100 text-rose-800"
       : p === "high"
-        ? "border-orange-300/35 bg-orange-500/15 text-orange-100"
+        ? "border-orange-300 bg-orange-100 text-orange-800"
         : p === "medium"
-          ? "border-yellow-300/35 bg-yellow-500/15 text-yellow-100"
-          : "border-slate-300/35 bg-slate-500/15 text-slate-100";
+          ? "border-yellow-300 bg-yellow-100 text-yellow-800"
+          : "border-indigo-300 bg-indigo-100 text-indigo-800";
 
   return (
     <span
@@ -103,7 +103,7 @@ function PriorityBadge({ priority }: { priority: string }) {
 
 function IdPill({ id }: { id: number }) {
   return (
-    <span className="inline-flex items-center rounded-full border border-violet-300/35 bg-violet-500/15 px-2.5 py-1 text-xs font-semibold text-violet-100">
+    <span className="inline-flex items-center rounded-full border border-violet-300 bg-violet-100 px-2.5 py-1 text-xs font-semibold text-violet-800">
       #{id}
     </span>
   );
@@ -815,12 +815,11 @@ export default function App() {
                           <article className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition duration-200 hover:-translate-y-[1px] hover:border-violet-300 hover:shadow-md">
                             <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                               <div className="min-w-0">
-                                <div className="flex flex-wrap items-center gap-2">
-                                  <IdPill id={t.id} />
-                                  <h3 className="text-base font-semibold text-slate-900">
-                                    {t.title}
-                                  </h3>
-                                </div>
+                              <div className="flex flex-wrap items-center gap-2">
+                                <h3 className="text-base font-semibold text-slate-900">
+                                  {t.title}
+                                </h3>
+                              </div>
 
                                 {t.description ? (
                                   <p className="mt-2 text-sm text-slate-700">
@@ -849,9 +848,25 @@ export default function App() {
                                 </div>
                               </div>
 
-                              <div className="flex flex-wrap gap-2 sm:flex-col sm:items-end">
-                                <StatusBadge status={t.status} />
-                                <PriorityBadge priority={t.priority} />
+                              <div className="grid min-w-[190px] gap-2 rounded-xl border border-slate-200 bg-slate-50 p-3 sm:justify-items-end">
+                                <div className="w-full">
+                                  <div className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-slate-500">
+                                    Ticket ID
+                                  </div>
+                                  <IdPill id={t.id} />
+                                </div>
+                                <div className="w-full">
+                                  <div className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-slate-500">
+                                    Status
+                                  </div>
+                                  <StatusBadge status={t.status} />
+                                </div>
+                                <div className="w-full">
+                                  <div className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-slate-500">
+                                    Priority
+                                  </div>
+                                  <PriorityBadge priority={t.priority} />
+                                </div>
                               </div>
                             </div>
                           </article>
@@ -967,20 +982,20 @@ export default function App() {
               </div>
 
               <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                <div className="rounded-xl border border-white/20 bg-white/10 p-3 shadow-sm">
-                  <div className="text-xs font-semibold text-indigo-200">
+                <div className="rounded-xl border border-slate-300 bg-white p-3 shadow-sm">
+                  <div className="text-xs font-semibold text-slate-600">
                     Requester
                   </div>
-                  <div className="mt-1 text-sm font-semibold text-white">
+                  <div className="mt-1 text-sm font-semibold text-slate-900">
                     {selected.requester_username ?? "-"}
                   </div>
                 </div>
 
-                <div className="rounded-xl border border-white/20 bg-white/10 p-3 shadow-sm">
-                  <div className="text-xs font-semibold text-indigo-200">
+                <div className="rounded-xl border border-slate-300 bg-white p-3 shadow-sm">
+                  <div className="text-xs font-semibold text-slate-600">
                     Assignee
                   </div>
-                  <div className="mt-1 text-sm font-semibold text-white">
+                  <div className="mt-1 text-sm font-semibold text-slate-900">
                     {selected.assignee_username ?? "-"}
                   </div>
                 </div>
@@ -988,14 +1003,14 @@ export default function App() {
 
               <div className="mt-4 grid gap-3 sm:grid-cols-2">
                 <div className="grid gap-1.5">
-                  <label className="text-xs font-semibold text-indigo-200">
+                  <label className="text-xs font-semibold text-slate-600">
                     Status
                   </label>
                   <select
                     value={selected.status}
                     disabled={detailsSaving}
                     onChange={(e) => saveDetails({ status: e.target.value })}
-                    className="h-11 rounded-xl border border-slate-300 bg-white px-3 text-sm text-slate-900 outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-200 disabled:opacity-60"
+                    className="h-11 rounded-xl border border-slate-300 bg-white px-3 text-sm font-semibold text-slate-900 outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-200 disabled:opacity-60"
                   >
                     <option value="open">open</option>
                     <option value="in_progress">in_progress</option>
@@ -1008,14 +1023,14 @@ export default function App() {
                 </div>
 
                 <div className="grid gap-1.5">
-                  <label className="text-xs font-semibold text-indigo-200">
+                  <label className="text-xs font-semibold text-slate-600">
                     Priority
                   </label>
                   <select
                     value={selected.priority}
                     disabled={detailsSaving}
                     onChange={(e) => saveDetails({ priority: e.target.value })}
-                    className="h-11 rounded-xl border border-indigo-200 bg-white px-3 text-sm text-slate-900 outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-200 disabled:opacity-60"
+                    className="h-11 rounded-xl border border-slate-300 bg-white px-3 text-sm font-semibold text-slate-900 outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-200 disabled:opacity-60"
                   >
                     <option value="low">low</option>
                     <option value="medium">medium</option>
