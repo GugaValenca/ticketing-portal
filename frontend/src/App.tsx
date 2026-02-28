@@ -330,6 +330,8 @@ export default function App() {
 
   function applySidebarFilter(filter: SidebarFilter) {
     setSidebarFilter(filter);
+    setActiveTopNav("tickets");
+    ticketsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
     setPage(1);
   }
 
