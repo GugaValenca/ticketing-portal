@@ -1,4 +1,4 @@
-# Ticketing Portal ??
+ï»¿# Ticketing Portal ??
 
 ![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB)
 ![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white)
@@ -115,30 +115,30 @@ Demo users created by `python manage.py seed`:
 ```bash
 ticketing-portal/
 +-- backend/
-¦   +-- api/
-¦   ¦   +-- index.py
-¦   +-- config/
-¦   ¦   +-- settings.py
-¦   ¦   +-- urls.py
-¦   +-- tickets/
-¦   ¦   +-- management/commands/seed.py
-¦   ¦   +-- models.py
-¦   ¦   +-- serializers.py
-¦   ¦   +-- permissions.py
-¦   ¦   +-- views.py
-¦   ¦   +-- auth.py
-¦   ¦   +-- me.py
-¦   ¦   +-- admin.py
-¦   +-- requirements.txt
-¦   +-- vercel.json
+Â¦   +-- api/
+Â¦   Â¦   +-- index.py
+Â¦   +-- config/
+Â¦   Â¦   +-- settings.py
+Â¦   Â¦   +-- urls.py
+Â¦   +-- tickets/
+Â¦   Â¦   +-- management/commands/seed.py
+Â¦   Â¦   +-- models.py
+Â¦   Â¦   +-- serializers.py
+Â¦   Â¦   +-- permissions.py
+Â¦   Â¦   +-- views.py
+Â¦   Â¦   +-- auth.py
+Â¦   Â¦   +-- me.py
+Â¦   Â¦   +-- admin.py
+Â¦   +-- requirements.txt
+Â¦   +-- vercel.json
 +-- frontend/
-¦   +-- src/
-¦   ¦   +-- components/
-¦   ¦   +-- lib/api.ts
-¦   ¦   +-- App.tsx
-¦   ¦   +-- main.tsx
-¦   +-- package.json
-¦   +-- vercel.json
+Â¦   +-- src/
+Â¦   Â¦   +-- components/
+Â¦   Â¦   +-- lib/api.ts
+Â¦   Â¦   +-- App.tsx
+Â¦   Â¦   +-- main.tsx
+Â¦   +-- package.json
+Â¦   +-- vercel.json
 +-- docker-compose.yml
 +-- README.md
 ```
@@ -193,3 +193,4 @@ This project is licensed under the MIT License.
 ---
 
 ? **If you found this project helpful, please give it a star!**
+
