@@ -11,14 +11,3 @@ body,
 #root {
   height: 100%;
 }
-
-/* Dark dropdown options for modal selects (Status/Priority). */
-.dark-select option {
-  background-color: #2a1b48;
-  color: #ffffff;
-}
-
-.dark-select optgroup {
-  background-color: #2a1b48;
-  color: #ffffff;
-}
