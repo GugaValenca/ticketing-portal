@@ -22,6 +22,7 @@ type Ticket = {
 };
 
 type SidebarFilter = "inbox" | "my_tickets" | "unassigned" | "overdue";
+type ReportDateField = "created_at" | "updated_at";
 
 const COMPANY_NAME = "NexaLink Telecom";
 const COMPANY_TAGLINE =
@@ -50,6 +51,14 @@ function usToIsoDate(value: string) {
   if (!m) return "";
   const [, mm, dd, yyyy] = m;
   return `${yyyy}-${mm}-${dd}`;
+}
+
+function usDateToBoundary(value: string, boundary: "start" | "end") {
+  const iso = usToIsoDate(value);
+  if (!iso) return null;
+  const time = boundary === "start" ? "T00:00:00.000" : "T23:59:59.999";
+  const parsed = new Date(`${iso}${time}`);
+  return Number.isNaN(parsed.getTime()) ? null : parsed;
 }
 
 function BrandMark({ className = "h-12 w-12" }: { className?: string }) {
@@ -245,6 +254,12 @@ export default function App() {
   const [sidebarFilter, setSidebarFilter] = useState<SidebarFilter>("inbox");
   const [reportStartDate, setReportStartDate] = useState("");
   const [reportEndDate, setReportEndDate] = useState("");
+  const [reportDateField, setReportDateField] = useState<ReportDateField>("created_at");
+  const [appliedReportStartDate, setAppliedReportStartDate] = useState("");
+  const [appliedReportEndDate, setAppliedReportEndDate] = useState("");
+  const [appliedReportDateField, setAppliedReportDateField] =
+    useState<ReportDateField>("created_at");
+  const [reportError, setReportError] = useState<string | null>(null);
   const reportStartPickerRef = useRef<HTMLInputElement | null>(null);
   const reportEndPickerRef = useRef<HTMLInputElement | null>(null);
 
@@ -333,6 +348,38 @@ export default function App() {
     setHideResolved(false);
     setSortKey("newest");
     setSidebarFilter("inbox");
+    setReportDateField("created_at");
+    setReportStartDate("");
+    setReportEndDate("");
+    setAppliedReportDateField("created_at");
+    setAppliedReportStartDate("");
+    setAppliedReportEndDate("");
+    setReportError(null);
+    setPage(1);
+  }
+
+  function applyReportFilters() {
+    setReportError(null);
+
+    const startDate = reportStartDate ? usDateToBoundary(reportStartDate, "start") : null;
+    const endDate = reportEndDate ? usDateToBoundary(reportEndDate, "end") : null;
+
+    if (reportStartDate && !startDate) {
+      setReportError("Invalid start date. Use MM/DD/YYYY.");
+      return;
+    }
+    if (reportEndDate && !endDate) {
+      setReportError("Invalid end date. Use MM/DD/YYYY.");
+      return;
+    }
+    if (startDate && endDate && startDate > endDate) {
+      setReportError("Start date cannot be after end date.");
+      return;
+    }
+
+    setAppliedReportDateField(reportDateField);
+    setAppliedReportStartDate(reportStartDate);
+    setAppliedReportEndDate(reportEndDate);
     setPage(1);
   }
 
@@ -360,6 +407,20 @@ export default function App() {
       const matchesPriority =
         priorityFilter === "all" ? true : t.priority === priorityFilter;
       const matchesResolvedVisibility = hideResolved ? t.status !== "resolved" : true;
+      const ticketReportDate = new Date(t[appliedReportDateField]);
+      const reportStart = appliedReportStartDate
+        ? usDateToBoundary(appliedReportStartDate, "start")
+        : null;
+      const reportEnd = appliedReportEndDate
+        ? usDateToBoundary(appliedReportEndDate, "end")
+        : null;
+      const matchesReportRange =
+        !reportStart && !reportEnd
+          ? true
+          : Number.isNaN(ticketReportDate.getTime())
+            ? false
+            : (!reportStart || ticketReportDate >= reportStart) &&
+              (!reportEnd || ticketReportDate <= reportEnd);
       const matchesSidebar =
         sidebarFilter === "inbox"
           ? true
@@ -378,6 +439,7 @@ export default function App() {
         matchesStatus &&
         matchesPriority &&
         matchesResolvedVisibility &&
+        matchesReportRange &&
         matchesSidebar
       );
     });
@@ -408,7 +470,19 @@ export default function App() {
         new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
       );
     });
-  }, [tickets, debouncedQuery, statusFilter, priorityFilter, hideResolved, sortKey, sidebarFilter, me]);
+  }, [
+    tickets,
+    debouncedQuery,
+    statusFilter,
+    priorityFilter,
+    hideResolved,
+    sortKey,
+    sidebarFilter,
+    me,
+    appliedReportDateField,
+    appliedReportStartDate,
+    appliedReportEndDate,
+  ]);
 
   const total = filteredSortedTickets.length;
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
@@ -737,9 +811,24 @@ export default function App() {
                   Report
                 </h2>
                 <p className="mt-1 text-xs text-slate-600">
-                  Choose a start and end date to review ticket activity in a specific period.
+                  Select a date field, define a period, and apply the filter.
                 </p>
-                <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-[minmax(0,220px)_minmax(0,220px)_auto]">
+                <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-[minmax(0,200px)_minmax(0,220px)_minmax(0,220px)_auto]">
+                  <div className="grid gap-1">
+                    <label className="text-xs font-semibold text-slate-600">
+                      Date field
+                    </label>
+                    <select
+                      value={reportDateField}
+                      onChange={(e) =>
+                        setReportDateField(e.target.value as ReportDateField)
+                      }
+                      className="h-10 rounded-lg border border-slate-300 bg-white px-3 text-sm text-slate-900 outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-200"
+                    >
+                      <option value="created_at">Created date</option>
+                      <option value="updated_at">Last updated date</option>
+                    </select>
+                  </div>
                   <div className="grid gap-1">
                     <label className="text-xs font-semibold text-slate-600">
                       Start date (MM/DD/YYYY)
@@ -835,12 +924,18 @@ export default function App() {
                   <div className="flex items-end sm:col-span-2 lg:col-span-1">
                     <button
                       type="button"
+                      onClick={applyReportFilters}
                       className="h-10 w-full rounded-lg bg-indigo-600 px-4 text-sm font-semibold text-white hover:bg-indigo-500 lg:w-auto"
                     >
-                      Submit
+                      Apply
                     </button>
                   </div>
                 </div>
+                {reportError ? (
+                  <div className="mt-2 rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-xs font-medium text-rose-700">
+                    {reportError}
+                  </div>
+                ) : null}
               </section>
 
               <section className="rounded-xl border border-indigo-100 bg-white/95 p-4 shadow-sm">
