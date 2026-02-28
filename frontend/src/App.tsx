@@ -1074,14 +1074,29 @@ export default function App() {
                         <button
                           onClick={() => setHideResolved((prev) => !prev)}
                           className={cx(
-                            "h-10 rounded-xl border px-4 text-sm font-semibold transition",
+                            "group inline-flex h-10 items-center gap-2 rounded-xl border px-3 text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300/60",
                             hideResolved
-                              ? "border-violet-300 bg-violet-100 text-violet-800 hover:bg-violet-200"
+                              ? "border-violet-400 bg-violet-600 text-white shadow-sm shadow-violet-900/20"
                               : "border-slate-300 bg-white text-slate-700 hover:bg-slate-50",
                           )}
                           aria-pressed={hideResolved}
+                          aria-label="Toggle hide resolved tickets"
                         >
-                          {hideResolved ? "Showing unresolved only" : "Hide resolved"}
+                          <span
+                            className={cx(
+                              "relative h-5 w-9 rounded-full transition",
+                              hideResolved ? "bg-white/25" : "bg-slate-300",
+                            )}
+                            aria-hidden="true"
+                          >
+                            <span
+                              className={cx(
+                                "absolute top-0.5 h-4 w-4 rounded-full bg-white shadow transition",
+                                hideResolved ? "left-4" : "left-0.5",
+                              )}
+                            />
+                          </span>
+                          <span>{hideResolved ? "Resolved hidden" : "Hide resolved"}</span>
                         </button>
                       </div>
 
