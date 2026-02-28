@@ -21,12 +21,21 @@ type Ticket = {
   updated_at: string;
 };
 
+type SidebarFilter = "inbox" | "my_tickets" | "unassigned" | "overdue";
+
 const COMPANY_NAME = "NexaLink Telecom";
 const COMPANY_TAGLINE =
   "Operations workspace for internet service incident management.";
 
 function cx(...classes: Array<string | false | null | undefined>) {
   return classes.filter(Boolean).join(" ");
+}
+
+function formatUsDateInput(value: string) {
+  const digits = value.replace(/\D/g, "").slice(0, 8);
+  if (digits.length <= 2) return digits;
+  if (digits.length <= 4) return `${digits.slice(0, 2)}/${digits.slice(2)}`;
+  return `${digits.slice(0, 2)}/${digits.slice(2, 4)}/${digits.slice(4)}`;
 }
 
 function BrandMark({ className = "h-12 w-12" }: { className?: string }) {
@@ -57,19 +66,19 @@ function StatusBadge({ status }: { status: string }) {
   const label = s.replaceAll("_", " ");
   const style =
     s === "open"
-      ? "border-sky-300/35 bg-sky-500/15 text-sky-100"
+      ? "border-sky-300/45 bg-sky-500/25 text-sky-100"
       : s === "in_progress"
-        ? "border-amber-300/35 bg-amber-500/15 text-amber-100"
+        ? "border-amber-300/45 bg-amber-500/25 text-amber-100"
         : s === "resolved"
-          ? "border-emerald-300/35 bg-emerald-500/15 text-emerald-100"
+          ? "border-emerald-300/45 bg-emerald-500/25 text-emerald-100"
           : s === "closed"
-            ? "border-slate-300/35 bg-slate-500/15 text-slate-100"
-            : "border-slate-300/35 bg-slate-500/15 text-slate-100";
+            ? "border-slate-300/45 bg-slate-500/25 text-slate-100"
+            : "border-slate-300/45 bg-slate-500/25 text-slate-100";
 
   return (
     <span
       className={cx(
-        "inline-flex rounded-full border px-3 py-1 text-xs font-semibold",
+        "inline-flex rounded-md border px-3 py-1 text-xs font-semibold",
         style,
       )}
     >
@@ -82,17 +91,17 @@ function PriorityBadge({ priority }: { priority: string }) {
   const p = priority.toLowerCase();
   const style =
     p === "urgent"
-      ? "border-rose-300/35 bg-rose-500/15 text-rose-100"
+      ? "border-rose-300/45 bg-rose-500/25 text-rose-100"
       : p === "high"
-        ? "border-orange-300/35 bg-orange-500/15 text-orange-100"
+        ? "border-orange-300/45 bg-orange-500/25 text-orange-100"
         : p === "medium"
-          ? "border-yellow-300/35 bg-yellow-500/15 text-yellow-100"
-          : "border-slate-300/35 bg-slate-500/15 text-slate-100";
+          ? "border-yellow-300/45 bg-yellow-500/25 text-yellow-100"
+          : "border-slate-300/45 bg-slate-500/25 text-slate-100";
 
   return (
     <span
       className={cx(
-        "inline-flex rounded-full border px-3 py-1 text-xs font-semibold",
+        "inline-flex rounded-md border px-3 py-1 text-xs font-semibold",
         style,
       )}
     >
@@ -103,7 +112,7 @@ function PriorityBadge({ priority }: { priority: string }) {
 
 function IdPill({ id }: { id: number }) {
   return (
-    <span className="inline-flex items-center rounded-full border border-violet-300/35 bg-violet-500/15 px-2.5 py-1 text-xs font-semibold text-violet-100">
+    <span className="inline-flex items-center rounded-md border border-violet-300/45 bg-violet-500/30 px-2.5 py-1 text-xs font-semibold text-violet-100">
       #{id}
     </span>
   );
@@ -216,6 +225,9 @@ export default function App() {
   const [sortKey, setSortKey] = useState<SortKey>("newest");
   const [pageSize, setPageSize] = useState<PageSize>(10);
   const [page, setPage] = useState(1);
+  const [sidebarFilter, setSidebarFilter] = useState<SidebarFilter>("inbox");
+  const [reportStartDate, setReportStartDate] = useState("");
+  const [reportEndDate, setReportEndDate] = useState("");
 
   const isLoggedIn = useMemo(() => !!me, [me]);
 
@@ -300,6 +312,12 @@ export default function App() {
     setStatusFilter("all");
     setPriorityFilter("all");
     setSortKey("newest");
+    setSidebarFilter("inbox");
+    setPage(1);
+  }
+
+  function applySidebarFilter(filter: SidebarFilter) {
+    setSidebarFilter(filter);
     setPage(1);
   }
 
@@ -321,8 +339,20 @@ export default function App() {
         statusFilter === "all" ? true : t.status === statusFilter;
       const matchesPriority =
         priorityFilter === "all" ? true : t.priority === priorityFilter;
+      const matchesSidebar =
+        sidebarFilter === "inbox"
+          ? true
+          : sidebarFilter === "my_tickets"
+            ? !!me &&
+              (t.requester_username === me.username ||
+                t.assignee_username === me.username)
+            : sidebarFilter === "unassigned"
+              ? !t.assignee_username
+              : t.priority === "urgent" &&
+                t.status !== "resolved" &&
+                t.status !== "closed";
 
-      return matchesQuery && matchesStatus && matchesPriority;
+      return matchesQuery && matchesStatus && matchesPriority && matchesSidebar;
     });
 
     return [...filtered].sort((a, b) => {
@@ -351,7 +381,7 @@ export default function App() {
         new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
       );
     });
-  }, [tickets, debouncedQuery, statusFilter, priorityFilter, sortKey]);
+  }, [tickets, debouncedQuery, statusFilter, priorityFilter, sortKey, sidebarFilter, me]);
 
   const total = filteredSortedTickets.length;
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
@@ -565,21 +595,57 @@ export default function App() {
               Tickets
             </p>
             <nav className="mt-2 space-y-1">
-              <button type="button" className="flex w-full items-center justify-between rounded-lg bg-white/10 px-3 py-2 text-left text-sm text-white">
+              <button
+                type="button"
+                onClick={() => applySidebarFilter("inbox")}
+                className={cx(
+                  "flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-sm transition",
+                  sidebarFilter === "inbox"
+                    ? "bg-white/10 text-white"
+                    : "text-slate-200 hover:bg-white/10",
+                )}
+              >
                 <span>Inbox</span>
                 <span className="rounded-md bg-indigo-500/30 px-1.5 py-0.5 text-xs font-semibold">
                   {dashboardStats.inbox}
                 </span>
               </button>
-              <button type="button" className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-sm text-slate-200 hover:bg-white/10">
+              <button
+                type="button"
+                onClick={() => applySidebarFilter("my_tickets")}
+                className={cx(
+                  "flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-sm transition",
+                  sidebarFilter === "my_tickets"
+                    ? "bg-white/10 text-white"
+                    : "text-slate-200 hover:bg-white/10",
+                )}
+              >
                 <span>My tickets</span>
                 <span className="text-xs text-indigo-200">{dashboardStats.myTickets}</span>
               </button>
-              <button type="button" className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-sm text-slate-200 hover:bg-white/10">
+              <button
+                type="button"
+                onClick={() => applySidebarFilter("unassigned")}
+                className={cx(
+                  "flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-sm transition",
+                  sidebarFilter === "unassigned"
+                    ? "bg-white/10 text-white"
+                    : "text-slate-200 hover:bg-white/10",
+                )}
+              >
                 <span>Unassigned</span>
                 <span className="text-xs text-indigo-200">{dashboardStats.unassigned}</span>
               </button>
-              <button type="button" className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-sm text-slate-200 hover:bg-white/10">
+              <button
+                type="button"
+                onClick={() => applySidebarFilter("overdue")}
+                className={cx(
+                  "flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-sm transition",
+                  sidebarFilter === "overdue"
+                    ? "bg-white/10 text-white"
+                    : "text-slate-200 hover:bg-white/10",
+                )}
+              >
                 <span>Overdue</span>
                 <span className="text-xs text-indigo-200">{dashboardStats.overdue}</span>
               </button>
@@ -643,15 +709,42 @@ export default function App() {
                 <h2 className="text-sm font-semibold uppercase tracking-wide text-indigo-600">
                   Report
                 </h2>
+                <p className="mt-1 text-xs text-slate-600">
+                  Choose a start and end date to review ticket activity in a specific period.
+                </p>
                 <div className="mt-3 grid gap-3 sm:grid-cols-[160px_160px_auto]">
-                  <input
-                    type="date"
-                    className="h-10 rounded-lg border border-slate-300 bg-white px-3 text-sm text-slate-900 outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-200"
-                  />
-                  <input
-                    type="date"
-                    className="h-10 rounded-lg border border-slate-300 bg-white px-3 text-sm text-slate-900 outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-200"
-                  />
+                  <div className="grid gap-1">
+                    <label className="text-xs font-semibold text-slate-600">
+                      Start date (MM/DD/YYYY)
+                    </label>
+                    <input
+                      type="text"
+                      inputMode="numeric"
+                      placeholder="MM/DD/YYYY"
+                      maxLength={10}
+                      value={reportStartDate}
+                      onChange={(e) =>
+                        setReportStartDate(formatUsDateInput(e.target.value))
+                      }
+                      className="h-10 rounded-lg border border-slate-300 bg-white px-3 text-sm text-slate-900 outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-200"
+                    />
+                  </div>
+                  <div className="grid gap-1">
+                    <label className="text-xs font-semibold text-slate-600">
+                      End date (MM/DD/YYYY)
+                    </label>
+                    <input
+                      type="text"
+                      inputMode="numeric"
+                      placeholder="MM/DD/YYYY"
+                      maxLength={10}
+                      value={reportEndDate}
+                      onChange={(e) =>
+                        setReportEndDate(formatUsDateInput(e.target.value))
+                      }
+                      className="h-10 rounded-lg border border-slate-300 bg-white px-3 text-sm text-slate-900 outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-200"
+                    />
+                  </div>
                   <div className="flex items-center">
                     <button
                       type="button"
@@ -911,14 +1004,14 @@ export default function App() {
             </label>
             <select
               value={newPriority}
-              disabled
-              className="h-11 cursor-not-allowed rounded-xl border border-slate-300 bg-slate-100 px-3 text-sm text-slate-600 outline-none"
+              onChange={(e) => setNewPriority(e.target.value as any)}
+              className="dark-select h-11 rounded-xl border border-white/20 bg-white/10 px-3 text-sm font-semibold text-white outline-none transition focus:border-violet-300 focus:ring-2 focus:ring-violet-300/30"
             >
+              <option value="low">low</option>
               <option value="medium">medium</option>
+              <option value="high">high</option>
+              <option value="urgent">urgent</option>
             </select>
-            <p className="text-xs text-slate-400">
-              Priority is managed by administrators in the admin panel.
-            </p>
           </div>
 
           {createError ? (
@@ -995,7 +1088,7 @@ export default function App() {
                     value={selected.status}
                     disabled={detailsSaving}
                     onChange={(e) => saveDetails({ status: e.target.value })}
-                    className="h-11 rounded-xl border border-slate-300 bg-white px-3 text-sm text-slate-900 outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-200 disabled:opacity-60"
+                    className="dark-select h-11 rounded-xl border border-white/20 bg-white/10 px-3 text-sm font-semibold text-white outline-none transition focus:border-violet-300 focus:ring-2 focus:ring-violet-300/30 disabled:opacity-60"
                   >
                     <option value="open">open</option>
                     <option value="in_progress">in_progress</option>
@@ -1013,17 +1106,15 @@ export default function App() {
                   </label>
                   <select
                     value={selected.priority}
-                    disabled
-                    className="h-11 cursor-not-allowed rounded-xl border border-slate-300 bg-slate-100 px-3 text-sm text-slate-600 outline-none"
+                    disabled={detailsSaving}
+                    onChange={(e) => saveDetails({ priority: e.target.value })}
+                    className="dark-select h-11 rounded-xl border border-white/20 bg-white/10 px-3 text-sm font-semibold text-white outline-none transition focus:border-violet-300 focus:ring-2 focus:ring-violet-300/30 disabled:opacity-60"
                   >
                     <option value="low">low</option>
                     <option value="medium">medium</option>
                     <option value="high">high</option>
                     <option value="urgent">urgent</option>
                   </select>
-                  <p className="text-[11px] text-slate-400">
-                    Priority updates are restricted to the admin panel.
-                  </p>
                   <div className="mt-1">
                     <PriorityBadge priority={selected.priority} />
                   </div>
