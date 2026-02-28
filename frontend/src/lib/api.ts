@@ -2,7 +2,8 @@ import axios from "axios";
 import type { AxiosError, InternalAxiosRequestConfig } from "axios";
 
 const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:8000";
+  import.meta.env.VITE_API_BASE_URL ||
+  (import.meta.env.PROD ? "" : "http://127.0.0.1:8000");
 const plainAxios = axios.create({ baseURL: API_BASE_URL });
 
 type TokenPair = { access: string; refresh: string };
