@@ -29,18 +29,6 @@ function cx(...classes: Array<string | false | null | undefined>) {
   return classes.filter(Boolean).join(" ");
 }
 
-function formatDateTimeUs(value: string) {
-  return new Intl.DateTimeFormat("en-US", {
-    month: "2-digit",
-    day: "2-digit",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-    hour12: true,
-  }).format(new Date(value));
-}
-
 function BrandMark({ className = "h-12 w-12" }: { className?: string }) {
   return (
     <svg
@@ -655,26 +643,15 @@ export default function App() {
                 <h2 className="text-sm font-semibold uppercase tracking-wide text-indigo-600">
                   Report
                 </h2>
-                <p className="mt-1 text-xs text-slate-600">
-                  Use this date range to review ticket activity for a specific period (US format: MM/DD/YYYY).
-                </p>
                 <div className="mt-3 grid gap-3 sm:grid-cols-[160px_160px_auto]">
-                  <div className="grid gap-1">
-                    <label className="text-xs font-semibold text-slate-600">Start date</label>
-                    <input
-                      type="date"
-                      lang="en-US"
-                      className="h-10 rounded-lg border border-slate-300 bg-white px-3 text-sm text-slate-900 outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-200"
-                    />
-                  </div>
-                  <div className="grid gap-1">
-                    <label className="text-xs font-semibold text-slate-600">End date</label>
-                    <input
-                      type="date"
-                      lang="en-US"
-                      className="h-10 rounded-lg border border-slate-300 bg-white px-3 text-sm text-slate-900 outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-200"
-                    />
-                  </div>
+                  <input
+                    type="date"
+                    className="h-10 rounded-lg border border-slate-300 bg-white px-3 text-sm text-slate-900 outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-200"
+                  />
+                  <input
+                    type="date"
+                    className="h-10 rounded-lg border border-slate-300 bg-white px-3 text-sm text-slate-900 outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-200"
+                  />
                   <div className="flex items-center">
                     <button
                       type="button"
@@ -935,7 +912,7 @@ export default function App() {
             <select
               value={newPriority}
               onChange={(e) => setNewPriority(e.target.value as any)}
-              className="dark-select h-11 rounded-xl border border-white/20 bg-white/10 px-3 text-sm text-white outline-none transition focus:border-violet-300 focus:ring-2 focus:ring-violet-300/30"
+              className="h-11 rounded-xl border border-indigo-200 bg-white px-3 text-sm text-slate-900 outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-200"
             >
               <option value="low">low</option>
               <option value="medium">medium</option>
@@ -1018,7 +995,7 @@ export default function App() {
                     value={selected.status}
                     disabled={detailsSaving}
                     onChange={(e) => saveDetails({ status: e.target.value })}
-                    className="dark-select h-11 rounded-xl border border-white/20 bg-white/10 px-3 text-sm font-semibold text-white outline-none transition focus:border-violet-300 focus:ring-2 focus:ring-violet-300/30 disabled:opacity-60"
+                    className="h-11 rounded-xl border border-white/20 bg-white/10 px-3 text-sm font-semibold text-white outline-none transition focus:border-violet-300 focus:ring-2 focus:ring-violet-300/30 disabled:opacity-60"
                   >
                     <option value="open">open</option>
                     <option value="in_progress">in_progress</option>
@@ -1038,7 +1015,7 @@ export default function App() {
                     value={selected.priority}
                     disabled={detailsSaving}
                     onChange={(e) => saveDetails({ priority: e.target.value })}
-                    className="dark-select h-11 rounded-xl border border-white/20 bg-white/10 px-3 text-sm font-semibold text-white outline-none transition focus:border-violet-300 focus:ring-2 focus:ring-violet-300/30 disabled:opacity-60"
+                    className="h-11 rounded-xl border border-white/20 bg-white/10 px-3 text-sm font-semibold text-white outline-none transition focus:border-violet-300 focus:ring-2 focus:ring-violet-300/30 disabled:opacity-60"
                   >
                     <option value="low">low</option>
                     <option value="medium">medium</option>
@@ -1055,13 +1032,13 @@ export default function App() {
                 <div>
                   Created:{" "}
                   <span className="font-semibold text-slate-100">
-                    {formatDateTimeUs(selected.created_at)}
+                    {new Date(selected.created_at).toLocaleString()}
                   </span>
                 </div>
                 <div>
                   Updated:{" "}
                   <span className="font-semibold text-slate-100">
-                    {formatDateTimeUs(selected.updated_at)}
+                    {new Date(selected.updated_at).toLocaleString()}
                   </span>
                 </div>
               </div>
