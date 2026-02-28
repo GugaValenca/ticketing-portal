@@ -692,7 +692,7 @@ export default function App() {
         </aside>
 
         <div className="flex min-w-0 flex-1 flex-col">
-          <header className="border-b border-white/10 bg-[#1d1236]/85">
+          <header className="sticky top-0 z-40 border-b border-white/10 bg-[#1d1236]/95 backdrop-blur">
             <div className="flex h-14 items-center justify-between gap-3 px-4 sm:px-6">
               <div className="flex items-center gap-4 text-sm text-indigo-100">
                 <button
