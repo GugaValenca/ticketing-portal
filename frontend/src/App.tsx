@@ -616,7 +616,7 @@ export default function App() {
       </div>
 
       <div className="relative z-10 flex min-h-screen">
-        <aside className="sticky top-0 hidden h-screen w-64 shrink-0 border-r border-white/10 bg-[#160c2d]/90 md:flex md:flex-col">
+        <aside className="hidden w-64 shrink-0 border-r border-white/10 bg-[#160c2d]/90 md:flex md:flex-col">
           <div className="border-b border-white/10 px-4 py-3">
             <div className="flex items-center gap-2">
               <BrandMark className="h-7 w-7" />
@@ -692,24 +692,13 @@ export default function App() {
         </aside>
 
         <div className="flex min-w-0 flex-1 flex-col">
-          <header className="sticky top-0 z-50 border-b border-white/10 bg-[#1d1236]/95 backdrop-blur">
-            <div className="flex min-h-[72px] items-center justify-between gap-3 px-4 py-3 sm:px-6">
-              <div className="flex min-w-0 items-center gap-4 text-sm text-indigo-100">
-                <div className="flex min-w-0 items-center gap-2.5">
-                  <BrandMark className="h-8 w-8" />
-                  <div className="min-w-0">
-                    <div className="truncate text-sm font-semibold text-white">
-                      {COMPANY_NAME}
-                    </div>
-                    <div className="truncate text-[11px] text-slate-300">
-                      Service Desk
-                    </div>
-                  </div>
-                </div>
+          <header className="sticky top-0 z-40 border-b border-white/10 bg-[#1d1236]/95 backdrop-blur">
+            <div className="flex h-14 items-center justify-between gap-3 px-4 sm:px-6">
+              <div className="flex items-center gap-4 text-sm text-indigo-100">
                 <button
                   type="button"
                   onClick={() => handleTopNav("service_desk")}
-                  className={cx("hidden font-semibold transition hover:text-white lg:inline", activeTopNav === "service_desk" ? "text-white" : "text-indigo-100")}
+                  className={cx("font-semibold transition hover:text-white", activeTopNav === "service_desk" ? "text-white" : "text-indigo-100")}
                   title="Go to dashboard overview"
                 >
                   Service Desk
@@ -748,7 +737,7 @@ export default function App() {
                 </button>
               </div>
 
-              <div className="flex shrink-0 items-center gap-2">
+              <div className="flex items-center gap-2">
                 <button
                   type="button"
                   onClick={loadMeAndTickets}
