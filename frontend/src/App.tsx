@@ -80,19 +80,19 @@ function StatusBadge({ status }: { status: string }) {
   const label = s.replaceAll("_", " ");
   const style =
     s === "open"
-      ? "border-sky-700 bg-sky-700 text-white shadow-sm shadow-sky-900/25"
+      ? "border-sky-900/80 bg-sky-600 text-white shadow-sm shadow-sky-900/30"
       : s === "in_progress"
-        ? "border-amber-700 bg-amber-700 text-white shadow-sm shadow-amber-900/25"
+        ? "border-amber-900/80 bg-amber-500 text-slate-950 shadow-sm shadow-amber-900/25"
         : s === "resolved"
-          ? "border-emerald-700 bg-emerald-700 text-white shadow-sm shadow-emerald-900/25"
+          ? "border-emerald-900/80 bg-emerald-600 text-white shadow-sm shadow-emerald-900/30"
           : s === "closed"
-            ? "border-slate-700 bg-slate-700 text-white shadow-sm shadow-slate-900/25"
-            : "border-slate-700 bg-slate-700 text-white shadow-sm shadow-slate-900/25";
+            ? "border-slate-900/80 bg-slate-600 text-white shadow-sm shadow-slate-900/30"
+            : "border-slate-900/80 bg-slate-600 text-white shadow-sm shadow-slate-900/30";
 
   return (
     <span
       className={cx(
-        "inline-flex min-w-[92px] items-center justify-center rounded-md border px-3 py-1 text-xs font-semibold capitalize tracking-wide",
+        "inline-flex min-w-[96px] items-center justify-center rounded-lg border px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.04em] leading-none ring-1 ring-black/10",
         style,
       )}
     >
@@ -105,17 +105,17 @@ function PriorityBadge({ priority }: { priority: string }) {
   const p = priority.toLowerCase();
   const style =
     p === "urgent"
-      ? "border-rose-700 bg-rose-700 text-white shadow-sm shadow-rose-900/25"
+      ? "border-rose-900/80 bg-rose-600 text-white shadow-sm shadow-rose-900/30"
       : p === "high"
-        ? "border-orange-700 bg-orange-700 text-white shadow-sm shadow-orange-900/25"
+        ? "border-orange-900/80 bg-orange-500 text-slate-950 shadow-sm shadow-orange-900/25"
         : p === "medium"
-          ? "border-amber-700 bg-amber-700 text-white shadow-sm shadow-amber-900/25"
-          : "border-indigo-700 bg-indigo-700 text-white shadow-sm shadow-indigo-900/25";
+          ? "border-yellow-900/80 bg-yellow-400 text-slate-950 shadow-sm shadow-yellow-900/25"
+          : "border-indigo-900/80 bg-indigo-600 text-white shadow-sm shadow-indigo-900/30";
 
   return (
     <span
       className={cx(
-        "inline-flex min-w-[92px] items-center justify-center rounded-md border px-3 py-1 text-xs font-semibold capitalize tracking-wide",
+        "inline-flex min-w-[96px] items-center justify-center rounded-lg border px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.04em] leading-none ring-1 ring-black/10",
         style,
       )}
     >
@@ -126,7 +126,7 @@ function PriorityBadge({ priority }: { priority: string }) {
 
 function IdPill({ id }: { id: number }) {
   return (
-    <span className="inline-flex min-w-[54px] items-center justify-center rounded-md border border-violet-700 bg-violet-700 px-2.5 py-1 text-xs font-semibold tracking-wide text-white shadow-sm shadow-violet-900/25">
+    <span className="inline-flex min-w-[56px] items-center justify-center rounded-lg border border-violet-900/80 bg-violet-600 px-2.5 py-1.5 text-[11px] font-bold tracking-[0.04em] text-white shadow-sm shadow-violet-900/30 ring-1 ring-black/10">
       #{id}
     </span>
   );
