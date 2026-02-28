@@ -45,9 +45,14 @@ The public demo is focused on the main user workflow. Administrative tools are r
 
 ## Screenshots
 
-![NexaLink Service Desk - Login](https://via.placeholder.com/1280x720/f8fafc/0f172a?text=NexaLink+Service+Desk+-+Login)
-![NexaLink Service Desk - Ticket Dashboard](https://via.placeholder.com/1280x720/f1f5f9/0f172a?text=NexaLink+Service+Desk+-+Ticket+Dashboard)
-![NexaLink Service Desk - Ticket Details](https://via.placeholder.com/1280x720/e2e8f0/0f172a?text=NexaLink+Service+Desk+-+Ticket+Details)
+### Login
+![NexaLink Service Desk - Login](docs/screenshots/login.png)
+
+### Dashboard
+![NexaLink Service Desk - Ticket Dashboard](docs/screenshots/dashboard.png)
+
+### Ticket Details
+![NexaLink Service Desk - Ticket Details](docs/screenshots/ticket-details.png)
 
 ## Installation
 
