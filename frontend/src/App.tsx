@@ -815,12 +815,11 @@ export default function App() {
                           <article className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition duration-200 hover:-translate-y-[1px] hover:border-violet-300 hover:shadow-md">
                             <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                               <div className="min-w-0">
-                                <div className="flex flex-wrap items-center gap-2">
-                                  <IdPill id={t.id} />
-                                  <h3 className="text-base font-semibold text-slate-900">
-                                    {t.title}
-                                  </h3>
-                                </div>
+                              <div className="flex flex-wrap items-center gap-2">
+                                <h3 className="text-base font-semibold text-slate-900">
+                                  {t.title}
+                                </h3>
+                              </div>
 
                                 {t.description ? (
                                   <p className="mt-2 text-sm text-slate-700">
@@ -849,9 +848,25 @@ export default function App() {
                                 </div>
                               </div>
 
-                              <div className="flex flex-wrap gap-2 sm:flex-col sm:items-end">
-                                <StatusBadge status={t.status} />
-                                <PriorityBadge priority={t.priority} />
+                              <div className="grid min-w-[190px] gap-2 rounded-xl border border-slate-200 bg-slate-50 p-3 sm:justify-items-end">
+                                <div className="w-full">
+                                  <div className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-slate-500">
+                                    Ticket ID
+                                  </div>
+                                  <IdPill id={t.id} />
+                                </div>
+                                <div className="w-full">
+                                  <div className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-slate-500">
+                                    Status
+                                  </div>
+                                  <StatusBadge status={t.status} />
+                                </div>
+                                <div className="w-full">
+                                  <div className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-slate-500">
+                                    Priority
+                                  </div>
+                                  <PriorityBadge priority={t.priority} />
+                                </div>
                               </div>
                             </div>
                           </article>
