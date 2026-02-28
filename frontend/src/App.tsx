@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { api, auth } from "./lib/api";
 
 type Me = {
@@ -36,6 +36,20 @@ function formatUsDateInput(value: string) {
   if (digits.length <= 2) return digits;
   if (digits.length <= 4) return `${digits.slice(0, 2)}/${digits.slice(2)}`;
   return `${digits.slice(0, 2)}/${digits.slice(2, 4)}/${digits.slice(4)}`;
+}
+
+function isoToUsDate(value: string) {
+  if (!value) return "";
+  const [year, month, day] = value.split("-");
+  if (!year || !month || !day) return "";
+  return `${month}/${day}/${year}`;
+}
+
+function usToIsoDate(value: string) {
+  const m = value.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+  if (!m) return "";
+  const [, mm, dd, yyyy] = m;
+  return `${yyyy}-${mm}-${dd}`;
 }
 
 function BrandMark({ className = "h-12 w-12" }: { className?: string }) {
@@ -228,6 +242,8 @@ export default function App() {
   const [sidebarFilter, setSidebarFilter] = useState<SidebarFilter>("inbox");
   const [reportStartDate, setReportStartDate] = useState("");
   const [reportEndDate, setReportEndDate] = useState("");
+  const reportStartPickerRef = useRef<HTMLInputElement | null>(null);
+  const reportEndPickerRef = useRef<HTMLInputElement | null>(null);
 
   const isLoggedIn = useMemo(() => !!me, [me]);
 
@@ -717,33 +733,93 @@ export default function App() {
                     <label className="text-xs font-semibold text-slate-600">
                       Start date (MM/DD/YYYY)
                     </label>
-                    <input
-                      type="text"
-                      inputMode="numeric"
-                      placeholder="MM/DD/YYYY"
-                      maxLength={10}
-                      value={reportStartDate}
-                      onChange={(e) =>
-                        setReportStartDate(formatUsDateInput(e.target.value))
-                      }
-                      className="h-10 rounded-lg border border-slate-300 bg-white px-3 text-sm text-slate-900 outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-200"
-                    />
+                    <div className="flex h-10 items-center rounded-lg border border-slate-300 bg-white px-2 focus-within:border-violet-400 focus-within:ring-2 focus-within:ring-violet-200">
+                      <input
+                        type="text"
+                        inputMode="numeric"
+                        placeholder="MM/DD/YYYY"
+                        maxLength={10}
+                        value={reportStartDate}
+                        onChange={(e) =>
+                          setReportStartDate(formatUsDateInput(e.target.value))
+                        }
+                        className="h-full flex-1 bg-transparent px-1 text-sm text-slate-900 outline-none placeholder:text-slate-400"
+                      />
+                      <button
+                        type="button"
+                        className="rounded-md p-1 text-slate-600 hover:bg-slate-100"
+                        onClick={() => {
+                          const picker = reportStartPickerRef.current;
+                          if (!picker) return;
+                          if (typeof picker.showPicker === "function") {
+                            picker.showPicker();
+                          } else {
+                            picker.focus();
+                          }
+                        }}
+                        aria-label="Open start date picker"
+                      >
+                        <svg viewBox="0 0 24 24" className="h-4 w-4" fill="currentColor">
+                          <path d="M7 2h2v2h6V2h2v2h3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h3V2Zm13 8H4v10h16V10Z" />
+                        </svg>
+                      </button>
+                      <input
+                        ref={reportStartPickerRef}
+                        type="date"
+                        lang="en-US"
+                        value={usToIsoDate(reportStartDate)}
+                        onChange={(e) => setReportStartDate(isoToUsDate(e.target.value))}
+                        className="absolute h-0 w-0 opacity-0 pointer-events-none"
+                        tabIndex={-1}
+                        aria-hidden
+                      />
+                    </div>
                   </div>
                   <div className="grid gap-1">
                     <label className="text-xs font-semibold text-slate-600">
                       End date (MM/DD/YYYY)
                     </label>
-                    <input
-                      type="text"
-                      inputMode="numeric"
-                      placeholder="MM/DD/YYYY"
-                      maxLength={10}
-                      value={reportEndDate}
-                      onChange={(e) =>
-                        setReportEndDate(formatUsDateInput(e.target.value))
-                      }
-                      className="h-10 rounded-lg border border-slate-300 bg-white px-3 text-sm text-slate-900 outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-200"
-                    />
+                    <div className="flex h-10 items-center rounded-lg border border-slate-300 bg-white px-2 focus-within:border-violet-400 focus-within:ring-2 focus-within:ring-violet-200">
+                      <input
+                        type="text"
+                        inputMode="numeric"
+                        placeholder="MM/DD/YYYY"
+                        maxLength={10}
+                        value={reportEndDate}
+                        onChange={(e) =>
+                          setReportEndDate(formatUsDateInput(e.target.value))
+                        }
+                        className="h-full flex-1 bg-transparent px-1 text-sm text-slate-900 outline-none placeholder:text-slate-400"
+                      />
+                      <button
+                        type="button"
+                        className="rounded-md p-1 text-slate-600 hover:bg-slate-100"
+                        onClick={() => {
+                          const picker = reportEndPickerRef.current;
+                          if (!picker) return;
+                          if (typeof picker.showPicker === "function") {
+                            picker.showPicker();
+                          } else {
+                            picker.focus();
+                          }
+                        }}
+                        aria-label="Open end date picker"
+                      >
+                        <svg viewBox="0 0 24 24" className="h-4 w-4" fill="currentColor">
+                          <path d="M7 2h2v2h6V2h2v2h3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h3V2Zm13 8H4v10h16V10Z" />
+                        </svg>
+                      </button>
+                      <input
+                        ref={reportEndPickerRef}
+                        type="date"
+                        lang="en-US"
+                        value={usToIsoDate(reportEndDate)}
+                        onChange={(e) => setReportEndDate(isoToUsDate(e.target.value))}
+                        className="absolute h-0 w-0 opacity-0 pointer-events-none"
+                        tabIndex={-1}
+                        aria-hidden
+                      />
+                    </div>
                   </div>
                   <div className="flex items-center">
                     <button
