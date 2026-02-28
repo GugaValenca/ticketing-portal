@@ -31,14 +31,14 @@ function StatusBadge({ status }: { status: string }) {
   const label = s.replaceAll("_", " ");
   const style =
     s === "open"
-      ? "border-sky-200 bg-sky-50 text-sky-800"
+      ? "border-sky-300/35 bg-sky-500/15 text-sky-100"
       : s === "in_progress"
-        ? "border-amber-200 bg-amber-50 text-amber-800"
+        ? "border-amber-300/35 bg-amber-500/15 text-amber-100"
         : s === "resolved"
-          ? "border-emerald-200 bg-emerald-50 text-emerald-800"
+          ? "border-emerald-300/35 bg-emerald-500/15 text-emerald-100"
           : s === "closed"
-            ? "border-slate-200 bg-slate-100 text-slate-700"
-            : "border-slate-200 bg-slate-50 text-slate-700";
+            ? "border-slate-300/35 bg-slate-500/15 text-slate-100"
+            : "border-slate-300/35 bg-slate-500/15 text-slate-100";
 
   return (
     <span
@@ -56,12 +56,12 @@ function PriorityBadge({ priority }: { priority: string }) {
   const p = priority.toLowerCase();
   const style =
     p === "urgent"
-      ? "border-rose-200 bg-rose-50 text-rose-800"
+      ? "border-rose-300/35 bg-rose-500/15 text-rose-100"
       : p === "high"
-        ? "border-orange-200 bg-orange-50 text-orange-800"
+        ? "border-orange-300/35 bg-orange-500/15 text-orange-100"
         : p === "medium"
-          ? "border-yellow-200 bg-yellow-50 text-yellow-800"
-          : "border-slate-200 bg-slate-50 text-slate-700";
+          ? "border-yellow-300/35 bg-yellow-500/15 text-yellow-100"
+          : "border-slate-300/35 bg-slate-500/15 text-slate-100";
 
   return (
     <span
@@ -77,7 +77,7 @@ function PriorityBadge({ priority }: { priority: string }) {
 
 function IdPill({ id }: { id: number }) {
   return (
-    <span className="inline-flex items-center rounded-full border border-slate-200 bg-white px-2.5 py-1 text-xs font-semibold text-slate-700">
+    <span className="inline-flex items-center rounded-full border border-violet-300/35 bg-violet-500/15 px-2.5 py-1 text-xs font-semibold text-violet-100">
       #{id}
     </span>
   );
@@ -100,18 +100,18 @@ function Modal({
     <div className="fixed inset-0 z-[100]">
       <button
         onClick={onClose}
-        className="absolute inset-0 h-full w-full bg-black/40"
+        className="absolute inset-0 h-full w-full bg-slate-950/65"
         aria-label="Close modal"
       />
       <div className="relative mx-auto mt-16 w-full max-w-2xl px-4">
-        <div className="rounded-2xl border border-slate-200 bg-white shadow-xl">
-          <div className="flex items-center justify-between border-b border-slate-200 px-5 py-4">
-            <h3 className="text-base font-semibold text-slate-900">{title}</h3>
+        <div className="rounded-2xl border border-white/15 bg-[#1d1236]/95 shadow-2xl shadow-[#100723]/60 backdrop-blur">
+          <div className="flex items-center justify-between border-b border-white/10 px-5 py-4">
+            <h3 className="text-base font-semibold text-white">{title}</h3>
             <button
               onClick={onClose}
-              className="rounded-lg border border-slate-200 bg-white px-2 py-1 text-sm font-semibold text-slate-900 hover:bg-slate-50"
+              className="rounded-lg border border-white/20 bg-white/10 px-2 py-1 text-sm font-semibold text-slate-100 hover:bg-white/20"
             >
-              ✕
+              x
             </button>
           </div>
           <div className="px-5 py-4">{children}</div>
@@ -139,11 +139,11 @@ const STATUS_ORDER: Record<string, number> = {
 
 function StatTile({ label, value }: { label: string; value: string | number }) {
   return (
-    <div className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2">
-      <div className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">
+    <div className="rounded-xl border border-white/20 bg-white/10 px-3 py-2 shadow-lg shadow-[#12072c]/25">
+      <div className="text-[11px] font-semibold uppercase tracking-wide text-indigo-200">
         {label}
       </div>
-      <div className="mt-0.5 text-base font-semibold text-slate-900">
+      <div className="mt-0.5 text-base font-semibold text-white">
         {value}
       </div>
     </div>
@@ -492,104 +492,52 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 via-slate-50 to-slate-100 text-slate-900">
-      <Header
-        user={me}
-        onReload={loadMeAndTickets}
-        onLogout={handleLogout}
-        onNewTicket={openCreateModal}
-      />
+    <div className="relative min-h-screen overflow-hidden bg-[#120826] text-slate-100">
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute -left-24 top-[-120px] h-[380px] w-[380px] rounded-full bg-fuchsia-700/25 blur-[120px]" />
+        <div className="absolute right-[-80px] top-[120px] h-[420px] w-[420px] rounded-full bg-indigo-700/30 blur-[130px]" />
+        <div className="absolute bottom-[-120px] left-[22%] h-[420px] w-[420px] rounded-full bg-sky-500/20 blur-[120px]" />
+      </div>
+
+      <div className="relative z-10">
+        <Header
+          user={me}
+          onReload={loadMeAndTickets}
+          onLogout={handleLogout}
+          onNewTicket={openCreateModal}
+        />
 
       <main className="mx-auto max-w-6xl px-4 py-6 sm:px-6">
-        <div className="rounded-2xl border border-slate-200 bg-white shadow-sm">
-          {/* Auth block */}
-          <div className="border-b border-slate-200 p-5 sm:p-6">
-            {!isLoggedIn ? (
-              <>
-                <h2 className="text-lg font-semibold text-slate-900">
-                  Sign in
-                </h2>
-                <p className="mt-1 text-sm text-slate-600">
-                  Use a seeded user account (for example: GugaTampa, LaisLany,
-                  or admin).
-                </p>
-
-                <form
-                  onSubmit={handleLogin}
-                  className="mt-5 grid gap-4 sm:max-w-xl sm:grid-cols-2"
-                >
-                  <div className="grid gap-1.5">
-                    <label className="text-sm font-medium text-slate-700">
-                      Username or Email
-                    </label>
-                    <input
-                      className="h-11 rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none transition focus:border-slate-400 focus:ring-2 focus:ring-slate-200"
-                      value={username}
-                      onChange={(e) => setUsername(e.target.value)}
-                      autoComplete="username"
-                    />
-                  </div>
-
-                  <div className="grid gap-1.5">
-                    <label className="text-sm font-medium text-slate-700">
-                      Password
-                    </label>
-                    <input
-                      type="password"
-                      className="h-11 rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none transition focus:border-slate-400 focus:ring-2 focus:ring-slate-200"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      autoComplete="current-password"
-                    />
-                  </div>
-
-                  <div className="flex items-center gap-3 sm:col-span-2">
-                    <button
-                      type="submit"
-                      disabled={loading}
-                      className="inline-flex h-11 items-center justify-center rounded-xl bg-slate-900 px-4 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-800 disabled:opacity-60"
-                    >
-                      {loading ? "Signing in..." : "Sign in"}
-                    </button>
-
-                    {error ? (
-                      <span className="text-sm font-medium text-rose-700">
-                        {error}
-                      </span>
-                    ) : null}
-                  </div>
-                </form>
-              </>
-            ) : (
-              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-                <StatTile
-                  label="Workspace status"
-                  value={loading ? "Syncing..." : "Workspace ready"}
-                />
-                <StatTile label="Total tickets" value={tickets.length} />
-                <StatTile label="Filtered results" value={total} />
-                <StatTile
-                  label="Current page"
-                  value={`${safePage} / ${totalPages}`}
-                />
-              </div>
-            )}
+        <div className="rounded-2xl border border-white/15 bg-white/10 shadow-xl shadow-[#0f0521]/35 backdrop-blur">
+          <div className="border-b border-white/15 p-5 sm:p-6">
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+              <StatTile
+                label="Workspace status"
+                value={loading ? "Syncing..." : "Workspace ready"}
+              />
+              <StatTile label="Total tickets" value={tickets.length} />
+              <StatTile label="Filtered results" value={total} />
+              <StatTile
+                label="Current page"
+                value={`${safePage} / ${totalPages}`}
+              />
+            </div>
           </div>
 
           {/* Tickets */}
           <div className="p-5 sm:p-6">
-            <section className="rounded-2xl border border-slate-200/80 bg-white/95 p-5 shadow-sm ring-1 ring-slate-100 sm:p-6">
+            <section className="rounded-2xl border border-white/20 bg-[#1a0f35]/75 p-5 shadow-lg shadow-indigo-900/25 ring-1 ring-white/10 sm:p-6">
               <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                 <div>
-                  <h2 className="text-xl font-semibold text-slate-900">
+                  <h2 className="text-xl font-semibold text-white">
                     Tickets
                   </h2>
-                  <p className="mt-1 text-sm text-slate-600">
+                  <p className="mt-1 text-sm text-indigo-200/90">
                     Search, filter, sort, and update tickets in one place.
                   </p>
                 </div>
 
-                <div className="text-sm text-slate-500">
+                <div className="text-sm text-indigo-200/80">
                   {loading
                     ? "Loading tickets..."
                     : total === 0
@@ -598,31 +546,31 @@ export default function App() {
                 </div>
               </div>
 
-              <div className="mt-4 rounded-xl border border-slate-200 bg-slate-50/60 p-3 sm:p-4">
+              <div className="mt-4 rounded-xl border border-white/15 bg-white/5 p-3 sm:p-4">
                 <div className="grid gap-3 md:grid-cols-12">
                   <div className="md:col-span-5">
-                    <label className="text-xs font-semibold text-slate-600">
+                    <label className="text-xs font-semibold text-indigo-200">
                       Search tickets
                     </label>
                     <input
                       value={query}
                       onChange={(e) => setQuery(e.target.value)}
                       placeholder="Search by title or description..."
-                      className="mt-1 h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none transition focus:border-slate-400 focus:ring-2 focus:ring-slate-200"
+                      className="mt-1 h-11 w-full rounded-xl border border-white/20 bg-white/10 px-3 text-sm text-white outline-none transition placeholder:text-slate-300 focus:border-violet-300 focus:ring-2 focus:ring-violet-300/30"
                     />
-                    <div className="mt-1 text-[11px] text-slate-500">
+                    <div className="mt-1 text-[11px] text-indigo-200/75">
                       Results update after 300ms to keep interactions smooth.
                     </div>
                   </div>
 
                   <div className="md:col-span-2">
-                    <label className="text-xs font-semibold text-slate-600">
+                    <label className="text-xs font-semibold text-indigo-200">
                       Status
                     </label>
                     <select
                       value={statusFilter}
                       onChange={(e) => setStatusFilter(e.target.value as any)}
-                      className="mt-1 h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none transition focus:border-slate-400 focus:ring-2 focus:ring-slate-200"
+                      className="mt-1 h-11 w-full rounded-xl border border-white/20 bg-white/10 px-3 text-sm text-white outline-none transition placeholder:text-slate-300 focus:border-violet-300 focus:ring-2 focus:ring-violet-300/30"
                     >
                       <option value="all">All</option>
                       <option value="open">open</option>
@@ -633,13 +581,13 @@ export default function App() {
                   </div>
 
                   <div className="md:col-span-2">
-                    <label className="text-xs font-semibold text-slate-600">
+                    <label className="text-xs font-semibold text-indigo-200">
                       Priority
                     </label>
                     <select
                       value={priorityFilter}
                       onChange={(e) => setPriorityFilter(e.target.value as any)}
-                      className="mt-1 h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none transition focus:border-slate-400 focus:ring-2 focus:ring-slate-200"
+                      className="mt-1 h-11 w-full rounded-xl border border-white/20 bg-white/10 px-3 text-sm text-white outline-none transition placeholder:text-slate-300 focus:border-violet-300 focus:ring-2 focus:ring-violet-300/30"
                     >
                       <option value="all">All</option>
                       <option value="low">low</option>
@@ -650,13 +598,13 @@ export default function App() {
                   </div>
 
                   <div className="md:col-span-3">
-                    <label className="text-xs font-semibold text-slate-600">
+                    <label className="text-xs font-semibold text-indigo-200">
                       Sort by
                     </label>
                     <select
                       value={sortKey}
                       onChange={(e) => setSortKey(e.target.value as any)}
-                      className="mt-1 h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none transition focus:border-slate-400 focus:ring-2 focus:ring-slate-200"
+                      className="mt-1 h-11 w-full rounded-xl border border-white/20 bg-white/10 px-3 text-sm text-white outline-none transition placeholder:text-slate-300 focus:border-violet-300 focus:ring-2 focus:ring-violet-300/30"
                     >
                       <option value="newest">Newest</option>
                       <option value="oldest">Oldest</option>
@@ -667,7 +615,7 @@ export default function App() {
 
                   <div className="flex flex-col gap-2 md:col-span-12 sm:flex-row sm:items-center sm:justify-between">
                     <div className="flex items-center gap-2">
-                      <span className="text-xs font-semibold text-slate-600">
+                      <span className="text-xs font-semibold text-indigo-200">
                         Page size
                       </span>
                       <select
@@ -675,7 +623,7 @@ export default function App() {
                         onChange={(e) =>
                           setPageSize(Number(e.target.value) as any)
                         }
-                        className="h-10 rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none transition focus:border-slate-400 focus:ring-2 focus:ring-slate-200"
+                        className="h-10 rounded-xl border border-white/20 bg-white/10 px-3 text-sm text-white outline-none transition focus:border-violet-300 focus:ring-2 focus:ring-violet-300/30"
                       >
                         <option value={10}>10</option>
                         <option value={20}>20</option>
@@ -684,7 +632,7 @@ export default function App() {
 
                       <button
                         onClick={clearFilters}
-                        className="h-10 rounded-xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-900 hover:bg-slate-50"
+                        className="h-10 rounded-xl border border-white/20 bg-white/10 px-4 text-sm font-semibold text-slate-100 hover:bg-white/20"
                       >
                         Reset filters
                       </button>
@@ -694,11 +642,11 @@ export default function App() {
                       <button
                         disabled={safePage <= 1}
                         onClick={() => setPage((p) => Math.max(1, p - 1))}
-                        className="h-10 rounded-xl border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-900 hover:bg-slate-50 disabled:opacity-50"
+                        className="h-10 rounded-xl border border-white/20 bg-white/10 px-3 text-sm font-semibold text-slate-100 hover:bg-white/20 disabled:opacity-50"
                       >
                         Prev
                       </button>
-                      <span className="text-sm text-slate-600">
+                      <span className="text-sm text-indigo-200">
                         Page <b>{safePage}</b> of <b>{totalPages}</b>
                       </span>
                       <button
@@ -706,7 +654,7 @@ export default function App() {
                         onClick={() =>
                           setPage((p) => Math.min(totalPages, p + 1))
                         }
-                        className="h-10 rounded-xl border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-900 hover:bg-slate-50 disabled:opacity-50"
+                        className="h-10 rounded-xl border border-white/20 bg-white/10 px-3 text-sm font-semibold text-slate-100 hover:bg-white/20 disabled:opacity-50"
                       >
                         Next
                       </button>
@@ -716,12 +664,8 @@ export default function App() {
               </div>
 
               <div className="mt-4">
-                {!isLoggedIn ? (
-                  <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700">
-                    Sign in to view and manage tickets.
-                  </div>
-                ) : pageItems.length === 0 ? (
-                  <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-slate-700">
+                {pageItems.length === 0 ? (
+                  <div className="rounded-xl border border-white/15 bg-white/10 p-4 text-slate-100">
                     No tickets match the current filters.
                   </div>
                 ) : (
@@ -733,37 +677,37 @@ export default function App() {
                         className="text-left"
                         type="button"
                       >
-                        <article className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm transition duration-200 hover:-translate-y-[1px] hover:border-slate-300 hover:shadow-md">
+                        <article className="rounded-2xl border border-white/15 bg-white/10 p-4 shadow-sm transition duration-200 hover:-translate-y-[1px] hover:border-violet-300/60 hover:bg-white/15 hover:shadow-md">
                           <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                             <div className="min-w-0">
                               <div className="flex flex-wrap items-center gap-2">
                                 <IdPill id={t.id} />
-                                <h3 className="text-base font-semibold text-slate-900">
+                                <h3 className="text-base font-semibold text-white">
                                   {t.title}
                                 </h3>
                               </div>
 
                               {t.description ? (
-                                <p className="mt-2 text-sm text-slate-700">
+                                <p className="mt-2 text-sm text-slate-200">
                                   {t.description}
                                 </p>
                               ) : (
-                                <p className="mt-2 text-sm text-slate-500">
+                                <p className="mt-2 text-sm text-slate-400">
                                   No description provided.
                                 </p>
                               )}
 
-                              <div className="mt-3 flex flex-wrap gap-2 text-xs text-slate-600">
+                              <div className="mt-3 flex flex-wrap gap-2 text-xs text-slate-300">
                                 <span>
                                   requester:{" "}
-                                  <span className="font-semibold text-slate-800">
+                                  <span className="font-semibold text-slate-100">
                                     {t.requester_username ?? "-"}
                                   </span>
                                 </span>
-                                <span>•</span>
+                                <span>|</span>
                                 <span>
                                   assignee:{" "}
-                                  <span className="font-semibold text-slate-800">
+                                  <span className="font-semibold text-slate-100">
                                     {t.assignee_username ?? "-"}
                                   </span>
                                 </span>
@@ -782,7 +726,7 @@ export default function App() {
                 )}
 
                 {error ? (
-                  <div className="mt-4 rounded-xl border border-rose-200 bg-rose-50 p-3 text-sm text-rose-800">
+                  <div className="mt-4 rounded-xl border border-rose-300/35 bg-rose-500/15 p-3 text-sm text-rose-100">
                     {error}
                   </div>
                 ) : null}
@@ -802,37 +746,37 @@ export default function App() {
       >
         <div className="grid gap-4">
           <div className="grid gap-1.5">
-            <label className="text-sm font-semibold text-slate-700">
+            <label className="text-sm font-semibold text-slate-200">
               Title
             </label>
             <input
               value={newTitle}
               onChange={(e) => setNewTitle(e.target.value)}
               placeholder="Example: Dashboard access issue"
-              className="h-11 rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none transition focus:border-slate-400 focus:ring-2 focus:ring-slate-200"
+              className="h-11 rounded-xl border border-white/20 bg-white/10 px-3 text-sm text-white outline-none transition placeholder:text-slate-300 focus:border-violet-300 focus:ring-2 focus:ring-violet-300/30"
             />
           </div>
 
           <div className="grid gap-1.5">
-            <label className="text-sm font-semibold text-slate-700">
+            <label className="text-sm font-semibold text-slate-200">
               Description (optional)
             </label>
             <textarea
               value={newDescription}
               onChange={(e) => setNewDescription(e.target.value)}
               placeholder="Describe the issue..."
-              className="min-h-[96px] rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm outline-none transition focus:border-slate-400 focus:ring-2 focus:ring-slate-200"
+              className="min-h-[96px] rounded-xl border border-white/20 bg-white/10 px-3 py-2 text-sm text-white outline-none transition placeholder:text-slate-300 focus:border-violet-300 focus:ring-2 focus:ring-violet-300/30"
             />
           </div>
 
           <div className="grid gap-1.5">
-            <label className="text-sm font-semibold text-slate-700">
+            <label className="text-sm font-semibold text-slate-200">
               Priority
             </label>
             <select
               value={newPriority}
               onChange={(e) => setNewPriority(e.target.value as any)}
-              className="h-11 rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none transition focus:border-slate-400 focus:ring-2 focus:ring-slate-200"
+              className="h-11 rounded-xl border border-white/20 bg-white/10 px-3 text-sm text-white outline-none transition focus:border-violet-300 focus:ring-2 focus:ring-violet-300/30"
             >
               <option value="low">low</option>
               <option value="medium">medium</option>
@@ -842,7 +786,7 @@ export default function App() {
           </div>
 
           {createError ? (
-            <div className="rounded-xl border border-rose-200 bg-rose-50 p-3 text-sm text-rose-800">
+            <div className="rounded-xl border border-rose-300/35 bg-rose-500/15 p-3 text-sm text-rose-100">
               {createError}
             </div>
           ) : null}
@@ -851,7 +795,7 @@ export default function App() {
             <button
               onClick={() => setIsCreateOpen(false)}
               disabled={creating}
-              className="h-10 rounded-xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-900 hover:bg-slate-50 disabled:opacity-60"
+              className="h-10 rounded-xl border border-white/20 bg-white/10 px-4 text-sm font-semibold text-slate-100 hover:bg-white/20 disabled:opacity-60"
             >
               Cancel
             </button>
@@ -859,7 +803,7 @@ export default function App() {
             <button
               onClick={createTicket}
               disabled={creating}
-              className="h-10 rounded-xl bg-slate-900 px-4 text-sm font-semibold text-white hover:bg-slate-800 disabled:opacity-60"
+              className="h-10 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-500 px-4 text-sm font-semibold text-white hover:from-violet-500 hover:to-indigo-400 disabled:opacity-60"
             >
               {creating ? "Creating..." : "Create ticket"}
             </button>
@@ -876,31 +820,31 @@ export default function App() {
         {!selected ? null : (
           <div className="grid gap-5">
             <div>
-              <div className="text-sm text-slate-500">Title</div>
-              <div className="mt-1 text-lg font-semibold text-slate-900">
+              <div className="text-sm text-slate-300">Title</div>
+              <div className="mt-1 text-lg font-semibold text-white">
                 {selected.title}
               </div>
 
-              <div className="mt-3 text-sm text-slate-500">Description</div>
-              <div className="mt-1 text-sm text-slate-700">
+              <div className="mt-3 text-sm text-slate-300">Description</div>
+              <div className="mt-1 text-sm text-slate-100">
                 {selected.description || "No description provided."}
               </div>
 
               <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                <div className="rounded-xl border border-slate-200 bg-white p-3 shadow-sm">
-                  <div className="text-xs font-semibold text-slate-600">
+                <div className="rounded-xl border border-white/20 bg-white/10 p-3 shadow-sm">
+                  <div className="text-xs font-semibold text-indigo-200">
                     Requester
                   </div>
-                  <div className="mt-1 text-sm font-semibold text-slate-900">
+                  <div className="mt-1 text-sm font-semibold text-white">
                     {selected.requester_username ?? "-"}
                   </div>
                 </div>
 
-                <div className="rounded-xl border border-slate-200 bg-white p-3 shadow-sm">
-                  <div className="text-xs font-semibold text-slate-600">
+                <div className="rounded-xl border border-white/20 bg-white/10 p-3 shadow-sm">
+                  <div className="text-xs font-semibold text-indigo-200">
                     Assignee
                   </div>
-                  <div className="mt-1 text-sm font-semibold text-slate-900">
+                  <div className="mt-1 text-sm font-semibold text-white">
                     {selected.assignee_username ?? "-"}
                   </div>
                 </div>
@@ -908,14 +852,14 @@ export default function App() {
 
               <div className="mt-4 grid gap-3 sm:grid-cols-2">
                 <div className="grid gap-1.5">
-                  <label className="text-xs font-semibold text-slate-600">
+                  <label className="text-xs font-semibold text-indigo-200">
                     Status
                   </label>
                   <select
                     value={selected.status}
                     disabled={detailsSaving}
                     onChange={(e) => saveDetails({ status: e.target.value })}
-                    className="h-11 rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none transition focus:border-slate-400 focus:ring-2 focus:ring-slate-200 disabled:opacity-60"
+                    className="h-11 rounded-xl border border-white/20 bg-white/10 px-3 text-sm text-white outline-none transition focus:border-violet-300 focus:ring-2 focus:ring-violet-300/30 disabled:opacity-60"
                   >
                     <option value="open">open</option>
                     <option value="in_progress">in_progress</option>
@@ -928,14 +872,14 @@ export default function App() {
                 </div>
 
                 <div className="grid gap-1.5">
-                  <label className="text-xs font-semibold text-slate-600">
+                  <label className="text-xs font-semibold text-indigo-200">
                     Priority
                   </label>
                   <select
                     value={selected.priority}
                     disabled={detailsSaving}
                     onChange={(e) => saveDetails({ priority: e.target.value })}
-                    className="h-11 rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none transition focus:border-slate-400 focus:ring-2 focus:ring-slate-200 disabled:opacity-60"
+                    className="h-11 rounded-xl border border-white/20 bg-white/10 px-3 text-sm text-white outline-none transition focus:border-violet-300 focus:ring-2 focus:ring-violet-300/30 disabled:opacity-60"
                   >
                     <option value="low">low</option>
                     <option value="medium">medium</option>
@@ -948,23 +892,23 @@ export default function App() {
                 </div>
               </div>
 
-              <div className="mt-4 grid gap-2 text-xs text-slate-500">
+              <div className="mt-4 grid gap-2 text-xs text-slate-300">
                 <div>
                   Created:{" "}
-                  <span className="font-semibold text-slate-700">
+                  <span className="font-semibold text-slate-100">
                     {new Date(selected.created_at).toLocaleString()}
                   </span>
                 </div>
                 <div>
                   Updated:{" "}
-                  <span className="font-semibold text-slate-700">
+                  <span className="font-semibold text-slate-100">
                     {new Date(selected.updated_at).toLocaleString()}
                   </span>
                 </div>
               </div>
 
               {detailsError ? (
-                <div className="mt-4 rounded-xl border border-rose-200 bg-rose-50 p-3 text-sm text-rose-800">
+                <div className="mt-4 rounded-xl border border-rose-300/35 bg-rose-500/15 p-3 text-sm text-rose-100">
                   {detailsError}
                 </div>
               ) : null}
@@ -974,7 +918,7 @@ export default function App() {
               <button
                 onClick={closeDetails}
                 disabled={detailsSaving}
-                className="h-10 rounded-xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-900 hover:bg-slate-50 disabled:opacity-60"
+                className="h-10 rounded-xl border border-white/20 bg-white/10 px-4 text-sm font-semibold text-slate-100 hover:bg-white/20 disabled:opacity-60"
               >
                 Close
               </button>
@@ -982,6 +926,9 @@ export default function App() {
           </div>
         )}
       </Modal>
+      </div>
     </div>
   );
 }
+
+
