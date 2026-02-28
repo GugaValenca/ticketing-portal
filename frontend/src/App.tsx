@@ -37,6 +37,13 @@ function formatDateTimeUs(value: string) {
   }).format(new Date(value));
 }
 
+function formatUsDateInput(value: string) {
+  const digits = value.replace(/\D/g, "").slice(0, 8);
+  if (digits.length <= 2) return digits;
+  if (digits.length <= 4) return `${digits.slice(0, 2)}/${digits.slice(2)}`;
+  return `${digits.slice(0, 2)}/${digits.slice(2, 4)}/${digits.slice(4)}`;
+}
+
 function BrandMark({ className = "h-12 w-12" }: { className?: string }) {
   return (
     <svg
@@ -228,6 +235,8 @@ export default function App() {
   const [page, setPage] = useState(1);
   const [sidebarFilter, setSidebarFilter] = useState<SidebarFilter>("inbox");
   const [activeTopNav, setActiveTopNav] = useState<TopNav>("service_desk");
+  const [reportStartDate, setReportStartDate] = useState("");
+  const [reportEndDate, setReportEndDate] = useState("");
 
   const isLoggedIn = useMemo(() => !!me, [me]);
   const dashboardRef = useRef<HTMLElement | null>(null);
@@ -774,22 +783,30 @@ export default function App() {
                   Report
                 </h2>
                 <p className="mt-1 text-xs text-slate-600">
-                  Use this date range to review ticket activity for a specific period (US format: MM/DD/YYYY).
+                  Use this date range to review ticket activity for a specific period.
                 </p>
                 <div className="mt-3 grid gap-3 sm:grid-cols-[160px_160px_auto]">
                   <div className="grid gap-1">
                     <label className="text-xs font-semibold text-slate-600">Start date</label>
                     <input
-                      type="date"
-                      lang="en-US"
+                      type="text"
+                      inputMode="numeric"
+                      placeholder="MM/DD/YYYY"
+                      maxLength={10}
+                      value={reportStartDate}
+                      onChange={(e) => setReportStartDate(formatUsDateInput(e.target.value))}
                       className="h-10 rounded-lg border border-slate-300 bg-white px-3 text-sm text-slate-900 outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-200"
                     />
                   </div>
                   <div className="grid gap-1">
                     <label className="text-xs font-semibold text-slate-600">End date</label>
                     <input
-                      type="date"
-                      lang="en-US"
+                      type="text"
+                      inputMode="numeric"
+                      placeholder="MM/DD/YYYY"
+                      maxLength={10}
+                      value={reportEndDate}
+                      onChange={(e) => setReportEndDate(formatUsDateInput(e.target.value))}
                       className="h-10 rounded-lg border border-slate-300 bg-white px-3 text-sm text-slate-900 outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-200"
                     />
                   </div>
@@ -913,28 +930,6 @@ export default function App() {
                           Reset filters
                         </button>
                       </div>
-
-                      <div className="flex items-center gap-2">
-                        <button
-                          disabled={safePage <= 1}
-                          onClick={() => setPage((p) => Math.max(1, p - 1))}
-                          className="h-10 rounded-xl border border-slate-300 bg-white px-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50"
-                        >
-                          Prev
-                        </button>
-                        <span className="text-sm text-slate-600">
-                          Page <b>{safePage}</b> of <b>{totalPages}</b>
-                        </span>
-                        <button
-                          disabled={safePage >= totalPages}
-                          onClick={() =>
-                            setPage((p) => Math.min(totalPages, p + 1))
-                          }
-                          className="h-10 rounded-xl border border-slate-300 bg-white px-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50"
-                        >
-                          Next
-                        </button>
-                      </div>
                     </div>
                   </div>
                 </div>
@@ -1001,13 +996,35 @@ export default function App() {
                     </div>
                   )}
 
-                  {error ? (
-                    <div className="mt-4 rounded-xl border border-rose-300/35 bg-rose-500/15 p-3 text-sm text-rose-100">
-                      {error}
-                    </div>
-                  ) : null}
+                {error ? (
+                  <div className="mt-4 rounded-xl border border-rose-300/35 bg-rose-500/15 p-3 text-sm text-rose-100">
+                    {error}
+                  </div>
+                ) : null}
+
+                <div className="mt-4 flex items-center justify-end gap-2 border-t border-slate-200 pt-3">
+                  <button
+                    disabled={safePage <= 1}
+                    onClick={() => setPage((p) => Math.max(1, p - 1))}
+                    className="h-10 rounded-xl border border-slate-300 bg-white px-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50"
+                  >
+                    Prev
+                  </button>
+                  <span className="text-sm text-slate-600">
+                    Page <b>{safePage}</b> of <b>{totalPages}</b>
+                  </span>
+                  <button
+                    disabled={safePage >= totalPages}
+                    onClick={() =>
+                      setPage((p) => Math.min(totalPages, p + 1))
+                    }
+                    className="h-10 rounded-xl border border-slate-300 bg-white px-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50"
+                  >
+                    Next
+                  </button>
                 </div>
-              </section>
+              </div>
+            </section>
             </div>
           </main>
         </div>
