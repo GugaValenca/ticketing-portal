@@ -1,4 +1,4 @@
-# Ticketing Portal ??
+# Ticketing Portal ğŸ«
 
 ![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB)
 ![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white)
@@ -11,7 +11,7 @@
 A full-stack ticket management platform built with Django REST Framework + React (Vite).  
 It focuses on practical support-team workflows: authentication, role-aware ticket access, and fast ticket lifecycle management in a clean UI.
 
-## Live Demo ??
+## Live Demo ğŸŒ
 
 - **Main Demo (Frontend):** https://ticketing-portal-web.vercel.app/
 - **Backend API:** https://ticketing-portal-api.vercel.app/
@@ -19,7 +19,7 @@ It focuses on practical support-team workflows: authentication, role-aware ticke
 - **OpenAPI Schema:** https://ticketing-portal-api.vercel.app/api/schema/
 - **Repository:** https://github.com/GugaValenca/ticketing-portal
 
-## Demo Access ??
+## Demo Access ğŸ”
 
 Use these demo accounts in the public frontend login form:
 
@@ -30,7 +30,7 @@ Use these demo accounts in the public frontend login form:
 Administrative tools are reserved for internal management and development use.  
 The public demo is focused on the main user workflow through the frontend app.
 
-## Overview ??
+## Overview ğŸ“Œ
 
 Ticketing Portal is a job-ready portfolio project designed to reflect real full-stack implementation work:
 - JWT authentication with refresh flow
@@ -40,7 +40,7 @@ Ticketing Portal is a job-ready portfolio project designed to reflect real full-
 
 It demonstrates strong fundamentals in API design, frontend integration, and deployment reliability.
 
-## Features ?
+## Features âœ¨
 
 - JWT login with access/refresh tokens
 - Login using username **or** email
@@ -53,13 +53,13 @@ It demonstrates strong fundamentals in API design, frontend integration, and dep
 - Seed command for demo users and sample tickets
 - Docker setup for backend + PostgreSQL local development
 
-## Screenshots ??
+## Screenshots ğŸ“¸
 
 ![Ticketing Portal - Login](https://via.placeholder.com/1280x720/f8fafc/0f172a?text=Ticketing+Portal+-+Login)
 ![Ticketing Portal - Dashboard](https://via.placeholder.com/1280x720/f1f5f9/0f172a?text=Ticketing+Portal+-+Dashboard)
 ![Ticketing Portal - Ticket Details](https://via.placeholder.com/1280x720/e2e8f0/0f172a?text=Ticketing+Portal+-+Ticket+Details)
 
-## Installation ??
+## Installation ğŸš€
 
 1. Clone the repository:
 ```bash
@@ -94,7 +94,7 @@ cd ../frontend
 npm install
 ```
 
-## Usage ??
+## Usage ğŸ’¡
 
 ### Public recruiter flow
 1. Open the live demo: `https://ticketing-portal-web.vercel.app/`
@@ -130,39 +130,39 @@ Optional frontend env:
 VITE_API_BASE_URL=http://127.0.0.1:8001
 ```
 
-## Project Structure ???
+## Project Structure ğŸ—ï¸
 
 ```bash
 ticketing-portal/
 +-- backend/
-¦   +-- api/
-¦   ¦   +-- index.py
-¦   +-- config/
-¦   ¦   +-- settings.py
-¦   ¦   +-- urls.py
-¦   +-- tickets/
-¦   ¦   +-- management/commands/seed.py
-¦   ¦   +-- auth.py
-¦   ¦   +-- models.py
-¦   ¦   +-- serializers.py
-¦   ¦   +-- permissions.py
-¦   ¦   +-- views.py
-¦   ¦   +-- me.py
-¦   +-- requirements.txt
-¦   +-- vercel.json
+Â¦   +-- api/
+Â¦   Â¦   +-- index.py
+Â¦   +-- config/
+Â¦   Â¦   +-- settings.py
+Â¦   Â¦   +-- urls.py
+Â¦   +-- tickets/
+Â¦   Â¦   +-- management/commands/seed.py
+Â¦   Â¦   +-- auth.py
+Â¦   Â¦   +-- models.py
+Â¦   Â¦   +-- serializers.py
+Â¦   Â¦   +-- permissions.py
+Â¦   Â¦   +-- views.py
+Â¦   Â¦   +-- me.py
+Â¦   +-- requirements.txt
+Â¦   +-- vercel.json
 +-- frontend/
-¦   +-- src/
-¦   ¦   +-- components/
-¦   ¦   +-- lib/api.ts
-¦   ¦   +-- App.tsx
-¦   ¦   +-- main.tsx
-¦   +-- package.json
-¦   +-- vercel.json
+Â¦   +-- src/
+Â¦   Â¦   +-- components/
+Â¦   Â¦   +-- lib/api.ts
+Â¦   Â¦   +-- App.tsx
+Â¦   Â¦   +-- main.tsx
+Â¦   +-- package.json
+Â¦   +-- vercel.json
 +-- docker-compose.yml
 +-- README.md
 ```
 
-## Key Technical Highlights / What I Learned ??
+## Key Technical Highlights / What I Learned ğŸ¯
 
 - Building an end-to-end JWT auth flow with refresh token handling
 - Implementing role-based access logic in DRF permissions/querysets
@@ -170,7 +170,7 @@ ticketing-portal/
 - Structuring a monorepo deployment flow on Vercel (frontend + backend)
 - Improving performance and maintainability with practical backend optimizations (`select_related`) and clear app structure
 
-## Technologies Used ???
+## Technologies Used ğŸ› ï¸
 
 - **Frontend:** React 19, TypeScript, Vite, Axios, Tailwind CSS
 - **Backend:** Python 3.12+, Django 6, Django REST Framework, SimpleJWT, drf-spectacular
@@ -179,7 +179,7 @@ ticketing-portal/
 - **DevOps/Deploy:** Docker, Docker Compose, Vercel
 - **Package Managers:** npm (frontend), pip (backend)
 
-## Future Improvements ??
+## Future Improvements ğŸ”®
 
 - Add backend automated tests for auth and permission scenarios
 - Add better ticket assignment workflow for staff users
@@ -187,7 +187,7 @@ ticketing-portal/
 - Add CI checks for linting/tests before production deploy
 - Add richer observability for API and frontend runtime errors
 
-## Contributing ??
+## Contributing ğŸ¤
 
 1. Fork the project  
 2. Create your feature branch (`git checkout -b feature/AmazingFeature`)  
@@ -195,11 +195,11 @@ ticketing-portal/
 4. Push to the branch (`git push origin feature/AmazingFeature`)  
 5. Open a Pull Request
 
-## License ??
+## License ğŸ“„
 
 This project is licensed under the MIT License.
 
-## Contact ??
+## Contact ğŸ“¬
 
 **Gustavo Valenca**
 
