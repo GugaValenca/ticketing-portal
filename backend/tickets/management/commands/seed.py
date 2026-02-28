@@ -54,20 +54,20 @@ class Command(BaseCommand):
 
         # 2) Tickets
         titles = [
-            "Login bug on Safari",
-            "Payment webhook retries",
-            "UI: button misaligned",
-            "Email notifications delayed",
-            "Database connection spike",
-            "Add priority to dashboard",
+            "Fiber outage in Vila Nova district",
+            "High latency on GPON segment",
+            "Packet loss affecting business clients",
+            "ONT offline after power fluctuations",
+            "PPP authentication failures on edge router",
+            "Intermittent internet drop in residential area",
         ]
         descriptions = [
-            "Repro steps included. Happens intermittently.",
-            "Investigate provider timeouts and implement backoff.",
-            "Minor CSS issue but affects conversion.",
-            "Queue seems slow; verify worker autoscaling.",
-            "Likely connection pool sizing issue.",
-            "PM request: show high priority tickets first.",
+            "Customers report complete internet outage. Validate OLT health and feeder signal levels.",
+            "Average ping above SLA threshold during peak hours. Check congestion and QoS policies.",
+            "Multiple clients report unstable video calls. Investigate uplink errors and route flaps.",
+            "Device is unreachable from ACS. Confirm signal, reboot remotely, and schedule technician if needed.",
+            "New sessions are failing with invalid credentials. Review RADIUS logs and recent config changes.",
+            "Service drops every few minutes in one neighborhood. Inspect splitter path and distribution box.",
         ]
 
         priorities = [Ticket.Priority.LOW, Ticket.Priority.MEDIUM, Ticket.Priority.HIGH, Ticket.Priority.URGENT]
