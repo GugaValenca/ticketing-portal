@@ -92,11 +92,12 @@ function StatusBadge({ status }: { status: string }) {
   return (
     <span
       className={cx(
-        "inline-flex min-w-[96px] items-center justify-center rounded-lg border px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.04em] leading-none ring-1 ring-black/10",
+        "inline-flex min-w-[96px] items-center justify-center gap-1.5 rounded-lg border px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.04em] leading-none ring-1 ring-black/10 transition-all duration-150",
         style,
       )}
     >
-      {label}
+      <span className="h-1.5 w-1.5 rounded-full bg-current opacity-80" aria-hidden="true" />
+      <span>{label}</span>
     </span>
   );
 }
@@ -115,11 +116,12 @@ function PriorityBadge({ priority }: { priority: string }) {
   return (
     <span
       className={cx(
-        "inline-flex min-w-[96px] items-center justify-center rounded-lg border px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.04em] leading-none ring-1 ring-black/10",
+        "inline-flex min-w-[96px] items-center justify-center gap-1.5 rounded-lg border px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.04em] leading-none ring-1 ring-black/10 transition-all duration-150",
         style,
       )}
     >
-      {p}
+      <span className="h-1.5 w-1.5 rounded-full bg-current opacity-80" aria-hidden="true" />
+      <span>{p}</span>
     </span>
   );
 }
@@ -978,10 +980,10 @@ export default function App() {
                         <button
                           key={t.id}
                           onClick={() => openDetails(t)}
-                          className="text-left"
+                          className="group block w-full rounded-2xl text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400/55 focus-visible:ring-offset-2 focus-visible:ring-offset-indigo-50"
                           type="button"
                         >
-                          <article className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition duration-200 hover:-translate-y-[1px] hover:border-violet-300 hover:shadow-md">
+                          <article className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition duration-200 group-hover:-translate-y-[1px] group-hover:border-violet-300 group-hover:shadow-md group-focus-visible:-translate-y-[1px] group-focus-visible:border-violet-300 group-focus-visible:shadow-md">
                             <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                               <div className="min-w-0">
                                 <div className="flex flex-wrap items-center gap-2">
