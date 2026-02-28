@@ -3,7 +3,9 @@ import type { AxiosError, InternalAxiosRequestConfig } from "axios";
 
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL ||
-  (import.meta.env.PROD ? "" : "http://127.0.0.1:8001");
+  (import.meta.env.PROD
+    ? "https://ticketing-portal-api.vercel.app"
+    : "http://127.0.0.1:8001");
 const plainAxios = axios.create({ baseURL: API_BASE_URL });
 
 type TokenPair = { access: string; refresh: string };
