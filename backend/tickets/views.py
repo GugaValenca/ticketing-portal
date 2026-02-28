@@ -1,10 +1,14 @@
 from django.db.models import Q
 from rest_framework import viewsets
+from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
 
 from .models import Ticket
 from .permissions import IsRequesterOrAssigneeOrStaff
-from .serializers import TicketSerializer
+from .serializers import TicketSerializer, UserSummarySerializer
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
 
 
 class TicketViewSet(viewsets.ModelViewSet):
@@ -22,3 +26,9 @@ class TicketViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(requester=self.request.user)
+
+
+class UserListView(generics.ListAPIView):
+    serializer_class = UserSummarySerializer
+    permission_classes = [IsAuthenticated]
+    queryset = User.objects.order_by("username")

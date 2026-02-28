@@ -23,6 +23,10 @@ type Ticket = {
 
 type SidebarFilter = "inbox" | "my_tickets" | "unassigned" | "overdue";
 type ReportDateField = "created_at" | "updated_at";
+type UserOption = {
+  id: number;
+  username: string;
+};
 
 const COMPANY_NAME = "NexaLink Telecom";
 const COMPANY_TAGLINE =
@@ -227,6 +231,8 @@ export default function App() {
   const [newPriority, setNewPriority] = useState<
     "low" | "medium" | "high" | "urgent"
   >("medium");
+  const [newAssigneeId, setNewAssigneeId] = useState("");
+  const [assigneeOptions, setAssigneeOptions] = useState<UserOption[]>([]);
   const [createError, setCreateError] = useState<string | null>(null);
   const [creating, setCreating] = useState(false);
 
@@ -275,15 +281,24 @@ export default function App() {
     setLoading(true);
     setError(null);
     try {
-      const meRes = await api.get<Me>("/api/me/");
+      const [meRes, ticketsRes] = await Promise.all([
+        api.get<Me>("/api/me/"),
+        api.get<Ticket[]>("/api/tickets/"),
+      ]);
       setMe(meRes.data);
-
-      const ticketsRes = await api.get<Ticket[]>("/api/tickets/");
       setTickets(ticketsRes.data);
+
+      try {
+        const usersRes = await api.get<UserOption[]>("/api/users/");
+        setAssigneeOptions(usersRes.data);
+      } catch {
+        setAssigneeOptions([]);
+      }
     } catch {
       setError("Failed to load workspace data. Please sign in again.");
       setMe(null);
       setTickets([]);
+      setAssigneeOptions([]);
     } finally {
       setLoading(false);
     }
@@ -314,6 +329,7 @@ export default function App() {
     setNewTitle("");
     setNewDescription("");
     setNewPriority("medium");
+    setNewAssigneeId("");
     setIsCreateOpen(true);
   }
 
@@ -327,11 +343,19 @@ export default function App() {
 
     setCreating(true);
     try {
-      await api.post("/api/tickets/", {
+      const payload: {
+        title: string;
+        description: string;
+        priority: "low" | "medium" | "high" | "urgent";
+        assignee?: number | null;
+      } = {
         title,
         description: newDescription.trim(),
         priority: newPriority,
-      });
+      };
+      if (newAssigneeId) payload.assignee = Number(newAssigneeId);
+
+      await api.post("/api/tickets/", payload);
       setIsCreateOpen(false);
       await loadMeAndTickets();
     } catch {
@@ -1206,6 +1230,24 @@ export default function App() {
               <option value="medium">medium</option>
               <option value="high">high</option>
               <option value="urgent">urgent</option>
+            </select>
+          </div>
+
+          <div className="grid gap-1.5">
+            <label className="text-sm font-semibold text-slate-200">
+              Assignee (optional)
+            </label>
+            <select
+              value={newAssigneeId}
+              onChange={(e) => setNewAssigneeId(e.target.value)}
+              className="dark-select h-11 rounded-xl border border-white/20 bg-white/10 px-3 text-sm font-semibold text-white outline-none transition focus:border-violet-300 focus:ring-2 focus:ring-violet-300/30"
+            >
+              <option value="">Unassigned</option>
+              {assigneeOptions.map((user) => (
+                <option key={user.id} value={user.id}>
+                  {user.username}
+                </option>
+              ))}
             </select>
           </div>
 
