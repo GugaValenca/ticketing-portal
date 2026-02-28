@@ -1,95 +1,43 @@
-# Ticketing Portal
+# Ticketing Portal ??
 
 ![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB)
 ![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white)
 ![Django](https://img.shields.io/badge/django-%23092E20.svg?style=for-the-badge&logo=django&logoColor=white)
+![Django REST Framework](https://img.shields.io/badge/django%20rest%20framework-%23A30000.svg?style=for-the-badge&logo=django&logoColor=white)
 ![PostgreSQL](https://img.shields.io/badge/postgresql-%23336791.svg?style=for-the-badge&logo=postgresql&logoColor=white)
 ![Vercel](https://img.shields.io/badge/deployed%20on-vercel-black?style=for-the-badge&logo=vercel)
+![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)
 
-A full-stack ticket management platform built with Django REST Framework + React (Vite), featuring JWT authentication, role-based access, advanced ticket filters, and a modern admin-ready workflow.
+A full-stack ticket management platform built with Django REST Framework + React (Vite), focused on real-world support workflows: authentication, permission-aware ticket access, and fast day-to-day ticket operations.
 
-## Live Demo
+## Live Demo ??
 
-- Frontend: `https://frontend-eight-omega-38.vercel.app`
-- Backend API: `https://backend-five-teal-88.vercel.app`
-- API docs (Swagger): `https://backend-five-teal-88.vercel.app/api/docs/`
-- OpenAPI schema: `https://backend-five-teal-88.vercel.app/api/schema/`
+- Frontend: `https://ticketing-portal-web.vercel.app/`
+- Backend API: `https://ticketing-portal-api.vercel.app/`
+- API Docs (Swagger): `https://ticketing-portal-api.vercel.app/api/docs/`
+- OpenAPI Schema: `https://ticketing-portal-api.vercel.app/api/schema/`
+- Repository: `https://github.com/GugaValenca/ticketing-portal`
 
-## Features
+## Features ?
 
-- JWT authentication (login + refresh token flow)
-- Automatic token refresh with Axios interceptors
-- Role-aware ticket access (`requester`, `assignee`, `staff/superuser`)
-- Full ticket CRUD with DRF `ModelViewSet`
-- Status and priority updates directly in ticket details modal
-- Search with debounce, filtering, sorting, and pagination
-- Professional Django admin branding
-- API documentation via `drf-spectacular` (Swagger/OpenAPI)
+- **JWT Authentication**: Sign-in flow with access + refresh tokens
+- **Username or Email Login**: Flexible login support on the backend
+- **Automatic Token Refresh**: Axios interceptors handle token renewal on 401
+- **Role-Aware Access Control**: `requester`, `assignee`, and `staff/superuser` visibility rules
+- **Ticket CRUD**: Create, list, update, and manage tickets through DRF endpoints
+- **Status & Priority Updates**: Inline updates inside the ticket details modal
+- **Search and Filters**: Debounced search, status/priority filters, sorting, and pagination
+- **Admin Experience**: Branded Django admin with practical list/search/filter setup
+- **API Documentation**: Swagger/OpenAPI powered by `drf-spectacular`
+- **Docker-Friendly Local Setup**: Backend + PostgreSQL via `docker-compose`
 
-## Tech Stack
+## Screenshots ??
 
-### Backend
-- Python 3.12+
-- Django 6
-- Django REST Framework
-- SimpleJWT
-- drf-spectacular
-- PostgreSQL (production) / SQLite (local fallback)
+![Login Screen Placeholder](https://via.placeholder.com/1280x720/f8fafc/0f172a?text=Ticketing+Portal+-+Login+Screen)
+![Tickets Dashboard Placeholder](https://via.placeholder.com/1280x720/f1f5f9/0f172a?text=Ticketing+Portal+-+Tickets+Dashboard)
+![Ticket Details Placeholder](https://via.placeholder.com/1280x720/e2e8f0/0f172a?text=Ticketing+Portal+-+Ticket+Details+Modal)
 
-### Frontend
-- React 19
-- TypeScript
-- Vite
-- Axios
-- Tailwind CSS
-- Vitest
-
-## Project Structure
-
-```bash
-ticketing-portal/
-+-- backend/
-¦   +-- api/
-¦   ¦   +-- index.py
-¦   +-- config/
-¦   ¦   +-- settings.py
-¦   ¦   +-- urls.py
-¦   ¦   +-- wsgi.py
-¦   +-- tickets/
-¦   ¦   +-- models.py
-¦   ¦   +-- serializers.py
-¦   ¦   +-- permissions.py
-¦   ¦   +-- views.py
-¦   ¦   +-- me.py
-¦   ¦   +-- urls.py
-¦   +-- manage.py
-¦   +-- requirements.txt
-¦   +-- vercel.json
-+-- frontend/
-¦   +-- public/
-¦   +-- src/
-¦   ¦   +-- components/
-¦   ¦   +-- lib/
-¦   ¦   +-- App.tsx
-¦   ¦   +-- main.tsx
-¦   +-- package.json
-¦   +-- vite.config.ts
-+-- docker-compose.yml
-+-- README.md
-```
-
-## API Endpoints
-
-- `POST /api/token/` - obtain access + refresh token
-- `POST /api/token/refresh/` - refresh access token
-- `GET /api/me/` - authenticated user profile
-- `GET /api/tickets/` - list tickets (permission-aware)
-- `POST /api/tickets/` - create ticket (requester = current user)
-- `PATCH /api/tickets/{id}/` - update ticket fields
-- `GET /api/docs/` - Swagger UI
-- `GET /api/schema/` - OpenAPI schema
-
-## Installation
+## Installation ??
 
 1. Clone the repository:
 ```bash
@@ -113,31 +61,9 @@ Mac/Linux:
 source .venv/bin/activate
 ```
 
-Install dependencies:
+Install backend dependencies:
 ```bash
 pip install -r requirements.txt
-```
-
-Create environment variables (example):
-```env
-DJANGO_SECRET_KEY=change-me
-DEBUG=True
-ALLOWED_HOSTS=127.0.0.1,localhost
-CORS_ALLOWED_ORIGINS=http://localhost:5173
-CSRF_TRUSTED_ORIGINS=http://localhost:5173
-# optional for local postgres:
-# DATABASE_URL=postgresql://user:password@localhost:5432/ticketing_db
-```
-
-Run migrations and seed data:
-```bash
-python manage.py migrate
-python manage.py seed
-```
-
-Run backend:
-```bash
-python manage.py runserver
 ```
 
 3. Frontend setup:
@@ -146,50 +72,115 @@ cd ../frontend
 npm install
 ```
 
-Create `.env`:
-```env
-VITE_API_BASE_URL=http://127.0.0.1:8000
+## Usage ??
+
+### Option A: Run with Docker (Backend + PostgreSQL)
+
+From the repository root:
+```bash
+docker compose up --build
 ```
 
-Run frontend:
+Backend will be available at:
+- `http://127.0.0.1:8001`
+
+### Option B: Run Backend/Frontend Separately
+
+Backend:
 ```bash
+cd backend
+python manage.py migrate
+python manage.py seed
+python manage.py runserver
+```
+
+Frontend:
+```bash
+cd frontend
 npm run dev
 ```
 
-## Production Deployment
-
-### Backend (Vercel)
-
-Required env vars:
-- `DJANGO_SECRET_KEY`
-- `DEBUG=False`
-- `ALLOWED_HOSTS=.vercel.app,localhost,127.0.0.1`
-- `CORS_ALLOWED_ORIGINS=<frontend-url>,http://localhost:5173`
-- `CSRF_TRUSTED_ORIGINS=<frontend-url>`
-- `DATABASE_URL=<postgres-connection-string>`
-
-Deploy:
-```bash
-cd backend
-npx vercel --prod
+Optional frontend env (`frontend/.env`):
+```env
+VITE_API_BASE_URL=http://127.0.0.1:8001
 ```
 
-### Frontend (Vercel)
+Demo users created by `python manage.py seed`:
+- `admin / Admin@12345`
+- `LaisLany / Lais@12345`
+- `GugaTampa / @Tampa5000`
 
-Required env vars:
-- `VITE_API_BASE_URL=https://your-backend.vercel.app`
+## Project Structure ???
 
-Deploy:
 ```bash
-cd frontend
-npx vercel --prod
+ticketing-portal/
++-- backend/
+¦   +-- api/
+¦   ¦   +-- index.py
+¦   +-- config/
+¦   ¦   +-- settings.py
+¦   ¦   +-- urls.py
+¦   +-- tickets/
+¦   ¦   +-- management/commands/seed.py
+¦   ¦   +-- models.py
+¦   ¦   +-- serializers.py
+¦   ¦   +-- permissions.py
+¦   ¦   +-- views.py
+¦   ¦   +-- auth.py
+¦   ¦   +-- me.py
+¦   ¦   +-- admin.py
+¦   +-- requirements.txt
+¦   +-- vercel.json
++-- frontend/
+¦   +-- src/
+¦   ¦   +-- components/
+¦   ¦   +-- lib/api.ts
+¦   ¦   +-- App.tsx
+¦   ¦   +-- main.tsx
+¦   +-- package.json
+¦   +-- vercel.json
++-- docker-compose.yml
++-- README.md
 ```
 
-## License
+## Key Technical Highlights ??
+
+- Built a **full authentication cycle** with JWT + refresh token rotation
+- Implemented **permission-aware data access** in DRF for realistic multi-role behavior
+- Added **frontend resilience** with request/response interceptors and token queue handling
+- Structured backend for deployment with **Vercel Python serverless entrypoint**
+- Improved maintainability with practical admin configuration, clear serializers, and explicit permission classes
+
+## Technologies Used ???
+
+- **Frontend**: React 19, TypeScript, Vite, Axios, Tailwind CSS
+- **Backend**: Python 3.12+, Django 6, Django REST Framework, SimpleJWT, drf-spectacular
+- **Database**: PostgreSQL (Docker/production), SQLite (local fallback)
+- **Testing**: Vitest (frontend)
+- **Deployment**: Vercel (frontend + backend)
+- **Containerization**: Docker, Docker Compose
+
+## Future Improvements ??
+
+- Add backend automated tests for auth and permission flows
+- Add ticket assignment workflow UI for admin/staff actions
+- Add richer audit metadata (who changed status/priority and when)
+- Improve observability with structured logging and basic error monitoring
+- Add CI checks for linting/tests before deployment
+
+## Contributing ??
+
+1. Fork the project
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+## License ??
 
 This project is licensed under the MIT License.
 
-## Contact
+## Contact ??
 
 **Gustavo Valenca**
 
@@ -201,4 +192,4 @@ This project is licensed under the MIT License.
 
 ---
 
-If you found this project helpful, please give it a star.
+? **If you found this project helpful, please give it a star!**
