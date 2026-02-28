@@ -80,19 +80,19 @@ function StatusBadge({ status }: { status: string }) {
   const label = s.replaceAll("_", " ");
   const style =
     s === "open"
-      ? "border-sky-700/80 bg-sky-800/35 text-sky-100"
+      ? "border-sky-700 bg-sky-700 text-white shadow-sm shadow-sky-900/25"
       : s === "in_progress"
-        ? "border-amber-700/80 bg-amber-700/30 text-amber-100"
+        ? "border-amber-700 bg-amber-700 text-white shadow-sm shadow-amber-900/25"
         : s === "resolved"
-          ? "border-emerald-700/80 bg-emerald-700/30 text-emerald-100"
+          ? "border-emerald-700 bg-emerald-700 text-white shadow-sm shadow-emerald-900/25"
           : s === "closed"
-            ? "border-slate-500/80 bg-slate-700/35 text-slate-100"
-            : "border-slate-500/80 bg-slate-700/35 text-slate-100";
+            ? "border-slate-700 bg-slate-700 text-white shadow-sm shadow-slate-900/25"
+            : "border-slate-700 bg-slate-700 text-white shadow-sm shadow-slate-900/25";
 
   return (
     <span
       className={cx(
-        "inline-flex rounded-md border px-3 py-1 text-xs font-semibold",
+        "inline-flex min-w-[92px] items-center justify-center rounded-md border px-3 py-1 text-xs font-semibold capitalize tracking-wide",
         style,
       )}
     >
@@ -105,17 +105,17 @@ function PriorityBadge({ priority }: { priority: string }) {
   const p = priority.toLowerCase();
   const style =
     p === "urgent"
-      ? "border-rose-700/80 bg-rose-700/30 text-rose-100"
+      ? "border-rose-700 bg-rose-700 text-white shadow-sm shadow-rose-900/25"
       : p === "high"
-        ? "border-orange-700/80 bg-orange-700/30 text-orange-100"
+        ? "border-orange-700 bg-orange-700 text-white shadow-sm shadow-orange-900/25"
         : p === "medium"
-          ? "border-yellow-700/80 bg-yellow-700/30 text-yellow-100"
-          : "border-indigo-700/80 bg-indigo-700/30 text-indigo-100";
+          ? "border-amber-700 bg-amber-700 text-white shadow-sm shadow-amber-900/25"
+          : "border-indigo-700 bg-indigo-700 text-white shadow-sm shadow-indigo-900/25";
 
   return (
     <span
       className={cx(
-        "inline-flex rounded-md border px-3 py-1 text-xs font-semibold",
+        "inline-flex min-w-[92px] items-center justify-center rounded-md border px-3 py-1 text-xs font-semibold capitalize tracking-wide",
         style,
       )}
     >
@@ -126,7 +126,7 @@ function PriorityBadge({ priority }: { priority: string }) {
 
 function IdPill({ id }: { id: number }) {
   return (
-    <span className="inline-flex items-center rounded-md border border-violet-700/80 bg-violet-700/30 px-2.5 py-1 text-xs font-semibold text-violet-100">
+    <span className="inline-flex min-w-[54px] items-center justify-center rounded-md border border-violet-700 bg-violet-700 px-2.5 py-1 text-xs font-semibold tracking-wide text-white shadow-sm shadow-violet-900/25">
       #{id}
     </span>
   );
