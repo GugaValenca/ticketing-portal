@@ -11,3 +11,9 @@ body,
 #root {
   height: 100%;
 }
+
+.dark-select option,
+.dark-select optgroup {
+  background-color: #2a1b48;
+  color: #ffffff;
+}
