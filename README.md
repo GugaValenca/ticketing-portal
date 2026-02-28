@@ -24,8 +24,6 @@ It focuses on practical support-team workflows: authentication, role-aware ticke
 Use these demo accounts in the public frontend login form:
 
 - `admin / Admin@12345`
-- `LaisLany / Lais@12345`
-- `GugaTampa / @Tampa5000`
 
 Administrative tools are reserved for internal management and development use.  
 The public demo is focused on the main user workflow through the frontend app.
