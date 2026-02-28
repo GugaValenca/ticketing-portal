@@ -12,11 +12,11 @@ A full-stack ticket management platform built with Django REST Framework + React
 
 ## Live Demo
 
-- Frontend: [https://ticketing-portal-web.vercel.app/](https://ticketing-portal-web.vercel.app/)
-- Backend API: [https://ticketing-portal-api.vercel.app/](https://ticketing-portal-api.vercel.app/)
-- API Docs (Swagger): [https://ticketing-portal-api.vercel.app/api/docs/](https://ticketing-portal-api.vercel.app/api/docs/)
-- OpenAPI Schema: [https://ticketing-portal-api.vercel.app/api/schema/](https://ticketing-portal-api.vercel.app/api/schema/)
-- Repository: [https://github.com/GugaValenca/ticketing-portal](https://github.com/GugaValenca/ticketing-portal)
+- Frontend: <a href="https://ticketing-portal-web.vercel.app/" target="_blank" rel="noopener noreferrer">https://ticketing-portal-web.vercel.app/</a>
+- Backend API: <a href="https://ticketing-portal-api.vercel.app/" target="_blank" rel="noopener noreferrer">https://ticketing-portal-api.vercel.app/</a>
+- API Docs (Swagger): <a href="https://ticketing-portal-api.vercel.app/api/docs/" target="_blank" rel="noopener noreferrer">https://ticketing-portal-api.vercel.app/api/docs/</a>
+- OpenAPI Schema: <a href="https://ticketing-portal-api.vercel.app/api/schema/" target="_blank" rel="noopener noreferrer">https://ticketing-portal-api.vercel.app/api/schema/</a>
+- Repository: <a href="https://github.com/GugaValenca/ticketing-portal" target="_blank" rel="noopener noreferrer">https://github.com/GugaValenca/ticketing-portal</a>
 
 ## Features
 
@@ -184,11 +184,11 @@ This project is licensed under the MIT License.
 
 **Gustavo Valenca**
 
-[![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white)](https://github.com/GugaValenca)
-[![LinkedIn](https://img.shields.io/badge/linkedin-%230077B5.svg?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/gugavalenca/)
-[![Instagram](https://img.shields.io/badge/Instagram-%23E4405F.svg?style=for-the-badge&logo=Instagram&logoColor=white)](https://www.instagram.com/gugatampa)
-[![Twitch](https://img.shields.io/badge/Twitch-%239146FF.svg?style=for-the-badge&logo=Twitch&logoColor=white)](https://www.twitch.tv/gugatampa)
-[![Discord](https://img.shields.io/badge/Discord-%235865F2.svg?style=for-the-badge&logo=discord&logoColor=white)](https://discord.com/invite/3QQyR5whBZ)
+<a href="https://github.com/GugaValenca" target="_blank" rel="noopener noreferrer"><img alt="GitHub" src="https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white" /></a>
+<a href="https://www.linkedin.com/in/gugavalenca/" target="_blank" rel="noopener noreferrer"><img alt="LinkedIn" src="https://img.shields.io/badge/linkedin-%230077B5.svg?style=for-the-badge&logo=linkedin&logoColor=white" /></a>
+<a href="https://www.instagram.com/gugatampa" target="_blank" rel="noopener noreferrer"><img alt="Instagram" src="https://img.shields.io/badge/Instagram-%23E4405F.svg?style=for-the-badge&logo=Instagram&logoColor=white" /></a>
+<a href="https://www.twitch.tv/gugatampa" target="_blank" rel="noopener noreferrer"><img alt="Twitch" src="https://img.shields.io/badge/Twitch-%239146FF.svg?style=for-the-badge&logo=Twitch&logoColor=white" /></a>
+<a href="https://discord.com/invite/3QQyR5whBZ" target="_blank" rel="noopener noreferrer"><img alt="Discord" src="https://img.shields.io/badge/Discord-%235865F2.svg?style=for-the-badge&logo=discord&logoColor=white" /></a>
 
 ---
 
