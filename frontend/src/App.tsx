@@ -728,12 +728,12 @@ export default function App() {
                 <p className="mt-1 text-xs text-slate-600">
                   Choose a start and end date to review ticket activity in a specific period.
                 </p>
-                <div className="mt-3 grid gap-3 sm:grid-cols-[160px_160px_auto]">
+                <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-[minmax(0,220px)_minmax(0,220px)_auto]">
                   <div className="grid gap-1">
                     <label className="text-xs font-semibold text-slate-600">
                       Start date (MM/DD/YYYY)
                     </label>
-                    <div className="flex h-10 items-center rounded-lg border border-slate-300 bg-white px-2 focus-within:border-violet-400 focus-within:ring-2 focus-within:ring-violet-200">
+                    <div className="relative flex h-10 items-center rounded-lg border border-slate-300 bg-white px-2 focus-within:border-violet-400 focus-within:ring-2 focus-within:ring-violet-200">
                       <input
                         type="text"
                         inputMode="numeric"
@@ -779,7 +779,7 @@ export default function App() {
                     <label className="text-xs font-semibold text-slate-600">
                       End date (MM/DD/YYYY)
                     </label>
-                    <div className="flex h-10 items-center rounded-lg border border-slate-300 bg-white px-2 focus-within:border-violet-400 focus-within:ring-2 focus-within:ring-violet-200">
+                    <div className="relative flex h-10 items-center rounded-lg border border-slate-300 bg-white px-2 focus-within:border-violet-400 focus-within:ring-2 focus-within:ring-violet-200">
                       <input
                         type="text"
                         inputMode="numeric"
@@ -821,10 +821,10 @@ export default function App() {
                       />
                     </div>
                   </div>
-                  <div className="flex items-center">
+                  <div className="flex items-end sm:col-span-2 lg:col-span-1">
                     <button
                       type="button"
-                      className="h-10 rounded-lg bg-indigo-600 px-4 text-sm font-semibold text-white hover:bg-indigo-500"
+                      className="h-10 w-full rounded-lg bg-indigo-600 px-4 text-sm font-semibold text-white hover:bg-indigo-500 lg:w-auto"
                     >
                       Submit
                     </button>
