@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { api, auth } from "./lib/api";
 
 type Me = {
@@ -157,8 +157,6 @@ function Modal({
 
 type SortKey = "newest" | "oldest" | "priority" | "status";
 type PageSize = 10 | 20 | 50;
-type SidebarFilter = "inbox" | "my_tickets" | "unassigned" | "overdue";
-type TopNav = "service_desk" | "users" | "tickets" | "tools" | "report";
 
 const PRIORITY_ORDER: Record<string, number> = {
   urgent: 0,
@@ -226,13 +224,8 @@ export default function App() {
   const [sortKey, setSortKey] = useState<SortKey>("newest");
   const [pageSize, setPageSize] = useState<PageSize>(10);
   const [page, setPage] = useState(1);
-  const [sidebarFilter, setSidebarFilter] = useState<SidebarFilter>("inbox");
-  const [activeTopNav, setActiveTopNav] = useState<TopNav>("service_desk");
 
   const isLoggedIn = useMemo(() => !!me, [me]);
-  const dashboardRef = useRef<HTMLElement | null>(null);
-  const reportRef = useRef<HTMLElement | null>(null);
-  const ticketsRef = useRef<HTMLElement | null>(null);
 
   // Debounce (300ms)
   useEffect(() => {
@@ -315,37 +308,7 @@ export default function App() {
     setStatusFilter("all");
     setPriorityFilter("all");
     setSortKey("newest");
-    setSidebarFilter("inbox");
     setPage(1);
-  }
-
-  function applySidebarFilter(filter: SidebarFilter) {
-    setSidebarFilter(filter);
-    setActiveTopNav("tickets");
-    ticketsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-    setPage(1);
-  }
-
-  function handleTopNav(action: TopNav) {
-    setActiveTopNav(action);
-
-    if (action === "tickets") {
-      ticketsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-      return;
-    }
-    if (action === "report") {
-      reportRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-      return;
-    }
-    if (action === "tools") {
-      openCreateModal();
-      return;
-    }
-    if (action === "users") {
-      applySidebarFilter("my_tickets");
-      return;
-    }
-    dashboardRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
   // reset page on filter/sort/pageSize changes
@@ -360,28 +323,14 @@ export default function App() {
       const matchesQuery =
         !q ||
         t.title.toLowerCase().includes(q) ||
-        (t.description || "").toLowerCase().includes(q) ||
-        (t.requester_username || "").toLowerCase().includes(q) ||
-        (t.assignee_username || "").toLowerCase().includes(q);
+        (t.description || "").toLowerCase().includes(q);
 
       const matchesStatus =
         statusFilter === "all" ? true : t.status === statusFilter;
       const matchesPriority =
         priorityFilter === "all" ? true : t.priority === priorityFilter;
-      const matchesSidebar =
-        sidebarFilter === "inbox"
-          ? true
-          : sidebarFilter === "my_tickets"
-            ? !!me &&
-              (t.requester_username === me.username ||
-                t.assignee_username === me.username)
-            : sidebarFilter === "unassigned"
-              ? !t.assignee_username
-              : t.priority === "urgent" &&
-                t.status !== "resolved" &&
-                t.status !== "closed";
 
-      return matchesQuery && matchesStatus && matchesPriority && matchesSidebar;
+      return matchesQuery && matchesStatus && matchesPriority;
     });
 
     return [...filtered].sort((a, b) => {
@@ -410,7 +359,7 @@ export default function App() {
         new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
       );
     });
-  }, [tickets, debouncedQuery, statusFilter, priorityFilter, sortKey, sidebarFilter, me]);
+  }, [tickets, debouncedQuery, statusFilter, priorityFilter, sortKey]);
 
   const total = filteredSortedTickets.length;
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
@@ -624,57 +573,21 @@ export default function App() {
               Tickets
             </p>
             <nav className="mt-2 space-y-1">
-              <button
-                type="button"
-                onClick={() => applySidebarFilter("inbox")}
-                className={cx(
-                  "flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-sm transition",
-                  sidebarFilter === "inbox"
-                    ? "bg-white/10 text-white"
-                    : "text-slate-200 hover:bg-white/10",
-                )}
-              >
+              <button type="button" className="flex w-full items-center justify-between rounded-lg bg-white/10 px-3 py-2 text-left text-sm text-white">
                 <span>Inbox</span>
                 <span className="rounded-md bg-indigo-500/30 px-1.5 py-0.5 text-xs font-semibold">
                   {dashboardStats.inbox}
                 </span>
               </button>
-              <button
-                type="button"
-                onClick={() => applySidebarFilter("my_tickets")}
-                className={cx(
-                  "flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-sm transition",
-                  sidebarFilter === "my_tickets"
-                    ? "bg-white/10 text-white"
-                    : "text-slate-200 hover:bg-white/10",
-                )}
-              >
+              <button type="button" className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-sm text-slate-200 hover:bg-white/10">
                 <span>My tickets</span>
                 <span className="text-xs text-indigo-200">{dashboardStats.myTickets}</span>
               </button>
-              <button
-                type="button"
-                onClick={() => applySidebarFilter("unassigned")}
-                className={cx(
-                  "flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-sm transition",
-                  sidebarFilter === "unassigned"
-                    ? "bg-white/10 text-white"
-                    : "text-slate-200 hover:bg-white/10",
-                )}
-              >
+              <button type="button" className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-sm text-slate-200 hover:bg-white/10">
                 <span>Unassigned</span>
                 <span className="text-xs text-indigo-200">{dashboardStats.unassigned}</span>
               </button>
-              <button
-                type="button"
-                onClick={() => applySidebarFilter("overdue")}
-                className={cx(
-                  "flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-sm transition",
-                  sidebarFilter === "overdue"
-                    ? "bg-white/10 text-white"
-                    : "text-slate-200 hover:bg-white/10",
-                )}
-              >
+              <button type="button" className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-sm text-slate-200 hover:bg-white/10">
                 <span>Overdue</span>
                 <span className="text-xs text-indigo-200">{dashboardStats.overdue}</span>
               </button>
@@ -686,46 +599,11 @@ export default function App() {
           <header className="border-b border-white/10 bg-[#1d1236]/85">
             <div className="flex h-14 items-center justify-between gap-3 px-4 sm:px-6">
               <div className="flex items-center gap-4 text-sm text-indigo-100">
-                <button
-                  type="button"
-                  onClick={() => handleTopNav("service_desk")}
-                  className={cx("font-semibold transition hover:text-white", activeTopNav === "service_desk" ? "text-white" : "text-indigo-100")}
-                  title="Go to dashboard overview"
-                >
-                  Service Desk
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleTopNav("users")}
-                  className={cx("hidden transition hover:text-white md:inline", activeTopNav === "users" ? "text-white" : "text-slate-300")}
-                  title="Filter tickets assigned to or requested by you"
-                >
-                  Users
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleTopNav("tickets")}
-                  className={cx("hidden transition hover:text-white md:inline", activeTopNav === "tickets" ? "text-white" : "text-slate-300")}
-                  title="Go to tickets section"
-                >
-                  Tickets
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleTopNav("tools")}
-                  className={cx("hidden transition hover:text-white md:inline", activeTopNav === "tools" ? "text-white" : "text-slate-300")}
-                  title="Open ticket creation tool"
-                >
-                  Tools
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleTopNav("report")}
-                  className={cx("hidden transition hover:text-white md:inline", activeTopNav === "report" ? "text-white" : "text-slate-300")}
-                  title="Go to report filters"
-                >
-                  Report
-                </button>
+                <span className="font-semibold">Service Desk</span>
+                <span className="hidden text-slate-300 md:inline">Users</span>
+                <span className="hidden text-slate-300 md:inline">Tickets</span>
+                <span className="hidden text-slate-300 md:inline">Tools</span>
+                <span className="hidden text-slate-300 md:inline">Report</span>
               </div>
 
               <div className="flex items-center gap-2">
@@ -756,7 +634,7 @@ export default function App() {
 
           <main className="flex-1 p-4 sm:p-6">
             <div className="space-y-4">
-              <section ref={dashboardRef} className="rounded-xl border border-indigo-100 bg-white/95 p-4 shadow-sm">
+              <section className="rounded-xl border border-indigo-100 bg-white/95 p-4 shadow-sm">
                 <h1 className="text-lg font-semibold text-slate-900">{COMPANY_NAME} Dashboard</h1>
                 <p className="mt-1 text-sm text-slate-600">{COMPANY_TAGLINE}</p>
 
@@ -769,7 +647,7 @@ export default function App() {
                 </div>
               </section>
 
-              <section ref={reportRef} className="rounded-xl border border-indigo-100 bg-white/95 p-4 shadow-sm">
+              <section className="rounded-xl border border-indigo-100 bg-white/95 p-4 shadow-sm">
                 <h2 className="text-sm font-semibold uppercase tracking-wide text-indigo-600">
                   Report
                 </h2>
@@ -804,7 +682,7 @@ export default function App() {
                 </div>
               </section>
 
-              <section ref={ticketsRef} className="rounded-xl border border-indigo-100 bg-white/95 p-4 shadow-sm">
+              <section className="rounded-xl border border-indigo-100 bg-white/95 p-4 shadow-sm">
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                   <div>
                     <h2 className="text-xl font-semibold text-slate-900">Tickets</h2>
