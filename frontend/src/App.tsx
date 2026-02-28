@@ -34,10 +34,6 @@ function formatDateTimeUs(value: string) {
     month: "2-digit",
     day: "2-digit",
     year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-    hour12: true,
   }).format(new Date(value));
 }
 
@@ -69,19 +65,19 @@ function StatusBadge({ status }: { status: string }) {
   const label = s.replaceAll("_", " ");
   const style =
     s === "open"
-      ? "border-sky-300 bg-sky-100 text-sky-800"
+      ? "border-sky-300 bg-sky-100 text-sky-900"
       : s === "in_progress"
-        ? "border-amber-300 bg-amber-100 text-amber-800"
+        ? "border-amber-300 bg-amber-100 text-amber-900"
         : s === "resolved"
-          ? "border-emerald-300 bg-emerald-100 text-emerald-800"
+          ? "border-emerald-300 bg-emerald-100 text-emerald-900"
           : s === "closed"
-            ? "border-slate-300 bg-slate-100 text-slate-700"
-            : "border-slate-300 bg-slate-100 text-slate-700";
+            ? "border-slate-300 bg-slate-200 text-slate-800"
+            : "border-slate-300 bg-slate-200 text-slate-800";
 
   return (
     <span
       className={cx(
-        "inline-flex rounded-full border px-3 py-1 text-xs font-semibold",
+        "inline-flex rounded-lg border px-3 py-1 text-xs font-semibold",
         style,
       )}
     >
@@ -94,17 +90,17 @@ function PriorityBadge({ priority }: { priority: string }) {
   const p = priority.toLowerCase();
   const style =
     p === "urgent"
-      ? "border-rose-300 bg-rose-100 text-rose-800"
+      ? "border-rose-400 bg-rose-100 text-rose-900"
       : p === "high"
-        ? "border-orange-300 bg-orange-100 text-orange-800"
+        ? "border-orange-400 bg-orange-100 text-orange-900"
         : p === "medium"
-          ? "border-yellow-300 bg-yellow-100 text-yellow-800"
-          : "border-indigo-300 bg-indigo-100 text-indigo-800";
+          ? "border-yellow-300 bg-yellow-100 text-yellow-900"
+          : "border-indigo-300 bg-indigo-100 text-indigo-900";
 
   return (
     <span
       className={cx(
-        "inline-flex rounded-full border px-3 py-1 text-xs font-semibold",
+        "inline-flex rounded-lg border px-3 py-1 text-xs font-semibold",
         style,
       )}
     >
@@ -115,7 +111,7 @@ function PriorityBadge({ priority }: { priority: string }) {
 
 function IdPill({ id }: { id: number }) {
   return (
-    <span className="inline-flex items-center rounded-full border border-violet-300 bg-violet-100 px-2.5 py-1 text-xs font-semibold text-violet-800">
+    <span className="inline-flex items-center rounded-lg border border-violet-300 bg-violet-100 px-2.5 py-1 text-xs font-semibold text-violet-900">
       #{id}
     </span>
   );
