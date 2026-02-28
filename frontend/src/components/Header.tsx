@@ -21,6 +21,10 @@ function initials(username: string) {
   return (a + b).toUpperCase();
 }
 
+const COMPANY_NAME = "NexaLink Telecom";
+const COMPANY_TAGLINE =
+  "Operations workspace for internet service incident management.";
+
 function RolePill({ user }: { user: Me }) {
   const label = user.is_superuser
     ? "Superuser"
@@ -104,15 +108,15 @@ export default function Header({
           {/* Brand */}
           <div className="flex min-w-0 items-center gap-3.5">
             <div className="grid h-10 w-10 place-items-center rounded-2xl bg-gradient-to-br from-fuchsia-600 via-violet-600 to-indigo-500 text-white shadow-lg shadow-indigo-900/40 ring-1 ring-white/20">
-              <span className="text-sm font-black tracking-tight">TP</span>
+              <span className="text-sm font-black tracking-tight">NL</span>
             </div>
 
             <div className="min-w-0">
               <div className="truncate text-[15px] font-semibold tracking-tight text-white">
-                Ticketing Portal
+                {COMPANY_NAME}
               </div>
               <div className="truncate text-xs text-slate-300">
-                Customer support workspace for Django REST + React
+                {COMPANY_TAGLINE}
               </div>
             </div>
           </div>

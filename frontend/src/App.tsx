@@ -21,8 +21,35 @@ type Ticket = {
   updated_at: string;
 };
 
+const COMPANY_NAME = "NexaLink Telecom";
+const COMPANY_TAGLINE =
+  "Operations workspace for internet service incident management.";
+
 function cx(...classes: Array<string | false | null | undefined>) {
   return classes.filter(Boolean).join(" ");
+}
+
+function BrandMark({ className = "h-12 w-12" }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 64 64"
+      className={className}
+      role="img"
+      aria-label={`${COMPANY_NAME} logo`}
+    >
+      <defs>
+        <linearGradient id="nexa-brand-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#d946ef" />
+          <stop offset="55%" stopColor="#7c3aed" />
+          <stop offset="100%" stopColor="#3b82f6" />
+        </linearGradient>
+      </defs>
+      <rect x="4" y="4" width="56" height="56" rx="18" fill="url(#nexa-brand-gradient)" />
+      <path d="M19 44V20h4l14 17V20h8v24h-4L27 27v17h-8Z" fill="white" fillOpacity="0.95" />
+      <path d="M47 17c3 1 5 3 6 6" stroke="white" strokeWidth="2.5" strokeLinecap="round" opacity="0.85" />
+      <path d="M47 12c5 1 9 4 11 9" stroke="white" strokeWidth="2.5" strokeLinecap="round" opacity="0.6" />
+    </svg>
+  );
 }
 
 function StatusBadge({ status }: { status: string }) {
@@ -410,15 +437,16 @@ export default function App() {
 
         <div className="relative z-10 flex min-h-screen items-center justify-center p-4">
           <div className="w-full max-w-md rounded-[38px] border border-white/20 bg-white/10 px-6 py-8 shadow-[0_35px_80px_rgba(17,6,42,0.65)] backdrop-blur-xl sm:px-8 sm:py-9">
-            <div className="mx-auto mb-7 flex h-40 w-40 items-center justify-center rounded-full bg-white/15 ring-1 ring-white/20">
-              <svg
-                viewBox="0 0 24 24"
-                className="h-24 w-24 text-white/65"
-                fill="currentColor"
-                aria-hidden="true"
-              >
-                <path d="M12 12c2.76 0 5-2.69 5-6s-2.24-6-5-6-5 2.69-5 6 2.24 6 5 6Zm0 2c-4.41 0-8 2.69-8 6v2h16v-2c0-3.31-3.59-6-8-6Z" />
-              </svg>
+            <div className="mx-auto mb-4 flex h-32 w-32 items-center justify-center rounded-full bg-white/15 ring-1 ring-white/20">
+              <BrandMark className="h-24 w-24" />
+            </div>
+            <div className="mb-6 text-center">
+              <h1 className="text-2xl font-semibold tracking-tight text-white">
+                {COMPANY_NAME}
+              </h1>
+              <p className="mt-1 text-sm text-indigo-200/85">
+                ISP service desk portal
+              </p>
             </div>
 
             <form onSubmit={handleLogin} className="space-y-7">
@@ -443,7 +471,7 @@ export default function App() {
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   autoComplete="username"
-                  placeholder="Email ID"
+                  placeholder="you@company.com"
                 />
               </div>
 
@@ -522,8 +550,14 @@ export default function App() {
       <div className="relative z-10 flex min-h-screen">
         <aside className="hidden w-64 shrink-0 border-r border-white/10 bg-[#160c2d]/90 md:flex md:flex-col">
           <div className="border-b border-white/10 px-4 py-3">
-            <div className="text-sm font-semibold text-indigo-100">Ticketing Portal</div>
-            <div className="mt-1 text-xs text-slate-300">{me?.username}</div>
+            <div className="flex items-center gap-2">
+              <BrandMark className="h-7 w-7" />
+              <div>
+                <div className="text-sm font-semibold text-indigo-100">{COMPANY_NAME}</div>
+                <div className="mt-0.5 text-[11px] text-slate-300">Service Desk</div>
+              </div>
+            </div>
+            <div className="mt-2 text-xs text-slate-300">{me?.username}</div>
           </div>
 
           <div className="px-3 py-4">
@@ -557,7 +591,7 @@ export default function App() {
           <header className="border-b border-white/10 bg-[#1d1236]/85">
             <div className="flex h-14 items-center justify-between gap-3 px-4 sm:px-6">
               <div className="flex items-center gap-4 text-sm text-indigo-100">
-                <span className="font-semibold">Dashboard</span>
+                <span className="font-semibold">Service Desk</span>
                 <span className="hidden text-slate-300 md:inline">Users</span>
                 <span className="hidden text-slate-300 md:inline">Tickets</span>
                 <span className="hidden text-slate-300 md:inline">Tools</span>
@@ -593,7 +627,8 @@ export default function App() {
           <main className="flex-1 p-4 sm:p-6">
             <div className="space-y-4">
               <section className="rounded-xl border border-white/15 bg-[#1a0f35]/75 p-4 shadow-lg shadow-indigo-900/25">
-                <h1 className="text-lg font-semibold text-white">Dashboard reports</h1>
+                <h1 className="text-lg font-semibold text-white">{COMPANY_NAME} Dashboard</h1>
+                <p className="mt-1 text-sm text-indigo-200/85">{COMPANY_TAGLINE}</p>
 
                 <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
                   <StatTile label="Inbox" value={dashboardStats.inbox} />
@@ -853,7 +888,7 @@ export default function App() {
             <input
               value={newTitle}
               onChange={(e) => setNewTitle(e.target.value)}
-              placeholder="Example: Dashboard access issue"
+              placeholder="Example: Fiber outage in Downtown region"
               className="h-11 rounded-xl border border-white/20 bg-white/10 px-3 text-sm text-white outline-none transition placeholder:text-slate-300 focus:border-violet-300 focus:ring-2 focus:ring-violet-300/30"
             />
           </div>
