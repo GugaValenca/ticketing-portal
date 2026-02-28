@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
 import { api, auth } from "./lib/api";
-import Header from "./components/Header";
 
 type Me = {
   id: number;
@@ -333,6 +332,27 @@ export default function App() {
   const startIndex = (safePage - 1) * pageSize;
   const endIndex = Math.min(startIndex + pageSize, total);
   const pageItems = filteredSortedTickets.slice(startIndex, endIndex);
+  const dashboardStats = useMemo(() => {
+    const today = new Date().toDateString();
+
+    return {
+      inbox: tickets.length,
+      unassigned: tickets.filter((t) => !t.assignee_username).length,
+      overdue: tickets.filter(
+        (t) => t.priority === "urgent" && t.status !== "resolved" && t.status !== "closed",
+      ).length,
+      myTickets: me
+        ? tickets.filter(
+            (t) =>
+              t.requester_username === me.username ||
+              t.assignee_username === me.username,
+          ).length
+        : 0,
+      dueToday: tickets.filter(
+        (t) => new Date(t.updated_at).toDateString() === today,
+      ).length,
+    };
+  }, [tickets, me]);
 
   function openDetails(ticket: Ticket) {
     setDetailsError(null);
@@ -499,242 +519,323 @@ export default function App() {
         <div className="absolute bottom-[-120px] left-[22%] h-[420px] w-[420px] rounded-full bg-sky-500/20 blur-[120px]" />
       </div>
 
-      <div className="relative z-10">
-        <Header
-          user={me}
-          onReload={loadMeAndTickets}
-          onLogout={handleLogout}
-          onNewTicket={openCreateModal}
-        />
+      <div className="relative z-10 flex min-h-screen">
+        <aside className="hidden w-64 shrink-0 border-r border-white/10 bg-[#160c2d]/90 md:flex md:flex-col">
+          <div className="border-b border-white/10 px-4 py-3">
+            <div className="text-sm font-semibold text-indigo-100">Ticketing Portal</div>
+            <div className="mt-1 text-xs text-slate-300">{me?.username}</div>
+          </div>
 
-      <main className="mx-auto max-w-6xl px-4 py-6 sm:px-6">
-        <div className="rounded-2xl border border-white/15 bg-white/10 shadow-xl shadow-[#0f0521]/35 backdrop-blur">
-          <div className="border-b border-white/15 p-5 sm:p-6">
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-              <StatTile
-                label="Workspace status"
-                value={loading ? "Syncing..." : "Workspace ready"}
-              />
-              <StatTile label="Total tickets" value={tickets.length} />
-              <StatTile label="Filtered results" value={total} />
-              <StatTile
-                label="Current page"
-                value={`${safePage} / ${totalPages}`}
-              />
+          <div className="px-3 py-4">
+            <p className="px-2 text-[11px] font-semibold uppercase tracking-wide text-indigo-200/80">
+              Tickets
+            </p>
+            <nav className="mt-2 space-y-1">
+              <button type="button" className="flex w-full items-center justify-between rounded-lg bg-white/10 px-3 py-2 text-left text-sm text-white">
+                <span>Inbox</span>
+                <span className="rounded-md bg-indigo-500/30 px-1.5 py-0.5 text-xs font-semibold">
+                  {dashboardStats.inbox}
+                </span>
+              </button>
+              <button type="button" className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-sm text-slate-200 hover:bg-white/10">
+                <span>My tickets</span>
+                <span className="text-xs text-indigo-200">{dashboardStats.myTickets}</span>
+              </button>
+              <button type="button" className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-sm text-slate-200 hover:bg-white/10">
+                <span>Unassigned</span>
+                <span className="text-xs text-indigo-200">{dashboardStats.unassigned}</span>
+              </button>
+              <button type="button" className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-sm text-slate-200 hover:bg-white/10">
+                <span>Overdue</span>
+                <span className="text-xs text-indigo-200">{dashboardStats.overdue}</span>
+              </button>
+            </nav>
+          </div>
+        </aside>
+
+        <div className="flex min-w-0 flex-1 flex-col">
+          <header className="border-b border-white/10 bg-[#1d1236]/85">
+            <div className="flex h-14 items-center justify-between gap-3 px-4 sm:px-6">
+              <div className="flex items-center gap-4 text-sm text-indigo-100">
+                <span className="font-semibold">Dashboard</span>
+                <span className="hidden text-slate-300 md:inline">Users</span>
+                <span className="hidden text-slate-300 md:inline">Tickets</span>
+                <span className="hidden text-slate-300 md:inline">Tools</span>
+                <span className="hidden text-slate-300 md:inline">Report</span>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={loadMeAndTickets}
+                  className="h-9 rounded-lg border border-white/20 bg-white/10 px-3 text-xs font-semibold text-slate-100 hover:bg-white/20"
+                >
+                  Refresh
+                </button>
+                <button
+                  type="button"
+                  onClick={openCreateModal}
+                  className="h-9 rounded-lg bg-gradient-to-r from-violet-600 to-indigo-500 px-3 text-xs font-semibold text-white hover:from-violet-500 hover:to-indigo-400"
+                >
+                  New ticket
+                </button>
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  className="h-9 rounded-lg border border-white/20 bg-white/10 px-3 text-xs font-semibold text-slate-100 hover:bg-white/20"
+                >
+                  Sign out
+                </button>
+              </div>
             </div>
-          </div>
+          </header>
 
-          {/* Tickets */}
-          <div className="p-5 sm:p-6">
-            <section className="rounded-2xl border border-white/20 bg-[#1a0f35]/75 p-5 shadow-lg shadow-indigo-900/25 ring-1 ring-white/10 sm:p-6">
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-                <div>
-                  <h2 className="text-xl font-semibold text-white">
-                    Tickets
-                  </h2>
-                  <p className="mt-1 text-sm text-indigo-200/90">
-                    Search, filter, sort, and update tickets in one place.
-                  </p>
+          <main className="flex-1 p-4 sm:p-6">
+            <div className="space-y-4">
+              <section className="rounded-xl border border-white/15 bg-[#1a0f35]/75 p-4 shadow-lg shadow-indigo-900/25">
+                <h1 className="text-lg font-semibold text-white">Dashboard reports</h1>
+
+                <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+                  <StatTile label="Inbox" value={dashboardStats.inbox} />
+                  <StatTile label="Unassigned" value={dashboardStats.unassigned} />
+                  <StatTile label="Overdue" value={dashboardStats.overdue} />
+                  <StatTile label="My tickets" value={dashboardStats.myTickets} />
+                  <StatTile label="Due today" value={dashboardStats.dueToday} />
+                </div>
+              </section>
+
+              <section className="rounded-xl border border-white/15 bg-[#1a0f35]/75 p-4 shadow-lg shadow-indigo-900/25">
+                <h2 className="text-sm font-semibold uppercase tracking-wide text-indigo-200">
+                  Report
+                </h2>
+                <div className="mt-3 grid gap-3 sm:grid-cols-[160px_160px_auto]">
+                  <input
+                    type="date"
+                    className="h-10 rounded-lg border border-white/20 bg-white/10 px-3 text-sm text-white outline-none focus:border-violet-300 focus:ring-2 focus:ring-violet-300/30"
+                  />
+                  <input
+                    type="date"
+                    className="h-10 rounded-lg border border-white/20 bg-white/10 px-3 text-sm text-white outline-none focus:border-violet-300 focus:ring-2 focus:ring-violet-300/30"
+                  />
+                  <div className="flex items-center">
+                    <button
+                      type="button"
+                      className="h-10 rounded-lg bg-indigo-600 px-4 text-sm font-semibold text-white hover:bg-indigo-500"
+                    >
+                      Submit
+                    </button>
+                  </div>
+                </div>
+              </section>
+
+              <section className="rounded-xl border border-white/15 bg-[#1a0f35]/75 p-4 shadow-lg shadow-indigo-900/25">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+                  <div>
+                    <h2 className="text-xl font-semibold text-white">Tickets</h2>
+                    <p className="mt-1 text-sm text-indigo-200/90">
+                      Search, filter, sort, and update tickets in one place.
+                    </p>
+                  </div>
+
+                  <div className="text-sm text-indigo-200/80">
+                    {loading
+                      ? "Loading tickets..."
+                      : total === 0
+                        ? "No matching results"
+                        : `Showing ${startIndex + 1}-${endIndex} of ${total}`}
+                  </div>
                 </div>
 
-                <div className="text-sm text-indigo-200/80">
-                  {loading
-                    ? "Loading tickets..."
-                    : total === 0
-                      ? "No matching results"
-                      : `Showing ${startIndex + 1}-${endIndex} of ${total}`}
-                </div>
-              </div>
-
-              <div className="mt-4 rounded-xl border border-white/15 bg-white/5 p-3 sm:p-4">
-                <div className="grid gap-3 md:grid-cols-12">
-                  <div className="md:col-span-5">
-                    <label className="text-xs font-semibold text-indigo-200">
-                      Search tickets
-                    </label>
-                    <input
-                      value={query}
-                      onChange={(e) => setQuery(e.target.value)}
-                      placeholder="Search by title or description..."
-                      className="mt-1 h-11 w-full rounded-xl border border-white/20 bg-white/10 px-3 text-sm text-white outline-none transition placeholder:text-slate-300 focus:border-violet-300 focus:ring-2 focus:ring-violet-300/30"
-                    />
-                    <div className="mt-1 text-[11px] text-indigo-200/75">
-                      Results update after 300ms to keep interactions smooth.
+                <div className="mt-4 rounded-xl border border-white/15 bg-white/5 p-3 sm:p-4">
+                  <div className="grid gap-3 md:grid-cols-12">
+                    <div className="md:col-span-5">
+                      <label className="text-xs font-semibold text-indigo-200">
+                        Search tickets
+                      </label>
+                      <input
+                        value={query}
+                        onChange={(e) => setQuery(e.target.value)}
+                        placeholder="Search by title or description..."
+                        className="mt-1 h-11 w-full rounded-xl border border-white/20 bg-white/10 px-3 text-sm text-white outline-none transition placeholder:text-slate-300 focus:border-violet-300 focus:ring-2 focus:ring-violet-300/30"
+                      />
+                      <div className="mt-1 text-[11px] text-indigo-200/75">
+                        Results update after 300ms to keep interactions smooth.
+                      </div>
                     </div>
-                  </div>
 
-                  <div className="md:col-span-2">
-                    <label className="text-xs font-semibold text-indigo-200">
-                      Status
-                    </label>
-                    <select
-                      value={statusFilter}
-                      onChange={(e) => setStatusFilter(e.target.value as any)}
-                      className="mt-1 h-11 w-full rounded-xl border border-white/20 bg-white/10 px-3 text-sm text-white outline-none transition placeholder:text-slate-300 focus:border-violet-300 focus:ring-2 focus:ring-violet-300/30"
-                    >
-                      <option value="all">All</option>
-                      <option value="open">open</option>
-                      <option value="in_progress">in_progress</option>
-                      <option value="resolved">resolved</option>
-                      <option value="closed">closed</option>
-                    </select>
-                  </div>
-
-                  <div className="md:col-span-2">
-                    <label className="text-xs font-semibold text-indigo-200">
-                      Priority
-                    </label>
-                    <select
-                      value={priorityFilter}
-                      onChange={(e) => setPriorityFilter(e.target.value as any)}
-                      className="mt-1 h-11 w-full rounded-xl border border-white/20 bg-white/10 px-3 text-sm text-white outline-none transition placeholder:text-slate-300 focus:border-violet-300 focus:ring-2 focus:ring-violet-300/30"
-                    >
-                      <option value="all">All</option>
-                      <option value="low">low</option>
-                      <option value="medium">medium</option>
-                      <option value="high">high</option>
-                      <option value="urgent">urgent</option>
-                    </select>
-                  </div>
-
-                  <div className="md:col-span-3">
-                    <label className="text-xs font-semibold text-indigo-200">
-                      Sort by
-                    </label>
-                    <select
-                      value={sortKey}
-                      onChange={(e) => setSortKey(e.target.value as any)}
-                      className="mt-1 h-11 w-full rounded-xl border border-white/20 bg-white/10 px-3 text-sm text-white outline-none transition placeholder:text-slate-300 focus:border-violet-300 focus:ring-2 focus:ring-violet-300/30"
-                    >
-                      <option value="newest">Newest</option>
-                      <option value="oldest">Oldest</option>
-                      <option value="priority">Priority</option>
-                      <option value="status">Status</option>
-                    </select>
-                  </div>
-
-                  <div className="flex flex-col gap-2 md:col-span-12 sm:flex-row sm:items-center sm:justify-between">
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs font-semibold text-indigo-200">
-                        Page size
-                      </span>
+                    <div className="md:col-span-2">
+                      <label className="text-xs font-semibold text-indigo-200">
+                        Status
+                      </label>
                       <select
-                        value={pageSize}
-                        onChange={(e) =>
-                          setPageSize(Number(e.target.value) as any)
-                        }
-                        className="h-10 rounded-xl border border-white/20 bg-white/10 px-3 text-sm text-white outline-none transition focus:border-violet-300 focus:ring-2 focus:ring-violet-300/30"
+                        value={statusFilter}
+                        onChange={(e) => setStatusFilter(e.target.value as any)}
+                        className="mt-1 h-11 w-full rounded-xl border border-white/20 bg-white/10 px-3 text-sm text-white outline-none transition placeholder:text-slate-300 focus:border-violet-300 focus:ring-2 focus:ring-violet-300/30"
                       >
-                        <option value={10}>10</option>
-                        <option value={20}>20</option>
-                        <option value={50}>50</option>
+                        <option value="all">All</option>
+                        <option value="open">open</option>
+                        <option value="in_progress">in_progress</option>
+                        <option value="resolved">resolved</option>
+                        <option value="closed">closed</option>
                       </select>
-
-                      <button
-                        onClick={clearFilters}
-                        className="h-10 rounded-xl border border-white/20 bg-white/10 px-4 text-sm font-semibold text-slate-100 hover:bg-white/20"
-                      >
-                        Reset filters
-                      </button>
                     </div>
 
-                    <div className="flex items-center gap-2">
-                      <button
-                        disabled={safePage <= 1}
-                        onClick={() => setPage((p) => Math.max(1, p - 1))}
-                        className="h-10 rounded-xl border border-white/20 bg-white/10 px-3 text-sm font-semibold text-slate-100 hover:bg-white/20 disabled:opacity-50"
+                    <div className="md:col-span-2">
+                      <label className="text-xs font-semibold text-indigo-200">
+                        Priority
+                      </label>
+                      <select
+                        value={priorityFilter}
+                        onChange={(e) => setPriorityFilter(e.target.value as any)}
+                        className="mt-1 h-11 w-full rounded-xl border border-white/20 bg-white/10 px-3 text-sm text-white outline-none transition placeholder:text-slate-300 focus:border-violet-300 focus:ring-2 focus:ring-violet-300/30"
                       >
-                        Prev
-                      </button>
-                      <span className="text-sm text-indigo-200">
-                        Page <b>{safePage}</b> of <b>{totalPages}</b>
-                      </span>
-                      <button
-                        disabled={safePage >= totalPages}
-                        onClick={() =>
-                          setPage((p) => Math.min(totalPages, p + 1))
-                        }
-                        className="h-10 rounded-xl border border-white/20 bg-white/10 px-3 text-sm font-semibold text-slate-100 hover:bg-white/20 disabled:opacity-50"
+                        <option value="all">All</option>
+                        <option value="low">low</option>
+                        <option value="medium">medium</option>
+                        <option value="high">high</option>
+                        <option value="urgent">urgent</option>
+                      </select>
+                    </div>
+
+                    <div className="md:col-span-3">
+                      <label className="text-xs font-semibold text-indigo-200">
+                        Sort by
+                      </label>
+                      <select
+                        value={sortKey}
+                        onChange={(e) => setSortKey(e.target.value as any)}
+                        className="mt-1 h-11 w-full rounded-xl border border-white/20 bg-white/10 px-3 text-sm text-white outline-none transition placeholder:text-slate-300 focus:border-violet-300 focus:ring-2 focus:ring-violet-300/30"
                       >
-                        Next
-                      </button>
+                        <option value="newest">Newest</option>
+                        <option value="oldest">Oldest</option>
+                        <option value="priority">Priority</option>
+                        <option value="status">Status</option>
+                      </select>
+                    </div>
+
+                    <div className="flex flex-col gap-2 md:col-span-12 sm:flex-row sm:items-center sm:justify-between">
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs font-semibold text-indigo-200">
+                          Page size
+                        </span>
+                        <select
+                          value={pageSize}
+                          onChange={(e) =>
+                            setPageSize(Number(e.target.value) as any)
+                          }
+                          className="h-10 rounded-xl border border-white/20 bg-white/10 px-3 text-sm text-white outline-none transition focus:border-violet-300 focus:ring-2 focus:ring-violet-300/30"
+                        >
+                          <option value={10}>10</option>
+                          <option value={20}>20</option>
+                          <option value={50}>50</option>
+                        </select>
+
+                        <button
+                          onClick={clearFilters}
+                          className="h-10 rounded-xl border border-white/20 bg-white/10 px-4 text-sm font-semibold text-slate-100 hover:bg-white/20"
+                        >
+                          Reset filters
+                        </button>
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        <button
+                          disabled={safePage <= 1}
+                          onClick={() => setPage((p) => Math.max(1, p - 1))}
+                          className="h-10 rounded-xl border border-white/20 bg-white/10 px-3 text-sm font-semibold text-slate-100 hover:bg-white/20 disabled:opacity-50"
+                        >
+                          Prev
+                        </button>
+                        <span className="text-sm text-indigo-200">
+                          Page <b>{safePage}</b> of <b>{totalPages}</b>
+                        </span>
+                        <button
+                          disabled={safePage >= totalPages}
+                          onClick={() =>
+                            setPage((p) => Math.min(totalPages, p + 1))
+                          }
+                          className="h-10 rounded-xl border border-white/20 bg-white/10 px-3 text-sm font-semibold text-slate-100 hover:bg-white/20 disabled:opacity-50"
+                        >
+                          Next
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
 
-              <div className="mt-4">
-                {pageItems.length === 0 ? (
-                  <div className="rounded-xl border border-white/15 bg-white/10 p-4 text-slate-100">
-                    No tickets match the current filters.
-                  </div>
-                ) : (
-                  <div className="grid gap-3">
-                    {pageItems.map((t) => (
-                      <button
-                        key={t.id}
-                        onClick={() => openDetails(t)}
-                        className="text-left"
-                        type="button"
-                      >
-                        <article className="rounded-2xl border border-white/15 bg-white/10 p-4 shadow-sm transition duration-200 hover:-translate-y-[1px] hover:border-violet-300/60 hover:bg-white/15 hover:shadow-md">
-                          <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                            <div className="min-w-0">
-                              <div className="flex flex-wrap items-center gap-2">
-                                <IdPill id={t.id} />
-                                <h3 className="text-base font-semibold text-white">
-                                  {t.title}
-                                </h3>
+                <div className="mt-4">
+                  {pageItems.length === 0 ? (
+                    <div className="rounded-xl border border-white/15 bg-white/10 p-4 text-slate-100">
+                      No tickets match the current filters.
+                    </div>
+                  ) : (
+                    <div className="grid gap-3">
+                      {pageItems.map((t) => (
+                        <button
+                          key={t.id}
+                          onClick={() => openDetails(t)}
+                          className="text-left"
+                          type="button"
+                        >
+                          <article className="rounded-2xl border border-white/15 bg-white/10 p-4 shadow-sm transition duration-200 hover:-translate-y-[1px] hover:border-violet-300/60 hover:bg-white/15 hover:shadow-md">
+                            <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                              <div className="min-w-0">
+                                <div className="flex flex-wrap items-center gap-2">
+                                  <IdPill id={t.id} />
+                                  <h3 className="text-base font-semibold text-white">
+                                    {t.title}
+                                  </h3>
+                                </div>
+
+                                {t.description ? (
+                                  <p className="mt-2 text-sm text-slate-200">
+                                    {t.description}
+                                  </p>
+                                ) : (
+                                  <p className="mt-2 text-sm text-slate-400">
+                                    No description provided.
+                                  </p>
+                                )}
+
+                                <div className="mt-3 flex flex-wrap gap-2 text-xs text-slate-300">
+                                  <span>
+                                    requester:{" "}
+                                    <span className="font-semibold text-slate-100">
+                                      {t.requester_username ?? "-"}
+                                    </span>
+                                  </span>
+                                  <span>|</span>
+                                  <span>
+                                    assignee:{" "}
+                                    <span className="font-semibold text-slate-100">
+                                      {t.assignee_username ?? "-"}
+                                    </span>
+                                  </span>
+                                </div>
                               </div>
 
-                              {t.description ? (
-                                <p className="mt-2 text-sm text-slate-200">
-                                  {t.description}
-                                </p>
-                              ) : (
-                                <p className="mt-2 text-sm text-slate-400">
-                                  No description provided.
-                                </p>
-                              )}
-
-                              <div className="mt-3 flex flex-wrap gap-2 text-xs text-slate-300">
-                                <span>
-                                  requester:{" "}
-                                  <span className="font-semibold text-slate-100">
-                                    {t.requester_username ?? "-"}
-                                  </span>
-                                </span>
-                                <span>|</span>
-                                <span>
-                                  assignee:{" "}
-                                  <span className="font-semibold text-slate-100">
-                                    {t.assignee_username ?? "-"}
-                                  </span>
-                                </span>
+                              <div className="flex flex-wrap gap-2 sm:flex-col sm:items-end">
+                                <StatusBadge status={t.status} />
+                                <PriorityBadge priority={t.priority} />
                               </div>
                             </div>
+                          </article>
+                        </button>
+                      ))}
+                    </div>
+                  )}
 
-                            <div className="flex flex-wrap gap-2 sm:flex-col sm:items-end">
-                              <StatusBadge status={t.status} />
-                              <PriorityBadge priority={t.priority} />
-                            </div>
-                          </div>
-                        </article>
-                      </button>
-                    ))}
-                  </div>
-                )}
-
-                {error ? (
-                  <div className="mt-4 rounded-xl border border-rose-300/35 bg-rose-500/15 p-3 text-sm text-rose-100">
-                    {error}
-                  </div>
-                ) : null}
-              </div>
-            </section>
-          </div>
+                  {error ? (
+                    <div className="mt-4 rounded-xl border border-rose-300/35 bg-rose-500/15 p-3 text-sm text-rose-100">
+                      {error}
+                    </div>
+                  ) : null}
+                </div>
+              </section>
+            </div>
+          </main>
         </div>
-      </main>
+      </div>
 
       {/* Create Ticket Modal */}
       <Modal
@@ -926,7 +1027,6 @@ export default function App() {
           </div>
         )}
       </Modal>
-      </div>
     </div>
   );
 }
