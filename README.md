@@ -1,4 +1,4 @@
-﻿# Ticketing Portal ??
+# Ticketing Portal
 
 ![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB)
 ![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white)
@@ -10,15 +10,15 @@
 
 A full-stack ticket management platform built with Django REST Framework + React (Vite), focused on real-world support workflows: authentication, permission-aware ticket access, and fast day-to-day ticket operations.
 
-## Live Demo ??
+## Live Demo
 
-- Frontend: `https://ticketing-portal-web.vercel.app/`
-- Backend API: `https://ticketing-portal-api.vercel.app/`
-- API Docs (Swagger): `https://ticketing-portal-api.vercel.app/api/docs/`
-- OpenAPI Schema: `https://ticketing-portal-api.vercel.app/api/schema/`
-- Repository: `https://github.com/GugaValenca/ticketing-portal`
+- Frontend: [https://ticketing-portal-web.vercel.app/](https://ticketing-portal-web.vercel.app/)
+- Backend API: [https://ticketing-portal-api.vercel.app/](https://ticketing-portal-api.vercel.app/)
+- API Docs (Swagger): [https://ticketing-portal-api.vercel.app/api/docs/](https://ticketing-portal-api.vercel.app/api/docs/)
+- OpenAPI Schema: [https://ticketing-portal-api.vercel.app/api/schema/](https://ticketing-portal-api.vercel.app/api/schema/)
+- Repository: [https://github.com/GugaValenca/ticketing-portal](https://github.com/GugaValenca/ticketing-portal)
 
-## Features ?
+## Features
 
 - **JWT Authentication**: Sign-in flow with access + refresh tokens
 - **Username or Email Login**: Flexible login support on the backend
@@ -31,13 +31,13 @@ A full-stack ticket management platform built with Django REST Framework + React
 - **API Documentation**: Swagger/OpenAPI powered by `drf-spectacular`
 - **Docker-Friendly Local Setup**: Backend + PostgreSQL via `docker-compose`
 
-## Screenshots ??
+## Screenshots
 
 ![Login Screen Placeholder](https://via.placeholder.com/1280x720/f8fafc/0f172a?text=Ticketing+Portal+-+Login+Screen)
 ![Tickets Dashboard Placeholder](https://via.placeholder.com/1280x720/f1f5f9/0f172a?text=Ticketing+Portal+-+Tickets+Dashboard)
 ![Ticket Details Placeholder](https://via.placeholder.com/1280x720/e2e8f0/0f172a?text=Ticketing+Portal+-+Ticket+Details+Modal)
 
-## Installation ??
+## Installation
 
 1. Clone the repository:
 ```bash
@@ -72,7 +72,7 @@ cd ../frontend
 npm install
 ```
 
-## Usage ??
+## Usage
 
 ### Option A: Run with Docker (Backend + PostgreSQL)
 
@@ -110,40 +110,40 @@ Demo users created by `python manage.py seed`:
 - `LaisLany / Lais@12345`
 - `GugaTampa / @Tampa5000`
 
-## Project Structure ???
+## Project Structure
 
 ```bash
 ticketing-portal/
-+-- backend/
-¦   +-- api/
-¦   ¦   +-- index.py
-¦   +-- config/
-¦   ¦   +-- settings.py
-¦   ¦   +-- urls.py
-¦   +-- tickets/
-¦   ¦   +-- management/commands/seed.py
-¦   ¦   +-- models.py
-¦   ¦   +-- serializers.py
-¦   ¦   +-- permissions.py
-¦   ¦   +-- views.py
-¦   ¦   +-- auth.py
-¦   ¦   +-- me.py
-¦   ¦   +-- admin.py
-¦   +-- requirements.txt
-¦   +-- vercel.json
-+-- frontend/
-¦   +-- src/
-¦   ¦   +-- components/
-¦   ¦   +-- lib/api.ts
-¦   ¦   +-- App.tsx
-¦   ¦   +-- main.tsx
-¦   +-- package.json
-¦   +-- vercel.json
-+-- docker-compose.yml
-+-- README.md
+|-- backend/
+|   |-- api/
+|   |   |-- index.py
+|   |-- config/
+|   |   |-- settings.py
+|   |   |-- urls.py
+|   |-- tickets/
+|   |   |-- management/commands/seed.py
+|   |   |-- models.py
+|   |   |-- serializers.py
+|   |   |-- permissions.py
+|   |   |-- views.py
+|   |   |-- auth.py
+|   |   |-- me.py
+|   |   |-- admin.py
+|   |-- requirements.txt
+|   |-- vercel.json
+|-- frontend/
+|   |-- src/
+|   |   |-- components/
+|   |   |-- lib/api.ts
+|   |   |-- App.tsx
+|   |   |-- main.tsx
+|   |-- package.json
+|   |-- vercel.json
+|-- docker-compose.yml
+|-- README.md
 ```
 
-## Key Technical Highlights ??
+## Key Technical Highlights
 
 - Built a **full authentication cycle** with JWT + refresh token rotation
 - Implemented **permission-aware data access** in DRF for realistic multi-role behavior
@@ -151,7 +151,7 @@ ticketing-portal/
 - Structured backend for deployment with **Vercel Python serverless entrypoint**
 - Improved maintainability with practical admin configuration, clear serializers, and explicit permission classes
 
-## Technologies Used ???
+## Technologies Used
 
 - **Frontend**: React 19, TypeScript, Vite, Axios, Tailwind CSS
 - **Backend**: Python 3.12+, Django 6, Django REST Framework, SimpleJWT, drf-spectacular
@@ -160,7 +160,7 @@ ticketing-portal/
 - **Deployment**: Vercel (frontend + backend)
 - **Containerization**: Docker, Docker Compose
 
-## Future Improvements ??
+## Future Improvements
 
 - Add backend automated tests for auth and permission flows
 - Add ticket assignment workflow UI for admin/staff actions
@@ -168,7 +168,7 @@ ticketing-portal/
 - Improve observability with structured logging and basic error monitoring
 - Add CI checks for linting/tests before deployment
 
-## Contributing ??
+## Contributing
 
 1. Fork the project
 2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
@@ -176,11 +176,11 @@ ticketing-portal/
 4. Push to the branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
-## License ??
+## License
 
 This project is licensed under the MIT License.
 
-## Contact ??
+## Contact
 
 **Gustavo Valenca**
 
@@ -192,5 +192,4 @@ This project is licensed under the MIT License.
 
 ---
 
-? **If you found this project helpful, please give it a star!**
-
+**If you found this project helpful, please give it a star!**
