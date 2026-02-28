@@ -35,7 +35,14 @@ SECRET_KEY = os.getenv(
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env_bool("DEBUG", default=True)
 
-ALLOWED_HOSTS = env_list("ALLOWED_HOSTS", default=["127.0.0.1", "localhost"])
+ALLOWED_HOSTS = env_list(
+    "ALLOWED_HOSTS",
+    default=[
+        "127.0.0.1",
+        "localhost",
+        ".vercel.app",
+    ],
+)
 
 
 # Application definition
@@ -168,6 +175,7 @@ CORS_ALLOWED_ORIGINS = env_list(
     default=[
         "http://localhost:5173",
         "http://127.0.0.1:5173",
+        "https://ticketing-portal-web.vercel.app",
     ],
 )
 
