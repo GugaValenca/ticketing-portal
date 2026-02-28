@@ -236,6 +236,7 @@ export default function App() {
   const [priorityFilter, setPriorityFilter] = useState<
     "all" | "low" | "medium" | "high" | "urgent"
   >("all");
+  const [hideResolved, setHideResolved] = useState(false);
 
   // Sorting + pagination
   const [sortKey, setSortKey] = useState<SortKey>("newest");
@@ -329,6 +330,7 @@ export default function App() {
     setQuery("");
     setStatusFilter("all");
     setPriorityFilter("all");
+    setHideResolved(false);
     setSortKey("newest");
     setSidebarFilter("inbox");
     setPage(1);
@@ -342,7 +344,7 @@ export default function App() {
   // reset page on filter/sort/pageSize changes
   useEffect(() => {
     setPage(1);
-  }, [debouncedQuery, statusFilter, priorityFilter, sortKey, pageSize]);
+  }, [debouncedQuery, statusFilter, priorityFilter, hideResolved, sortKey, pageSize]);
 
   const filteredSortedTickets = useMemo(() => {
     const q = debouncedQuery.trim().toLowerCase();
@@ -357,6 +359,7 @@ export default function App() {
         statusFilter === "all" ? true : t.status === statusFilter;
       const matchesPriority =
         priorityFilter === "all" ? true : t.priority === priorityFilter;
+      const matchesResolvedVisibility = hideResolved ? t.status !== "resolved" : true;
       const matchesSidebar =
         sidebarFilter === "inbox"
           ? true
@@ -370,7 +373,13 @@ export default function App() {
                 t.status !== "resolved" &&
                 t.status !== "closed";
 
-      return matchesQuery && matchesStatus && matchesPriority && matchesSidebar;
+      return (
+        matchesQuery &&
+        matchesStatus &&
+        matchesPriority &&
+        matchesResolvedVisibility &&
+        matchesSidebar
+      );
     });
 
     return [...filtered].sort((a, b) => {
@@ -399,7 +408,7 @@ export default function App() {
         new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
       );
     });
-  }, [tickets, debouncedQuery, statusFilter, priorityFilter, sortKey, sidebarFilter, me]);
+  }, [tickets, debouncedQuery, statusFilter, priorityFilter, hideResolved, sortKey, sidebarFilter, me]);
 
   const total = filteredSortedTickets.length;
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
@@ -941,6 +950,19 @@ export default function App() {
                           className="h-10 rounded-xl border border-slate-300 bg-white px-4 text-sm font-semibold text-slate-700 hover:bg-slate-50"
                         >
                           Reset filters
+                        </button>
+
+                        <button
+                          onClick={() => setHideResolved((prev) => !prev)}
+                          className={cx(
+                            "h-10 rounded-xl border px-4 text-sm font-semibold transition",
+                            hideResolved
+                              ? "border-violet-300 bg-violet-100 text-violet-800 hover:bg-violet-200"
+                              : "border-slate-300 bg-white text-slate-700 hover:bg-slate-50",
+                          )}
+                          aria-pressed={hideResolved}
+                        >
+                          {hideResolved ? "Showing unresolved only" : "Hide resolved"}
                         </button>
                       </div>
 
