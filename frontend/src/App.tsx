@@ -165,11 +165,11 @@ const STATUS_ORDER: Record<string, number> = {
 
 function StatTile({ label, value }: { label: string; value: string | number }) {
   return (
-    <div className="rounded-xl border border-white/20 bg-white/10 px-3 py-2 shadow-lg shadow-[#12072c]/25">
-      <div className="text-[11px] font-semibold uppercase tracking-wide text-indigo-200">
+    <div className="rounded-xl border border-indigo-100 bg-white px-3 py-2 shadow-sm">
+      <div className="text-[11px] font-semibold uppercase tracking-wide text-indigo-500">
         {label}
       </div>
-      <div className="mt-0.5 text-base font-semibold text-white">
+      <div className="mt-0.5 text-base font-semibold text-slate-900">
         {value}
       </div>
     </div>
@@ -626,9 +626,9 @@ export default function App() {
 
           <main className="flex-1 p-4 sm:p-6">
             <div className="space-y-4">
-              <section className="rounded-xl border border-white/15 bg-[#1a0f35]/75 p-4 shadow-lg shadow-indigo-900/25">
-                <h1 className="text-lg font-semibold text-white">{COMPANY_NAME} Dashboard</h1>
-                <p className="mt-1 text-sm text-indigo-200/85">{COMPANY_TAGLINE}</p>
+              <section className="rounded-xl border border-indigo-100 bg-white/95 p-4 shadow-sm">
+                <h1 className="text-lg font-semibold text-slate-900">{COMPANY_NAME} Dashboard</h1>
+                <p className="mt-1 text-sm text-slate-600">{COMPANY_TAGLINE}</p>
 
                 <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
                   <StatTile label="Inbox" value={dashboardStats.inbox} />
@@ -639,18 +639,18 @@ export default function App() {
                 </div>
               </section>
 
-              <section className="rounded-xl border border-white/15 bg-[#1a0f35]/75 p-4 shadow-lg shadow-indigo-900/25">
-                <h2 className="text-sm font-semibold uppercase tracking-wide text-indigo-200">
+              <section className="rounded-xl border border-indigo-100 bg-white/95 p-4 shadow-sm">
+                <h2 className="text-sm font-semibold uppercase tracking-wide text-indigo-600">
                   Report
                 </h2>
                 <div className="mt-3 grid gap-3 sm:grid-cols-[160px_160px_auto]">
                   <input
                     type="date"
-                    className="h-10 rounded-lg border border-white/20 bg-white/10 px-3 text-sm text-white outline-none focus:border-violet-300 focus:ring-2 focus:ring-violet-300/30"
+                    className="h-10 rounded-lg border border-slate-300 bg-white px-3 text-sm text-slate-900 outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-200"
                   />
                   <input
                     type="date"
-                    className="h-10 rounded-lg border border-white/20 bg-white/10 px-3 text-sm text-white outline-none focus:border-violet-300 focus:ring-2 focus:ring-violet-300/30"
+                    className="h-10 rounded-lg border border-slate-300 bg-white px-3 text-sm text-slate-900 outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-200"
                   />
                   <div className="flex items-center">
                     <button
@@ -663,16 +663,16 @@ export default function App() {
                 </div>
               </section>
 
-              <section className="rounded-xl border border-white/15 bg-[#1a0f35]/75 p-4 shadow-lg shadow-indigo-900/25">
+              <section className="rounded-xl border border-indigo-100 bg-white/95 p-4 shadow-sm">
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                   <div>
-                    <h2 className="text-xl font-semibold text-white">Tickets</h2>
-                    <p className="mt-1 text-sm text-indigo-200/90">
+                    <h2 className="text-xl font-semibold text-slate-900">Tickets</h2>
+                    <p className="mt-1 text-sm text-slate-600">
                       Search, filter, sort, and update tickets in one place.
                     </p>
                   </div>
 
-                  <div className="text-sm text-indigo-200/80">
+                  <div className="text-sm text-slate-500">
                     {loading
                       ? "Loading tickets..."
                       : total === 0
@@ -681,31 +681,31 @@ export default function App() {
                   </div>
                 </div>
 
-                <div className="mt-4 rounded-xl border border-white/15 bg-white/5 p-3 sm:p-4">
+                <div className="mt-4 rounded-xl border border-indigo-100 bg-indigo-50/40 p-3 sm:p-4">
                   <div className="grid gap-3 md:grid-cols-12">
                     <div className="md:col-span-5">
-                      <label className="text-xs font-semibold text-indigo-200">
+                      <label className="text-xs font-semibold text-indigo-700">
                         Search tickets
                       </label>
                       <input
                         value={query}
                         onChange={(e) => setQuery(e.target.value)}
                         placeholder="Search by title or description..."
-                        className="mt-1 h-11 w-full rounded-xl border border-white/20 bg-white/10 px-3 text-sm text-white outline-none transition placeholder:text-slate-300 focus:border-violet-300 focus:ring-2 focus:ring-violet-300/30"
+                        className="mt-1 h-11 w-full rounded-xl border border-slate-300 bg-white px-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-500 focus:border-violet-400 focus:ring-2 focus:ring-violet-200"
                       />
-                      <div className="mt-1 text-[11px] text-indigo-200/75">
+                      <div className="mt-1 text-[11px] text-slate-500">
                         Results update after 300ms to keep interactions smooth.
                       </div>
                     </div>
 
                     <div className="md:col-span-2">
-                      <label className="text-xs font-semibold text-indigo-200">
+                      <label className="text-xs font-semibold text-indigo-700">
                         Status
                       </label>
                       <select
                         value={statusFilter}
                         onChange={(e) => setStatusFilter(e.target.value as any)}
-                        className="mt-1 h-11 w-full rounded-xl border border-white/20 bg-white/10 px-3 text-sm text-white outline-none transition placeholder:text-slate-300 focus:border-violet-300 focus:ring-2 focus:ring-violet-300/30"
+                        className="mt-1 h-11 w-full rounded-xl border border-slate-300 bg-white px-3 text-sm text-slate-900 outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-200"
                       >
                         <option value="all">All</option>
                         <option value="open">open</option>
@@ -716,13 +716,13 @@ export default function App() {
                     </div>
 
                     <div className="md:col-span-2">
-                      <label className="text-xs font-semibold text-indigo-200">
+                      <label className="text-xs font-semibold text-indigo-700">
                         Priority
                       </label>
                       <select
                         value={priorityFilter}
                         onChange={(e) => setPriorityFilter(e.target.value as any)}
-                        className="mt-1 h-11 w-full rounded-xl border border-white/20 bg-white/10 px-3 text-sm text-white outline-none transition placeholder:text-slate-300 focus:border-violet-300 focus:ring-2 focus:ring-violet-300/30"
+                        className="mt-1 h-11 w-full rounded-xl border border-slate-300 bg-white px-3 text-sm text-slate-900 outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-200"
                       >
                         <option value="all">All</option>
                         <option value="low">low</option>
@@ -733,13 +733,13 @@ export default function App() {
                     </div>
 
                     <div className="md:col-span-3">
-                      <label className="text-xs font-semibold text-indigo-200">
+                      <label className="text-xs font-semibold text-indigo-700">
                         Sort by
                       </label>
                       <select
                         value={sortKey}
                         onChange={(e) => setSortKey(e.target.value as any)}
-                        className="mt-1 h-11 w-full rounded-xl border border-white/20 bg-white/10 px-3 text-sm text-white outline-none transition placeholder:text-slate-300 focus:border-violet-300 focus:ring-2 focus:ring-violet-300/30"
+                        className="mt-1 h-11 w-full rounded-xl border border-slate-300 bg-white px-3 text-sm text-slate-900 outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-200"
                       >
                         <option value="newest">Newest</option>
                         <option value="oldest">Oldest</option>
@@ -750,7 +750,7 @@ export default function App() {
 
                     <div className="flex flex-col gap-2 md:col-span-12 sm:flex-row sm:items-center sm:justify-between">
                       <div className="flex items-center gap-2">
-                        <span className="text-xs font-semibold text-indigo-200">
+                        <span className="text-xs font-semibold text-indigo-700">
                           Page size
                         </span>
                         <select
@@ -758,7 +758,7 @@ export default function App() {
                           onChange={(e) =>
                             setPageSize(Number(e.target.value) as any)
                           }
-                          className="h-10 rounded-xl border border-white/20 bg-white/10 px-3 text-sm text-white outline-none transition focus:border-violet-300 focus:ring-2 focus:ring-violet-300/30"
+                          className="h-10 rounded-xl border border-slate-300 bg-white px-3 text-sm text-slate-900 outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-200"
                         >
                           <option value={10}>10</option>
                           <option value={20}>20</option>
@@ -767,7 +767,7 @@ export default function App() {
 
                         <button
                           onClick={clearFilters}
-                          className="h-10 rounded-xl border border-white/20 bg-white/10 px-4 text-sm font-semibold text-slate-100 hover:bg-white/20"
+                          className="h-10 rounded-xl border border-slate-300 bg-white px-4 text-sm font-semibold text-slate-700 hover:bg-slate-50"
                         >
                           Reset filters
                         </button>
@@ -777,11 +777,11 @@ export default function App() {
                         <button
                           disabled={safePage <= 1}
                           onClick={() => setPage((p) => Math.max(1, p - 1))}
-                          className="h-10 rounded-xl border border-white/20 bg-white/10 px-3 text-sm font-semibold text-slate-100 hover:bg-white/20 disabled:opacity-50"
+                          className="h-10 rounded-xl border border-slate-300 bg-white px-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50"
                         >
                           Prev
                         </button>
-                        <span className="text-sm text-indigo-200">
+                        <span className="text-sm text-slate-600">
                           Page <b>{safePage}</b> of <b>{totalPages}</b>
                         </span>
                         <button
@@ -789,7 +789,7 @@ export default function App() {
                           onClick={() =>
                             setPage((p) => Math.min(totalPages, p + 1))
                           }
-                          className="h-10 rounded-xl border border-white/20 bg-white/10 px-3 text-sm font-semibold text-slate-100 hover:bg-white/20 disabled:opacity-50"
+                          className="h-10 rounded-xl border border-slate-300 bg-white px-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50"
                         >
                           Next
                         </button>
@@ -800,7 +800,7 @@ export default function App() {
 
                 <div className="mt-4">
                   {pageItems.length === 0 ? (
-                    <div className="rounded-xl border border-white/15 bg-white/10 p-4 text-slate-100">
+                    <div className="rounded-xl border border-slate-200 bg-white p-4 text-slate-700">
                       No tickets match the current filters.
                     </div>
                   ) : (
@@ -812,37 +812,37 @@ export default function App() {
                           className="text-left"
                           type="button"
                         >
-                          <article className="rounded-2xl border border-white/15 bg-white/10 p-4 shadow-sm transition duration-200 hover:-translate-y-[1px] hover:border-violet-300/60 hover:bg-white/15 hover:shadow-md">
+                          <article className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition duration-200 hover:-translate-y-[1px] hover:border-violet-300 hover:shadow-md">
                             <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                               <div className="min-w-0">
                                 <div className="flex flex-wrap items-center gap-2">
                                   <IdPill id={t.id} />
-                                  <h3 className="text-base font-semibold text-white">
+                                  <h3 className="text-base font-semibold text-slate-900">
                                     {t.title}
                                   </h3>
                                 </div>
 
                                 {t.description ? (
-                                  <p className="mt-2 text-sm text-slate-200">
+                                  <p className="mt-2 text-sm text-slate-700">
                                     {t.description}
                                   </p>
                                 ) : (
-                                  <p className="mt-2 text-sm text-slate-400">
+                                  <p className="mt-2 text-sm text-slate-500">
                                     No description provided.
                                   </p>
                                 )}
 
-                                <div className="mt-3 flex flex-wrap gap-2 text-xs text-slate-300">
+                                <div className="mt-3 flex flex-wrap gap-2 text-xs text-slate-500">
                                   <span>
                                     requester:{" "}
-                                    <span className="font-semibold text-slate-100">
+                                    <span className="font-semibold text-slate-700">
                                       {t.requester_username ?? "-"}
                                     </span>
                                   </span>
                                   <span>|</span>
                                   <span>
                                     assignee:{" "}
-                                    <span className="font-semibold text-slate-100">
+                                    <span className="font-semibold text-slate-700">
                                       {t.assignee_username ?? "-"}
                                     </span>
                                   </span>
@@ -911,14 +911,14 @@ export default function App() {
             </label>
             <select
               value={newPriority}
-              onChange={(e) => setNewPriority(e.target.value as any)}
-              className="h-11 rounded-xl border border-white/20 bg-white/10 px-3 text-sm text-white outline-none transition focus:border-violet-300 focus:ring-2 focus:ring-violet-300/30"
+              disabled
+              className="h-11 cursor-not-allowed rounded-xl border border-slate-300 bg-slate-100 px-3 text-sm text-slate-600 outline-none"
             >
-              <option value="low">low</option>
               <option value="medium">medium</option>
-              <option value="high">high</option>
-              <option value="urgent">urgent</option>
             </select>
+            <p className="text-xs text-slate-400">
+              Priority is managed by administrators in the admin panel.
+            </p>
           </div>
 
           {createError ? (
@@ -995,7 +995,7 @@ export default function App() {
                     value={selected.status}
                     disabled={detailsSaving}
                     onChange={(e) => saveDetails({ status: e.target.value })}
-                    className="h-11 rounded-xl border border-white/20 bg-white/10 px-3 text-sm text-white outline-none transition focus:border-violet-300 focus:ring-2 focus:ring-violet-300/30 disabled:opacity-60"
+                    className="h-11 rounded-xl border border-slate-300 bg-white px-3 text-sm text-slate-900 outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-200 disabled:opacity-60"
                   >
                     <option value="open">open</option>
                     <option value="in_progress">in_progress</option>
@@ -1013,15 +1013,17 @@ export default function App() {
                   </label>
                   <select
                     value={selected.priority}
-                    disabled={detailsSaving}
-                    onChange={(e) => saveDetails({ priority: e.target.value })}
-                    className="h-11 rounded-xl border border-white/20 bg-white/10 px-3 text-sm text-white outline-none transition focus:border-violet-300 focus:ring-2 focus:ring-violet-300/30 disabled:opacity-60"
+                    disabled
+                    className="h-11 cursor-not-allowed rounded-xl border border-slate-300 bg-slate-100 px-3 text-sm text-slate-600 outline-none"
                   >
                     <option value="low">low</option>
                     <option value="medium">medium</option>
                     <option value="high">high</option>
                     <option value="urgent">urgent</option>
                   </select>
+                  <p className="text-[11px] text-slate-400">
+                    Priority updates are restricted to the admin panel.
+                  </p>
                   <div className="mt-1">
                     <PriorityBadge priority={selected.priority} />
                   </div>
