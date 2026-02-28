@@ -1,4 +1,4 @@
-# Ticketing Portal 🎫
+﻿# Ticketing Portal
 
 ![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB)
 ![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white)
@@ -8,196 +8,199 @@
 ![Vercel](https://img.shields.io/badge/deployed%20on-vercel-black?style=for-the-badge&logo=vercel)
 ![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)
 
-A full-stack ticket management platform built with Django REST Framework + React (Vite).  
-It focuses on practical support-team workflows: authentication, role-aware ticket access, and fast ticket lifecycle management in a clean UI.
+A full-stack ticket management platform built with Django REST Framework and React (Vite), focused on practical support workflows.
+It combines authentication, role-aware ticket access, and a clean UI for creating, tracking, and updating tickets.
 
-## Live Demo 🌐
+## Live Demo
 
-- **Main Demo (Frontend):** https://ticketing-portal-web.vercel.app/
-- **Backend API:** https://ticketing-portal-api.vercel.app/
+- **Main Demo:** https://ticketing-portal-web.vercel.app/
+- **API:** https://ticketing-portal-api.vercel.app/
 - **API Docs (Swagger):** https://ticketing-portal-api.vercel.app/api/docs/
 - **OpenAPI Schema:** https://ticketing-portal-api.vercel.app/api/schema/
 - **Repository:** https://github.com/GugaValenca/ticketing-portal
 
-## Demo Access 🔐
+## Overview
 
-Use these demo accounts in the public frontend login form:
+Ticketing Portal is a job-ready portfolio project designed to demonstrate real fullstack implementation quality:
 
-- `admin / Admin@12345`
+- A React + TypeScript frontend with filtering, sorting, and pagination UX
+- A Django REST API with JWT authentication and permission-aware access rules
+- Production deployment on Vercel for frontend and backend
+- Docker-based local setup for backend and PostgreSQL
 
-Administrative tools are reserved for internal management and development use.  
-The public demo is focused on the main user workflow through the frontend app.
+The public demo is focused on the main user workflow. Administrative tools are reserved for internal management and development use.
 
-## Overview 📌
+## Features
 
-Ticketing Portal is a job-ready portfolio project designed to reflect real full-stack implementation work:
-- JWT authentication with refresh flow
-- backend permission rules for requester/assignee/staff roles
-- practical CRUD operations and ticket updates in the UI
-- production deployment for both frontend and backend on Vercel
+- JWT authentication with refresh token flow
+- Login support using username or email
+- Automatic token refresh using Axios interceptors
+- Role-aware ticket access for requester, assignee, and staff/superuser rules
+- Ticket CRUD via DRF ModelViewSet
+- Status and priority updates in the ticket details flow
+- Debounced search, status/priority filters, sorting, and pagination
+- API documentation with drf-spectacular (Swagger/OpenAPI)
+- Seed command for development/demo dataset creation
 
-It demonstrates strong fundamentals in API design, frontend integration, and deployment reliability.
-
-## Features ✨
-
-- JWT login with access/refresh tokens
-- Login using username **or** email
-- Automatic token refresh with Axios interceptors
-- Role-aware ticket visibility (`requester`, `assignee`, `staff/superuser`)
-- Ticket CRUD with DRF `ModelViewSet`
-- Inline status and priority updates
-- Debounced search, filters, sorting, and pagination
-- Swagger/OpenAPI documentation with `drf-spectacular`
-- Seed command for demo users and sample tickets
-- Docker setup for backend + PostgreSQL local development
-
-## Screenshots 📸
+## Screenshots
 
 ![Ticketing Portal - Login](https://via.placeholder.com/1280x720/f8fafc/0f172a?text=Ticketing+Portal+-+Login)
-![Ticketing Portal - Dashboard](https://via.placeholder.com/1280x720/f1f5f9/0f172a?text=Ticketing+Portal+-+Dashboard)
+![Ticketing Portal - Ticket Dashboard](https://via.placeholder.com/1280x720/f1f5f9/0f172a?text=Ticketing+Portal+-+Ticket+Dashboard)
 ![Ticketing Portal - Ticket Details](https://via.placeholder.com/1280x720/e2e8f0/0f172a?text=Ticketing+Portal+-+Ticket+Details)
 
-## Installation 🚀
+## Installation
 
 1. Clone the repository:
+
 ```bash
 git clone https://github.com/GugaValenca/ticketing-portal.git
 cd ticketing-portal
 ```
 
-2. Backend setup (Python/pip):
+2. Backend setup:
+
 ```bash
 cd backend
 python -m venv .venv
 ```
 
 Windows:
+
 ```bash
 .venv\Scripts\activate
 ```
 
 macOS/Linux:
+
 ```bash
 source .venv/bin/activate
 ```
 
 Install backend dependencies:
+
 ```bash
 pip install -r requirements.txt
 ```
 
-3. Frontend setup (Node/npm):
+3. Frontend setup:
+
 ```bash
 cd ../frontend
 npm install
 ```
 
-## Usage 💡
+## Usage
 
-### Public recruiter flow
-1. Open the live demo: `https://ticketing-portal-web.vercel.app/`
-2. Sign in with one of the demo credentials above
-3. Test the main workflow: list, filter, create, and update tickets
+### Public Demo Flow
 
-### Local development flow
+1. Open the main demo URL
+2. Sign in with safe public demo credentials when available
+3. Create, filter, and update tickets to evaluate the full workflow
 
-#### Option A: Docker (backend + PostgreSQL)
-From repository root:
+### Demo Access
+
+If demo access is required and no public credentials are documented, use placeholders:
+
+- Username or Email: `[DEMO_EMAIL_OR_USERNAME]`
+- Password: `[DEMO_PASSWORD]`
+
+### Local Development
+
+Option A: Docker backend + PostgreSQL
+
 ```bash
 docker compose up --build
 ```
 
-#### Option B: Run apps separately
+Option B: run backend and frontend separately
 
 Backend:
+
 ```bash
 cd backend
 python manage.py migrate
-python manage.py seed
 python manage.py runserver
 ```
 
 Frontend:
+
 ```bash
 cd frontend
 npm run dev
 ```
 
-Optional frontend env:
-```env
-VITE_API_BASE_URL=http://127.0.0.1:8001
-```
-
-## Project Structure 🏗️
+## Project Structure
 
 ```bash
 ticketing-portal/
-+-- backend/
-¦   +-- api/
-¦   ¦   +-- index.py
-¦   +-- config/
-¦   ¦   +-- settings.py
-¦   ¦   +-- urls.py
-¦   +-- tickets/
-¦   ¦   +-- management/commands/seed.py
-¦   ¦   +-- auth.py
-¦   ¦   +-- models.py
-¦   ¦   +-- serializers.py
-¦   ¦   +-- permissions.py
-¦   ¦   +-- views.py
-¦   ¦   +-- me.py
-¦   +-- requirements.txt
-¦   +-- vercel.json
-+-- frontend/
-¦   +-- src/
-¦   ¦   +-- components/
-¦   ¦   +-- lib/api.ts
-¦   ¦   +-- App.tsx
-¦   ¦   +-- main.tsx
-¦   +-- package.json
-¦   +-- vercel.json
-+-- docker-compose.yml
-+-- README.md
+|-- backend/
+|   |-- api/
+|   |   |-- index.py
+|   |-- config/
+|   |   |-- settings.py
+|   |   |-- urls.py
+|   |-- tickets/
+|   |   |-- management/commands/seed.py
+|   |   |-- auth.py
+|   |   |-- models.py
+|   |   |-- serializers.py
+|   |   |-- permissions.py
+|   |   |-- views.py
+|   |   |-- me.py
+|   |   |-- admin.py
+|   |-- requirements.txt
+|   |-- vercel.json
+|-- frontend/
+|   |-- src/
+|   |   |-- components/
+|   |   |-- lib/api.ts
+|   |   |-- App.tsx
+|   |   |-- main.tsx
+|   |-- package.json
+|   |-- vercel.json
+|-- docker-compose.yml
+|-- README.md
 ```
 
-## Key Technical Highlights / What I Learned 🎯
+## Key Technical Highlights / What I Learned
 
-- Building an end-to-end JWT auth flow with refresh token handling
-- Implementing role-based access logic in DRF permissions/querysets
-- Integrating frontend state and API error handling for reliable UX
-- Structuring a monorepo deployment flow on Vercel (frontend + backend)
-- Improving performance and maintainability with practical backend optimizations (`select_related`) and clear app structure
+- Implementing end-to-end JWT auth with automatic refresh handling
+- Building practical permission logic for role-aware access in DRF
+- Connecting frontend UX state to secure backend flows with resilient API handling
+- Structuring Vercel deployment for a monorepo with separate frontend/backend apps
+- Improving backend performance with query optimization (`select_related`)
 
-## Technologies Used 🛠️
+## Technologies Used
 
 - **Frontend:** React 19, TypeScript, Vite, Axios, Tailwind CSS
 - **Backend:** Python 3.12+, Django 6, Django REST Framework, SimpleJWT, drf-spectacular
-- **Database:** PostgreSQL (Docker/production), SQLite (local fallback)
-- **Testing:** Vitest (frontend)
-- **DevOps/Deploy:** Docker, Docker Compose, Vercel
+- **Database:** PostgreSQL (production/Docker), SQLite (local fallback)
+- **Testing:** Vitest
+- **Deployment:** Vercel
+- **Containerization:** Docker, Docker Compose
 - **Package Managers:** npm (frontend), pip (backend)
 
-## Future Improvements 🔮
+## Future Improvements
 
-- Add backend automated tests for auth and permission scenarios
-- Add better ticket assignment workflow for staff users
-- Add audit trails for status/priority changes
-- Add CI checks for linting/tests before production deploy
-- Add richer observability for API and frontend runtime errors
+- Add backend automated tests for auth and permission behavior
+- Expand ticket assignment and workflow controls in the UI
+- Add richer audit history for key ticket updates
+- Add CI checks for linting/tests on pull requests
+- Improve observability for API and frontend runtime errors
 
-## Contributing 🤝
+## Contributing
 
-1. Fork the project  
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)  
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)  
-4. Push to the branch (`git push origin feature/AmazingFeature`)  
+1. Fork the project
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m "Add some AmazingFeature"`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
-## License 📄
+## License
 
 This project is licensed under the MIT License.
 
-## Contact 📬
+## Contact
 
 **Gustavo Valenca**
 
@@ -209,4 +212,4 @@ This project is licensed under the MIT License.
 
 ---
 
-? **If you found this project helpful, please give it a star!**
+If you found this project helpful, please give it a star.

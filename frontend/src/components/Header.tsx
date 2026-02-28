@@ -29,10 +29,10 @@ function RolePill({ user }: { user: Me }) {
       : "User";
 
   const style = user.is_superuser
-    ? "border-amber-200 bg-amber-50 text-amber-800"
+    ? "border-amber-300/50 bg-amber-200/20 text-amber-100"
     : user.is_staff
-      ? "border-indigo-200 bg-indigo-50 text-indigo-800"
-      : "border-slate-200 bg-slate-50 text-slate-700";
+      ? "border-indigo-300/50 bg-indigo-300/20 text-indigo-100"
+      : "border-white/30 bg-white/10 text-slate-100";
 
   return (
     <span
@@ -67,11 +67,11 @@ function ActionButton({
   title?: string;
 }) {
   const base =
-    "inline-flex h-10 items-center justify-center rounded-xl px-3 text-sm font-semibold transition duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50";
+    "inline-flex h-10 items-center justify-center rounded-xl px-3 text-sm font-semibold transition duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300/70 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent disabled:cursor-not-allowed disabled:opacity-50";
   const style =
     variant === "primary"
-      ? "bg-slate-900 text-white shadow-sm hover:bg-slate-800 active:bg-slate-950"
-      : "border border-slate-200 bg-white text-slate-800 shadow-sm hover:border-slate-300 hover:bg-slate-50";
+      ? "bg-gradient-to-r from-violet-600 to-indigo-500 text-white shadow-lg shadow-indigo-900/35 hover:from-violet-500 hover:to-indigo-400 active:from-violet-700 active:to-indigo-600"
+      : "border border-white/30 bg-white/10 text-slate-100 shadow-sm hover:border-white/50 hover:bg-white/15";
 
   return (
     <button
@@ -98,20 +98,20 @@ export default function Header({
   onNewTicket: () => void;
 }) {
   return (
-    <header className="sticky top-0 z-40 border-b border-slate-200/80 bg-white/80 shadow-sm backdrop-blur-xl">
+    <header className="sticky top-0 z-40 border-b border-white/10 bg-[#170d2f]/75 shadow-lg shadow-[#11052a]/30 backdrop-blur-xl">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <div className="flex min-h-[72px] items-center justify-between gap-3 py-3">
           {/* Brand */}
           <div className="flex min-w-0 items-center gap-3.5">
-            <div className="grid h-10 w-10 place-items-center rounded-2xl bg-gradient-to-br from-slate-900 to-slate-700 text-white shadow-sm ring-1 ring-slate-800/40">
+            <div className="grid h-10 w-10 place-items-center rounded-2xl bg-gradient-to-br from-fuchsia-600 via-violet-600 to-indigo-500 text-white shadow-lg shadow-indigo-900/40 ring-1 ring-white/20">
               <span className="text-sm font-black tracking-tight">TP</span>
             </div>
 
             <div className="min-w-0">
-              <div className="truncate text-[15px] font-semibold tracking-tight text-slate-900">
+              <div className="truncate text-[15px] font-semibold tracking-tight text-white">
                 Ticketing Portal
               </div>
-              <div className="truncate text-xs text-slate-500">
+              <div className="truncate text-xs text-slate-300">
                 Customer support workspace for Django REST + React
               </div>
             </div>
@@ -137,16 +137,16 @@ export default function Header({
             </ActionButton>
 
             {user ? (
-              <div className="ml-1 flex items-center gap-2 rounded-2xl border border-slate-200/90 bg-white/95 px-2.5 py-1.5 shadow-sm ring-1 ring-slate-100">
-                <div className="grid h-9 w-9 place-items-center rounded-xl bg-slate-100 text-xs font-bold text-slate-700 ring-1 ring-slate-200">
+              <div className="ml-1 flex items-center gap-2 rounded-2xl border border-white/20 bg-white/10 px-2.5 py-1.5 shadow-sm ring-1 ring-white/10">
+                <div className="grid h-9 w-9 place-items-center rounded-xl bg-white/15 text-xs font-bold text-white ring-1 ring-white/20">
                   {initials(user.username)}
                 </div>
 
                 <div className="hidden min-w-0 sm:block sm:max-w-[220px]">
-                  <div className="truncate text-xs font-semibold text-slate-900">
+                  <div className="truncate text-xs font-semibold text-white">
                     {user.username}
                   </div>
-                  <div className="truncate text-[11px] text-slate-500">
+                  <div className="truncate text-[11px] text-slate-300">
                     {user.email || "No email"}
                   </div>
                 </div>
@@ -164,7 +164,7 @@ export default function Header({
                 </ActionButton>
               </div>
             ) : (
-              <span className="inline-flex h-9 items-center rounded-full border border-slate-200 bg-white px-3 text-xs font-semibold text-slate-600 shadow-sm">
+              <span className="inline-flex h-9 items-center rounded-full border border-white/25 bg-white/10 px-3 text-xs font-semibold text-slate-200 shadow-sm">
                 Not signed in
               </span>
             )}
