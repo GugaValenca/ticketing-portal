@@ -47,3 +47,22 @@ class TicketSerializer(serializers.ModelSerializer):
             "requester_username",
             "assignee_username",
         ]
+
+    def validate(self, attrs):
+        # A requester may set priority/assignee while filing a new ticket
+        # (self.instance is None), but once a ticket exists, only staff
+        # can change who it's assigned to or how urgent it is - everyone
+        # else can only update its status.
+        request = self.context.get("request")
+        user = getattr(request, "user", None)
+        is_staff = bool(user and (user.is_staff or user.is_superuser))
+
+        if self.instance is not None and not is_staff:
+            if "priority" in attrs:
+                raise serializers.ValidationError(
+                    {"priority": "Only staff can change ticket priority."}
+                )
+            if "assignee" in attrs:
+                raise serializers.ValidationError({"assignee": "Only staff can reassign tickets."})
+
+        return attrs

@@ -248,6 +248,7 @@ export default function App() {
         ticket={selected}
         saving={detailsSaving}
         error={detailsError}
+        canEditPriority={!!workspace.me?.is_staff || !!workspace.me?.is_superuser}
         onClose={closeDetails}
         onStatusChange={(status) => saveDetails({ status })}
         onPriorityChange={(priority) => saveDetails({ priority })}
