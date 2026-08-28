@@ -178,12 +178,16 @@ npm run test:e2e
 
 ## Linting & Formatting
 
-Backend (black, isort, ruff - config lives in `pyproject.toml`):
+Backend (black, isort, ruff - ruff and isort read `ruff.toml` /
+`.isort.cfg`; black's flags are passed directly since a `pyproject.toml`
+here would make Vercel's Python builder switch to uv-based builds):
 
 ```bash
 cd backend
 pip install -r requirements-dev.txt
-black . && isort . && ruff check .
+black --line-length 100 --extend-exclude '/migrations/' .
+isort .
+ruff check .
 ```
 
 Frontend (eslint):
