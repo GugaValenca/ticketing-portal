@@ -1,6 +1,6 @@
 import { AxiosError, type AxiosResponse, type InternalAxiosRequestConfig } from "axios";
 import { describe, expect, it, beforeEach } from "vitest";
-import { api } from "./api";
+import { api, SESSION_EXPIRED_EVENT } from "./api";
 
 function unauthorizedResponse(
   config: InternalAxiosRequestConfig,
@@ -78,5 +78,28 @@ describe("api response interceptor", () => {
     };
 
     await expect(api.get("/api/token/refresh/")).rejects.toBeDefined();
+  });
+
+  it("dispatches a session-expired event instead of navigating when refresh also fails", async () => {
+    // Regression test: this used to call `window.location.href = "/"`,
+    // which caused a reload -> bootstrap -> 401 -> failed refresh ->
+    // reload infinite loop for a visitor with no session at all.
+    let eventFired = false;
+    window.addEventListener(SESSION_EXPIRED_EVENT, () => {
+      eventFired = true;
+    });
+
+    api.defaults.adapter = async (config) => {
+      throw new AxiosError(
+        "Unauthorized",
+        "ERR_BAD_REQUEST",
+        config,
+        undefined,
+        unauthorizedResponse(config),
+      );
+    };
+
+    await expect(api.get("/api/tickets/")).rejects.toBeDefined();
+    expect(eventFired).toBe(true);
   });
 });
