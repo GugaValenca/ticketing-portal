@@ -1,4 +1,7 @@
+import os
 import random
+import secrets
+import string
 
 from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand
@@ -6,6 +9,11 @@ from django.core.management.base import BaseCommand
 from tickets.models import Ticket
 
 User = get_user_model()
+
+
+def generate_password() -> str:
+    alphabet = string.ascii_letters + string.digits + "!@#%^&*-_="
+    return "".join(secrets.choice(alphabet) for _ in range(16))
 
 
 class Command(BaseCommand):
@@ -30,27 +38,42 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         # 1) Users
+        # Passwords can be pinned via env vars for repeatable local setups;
+        # otherwise each run generates fresh random passwords and prints
+        # them once so they are never hardcoded in source control.
+        admin_password = os.getenv("SEED_ADMIN_PASSWORD") or generate_password()
+        lais_password = os.getenv("SEED_LAIS_PASSWORD") or generate_password()
+        demo_password = os.getenv("SEED_DEMO_PASSWORD") or generate_password()
+
         admin = self.ensure_user(
             username="admin",
             email="admin@example.com",
-            password="Admin@12345",
+            password=admin_password,
             is_staff=True,
             is_superuser=True,
         )
         lais = self.ensure_user(
             username="LaisLany",
             email="lais@example.com",
-            password="Lais@12345",
+            password=lais_password,
         )
         guga = self.ensure_user(
-            username="GugaTampa",
-            email="gustavo_valenca@hotmail.com",
-            password="@Tampa5000",
+            username="demo_agent",
+            email="demo_agent@example.com",
+            password=demo_password,
             is_staff=True,
             is_superuser=True,
         )
 
-        self.stdout.write(self.style.SUCCESS("Users ensured: admin / LaisLany / GugaTampa"))
+        self.stdout.write(self.style.SUCCESS("Users ensured: admin / LaisLany / demo_agent"))
+        self.stdout.write(
+            self.style.WARNING(
+                "Generated passwords (save them now, they are not stored anywhere):\n"
+                f"  admin: {admin_password}\n"
+                f"  LaisLany: {lais_password}\n"
+                f"  demo_agent: {demo_password}"
+            )
+        )
 
         # 2) Tickets
         titles = [
@@ -89,4 +112,4 @@ class Command(BaseCommand):
                 created_count += 1
 
         self.stdout.write(self.style.SUCCESS(f"Tickets created: {created_count}"))
-        self.stdout.write(self.style.SUCCESS("Done. (Passwords: Admin@12345 / Lais@12345 / @Tampa5000)"))
+        self.stdout.write(self.style.SUCCESS("Done."))
