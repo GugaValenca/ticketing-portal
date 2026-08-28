@@ -1,6 +1,6 @@
 import { AxiosError, type AxiosResponse, type InternalAxiosRequestConfig } from "axios";
 import { describe, expect, it, beforeEach } from "vitest";
-import { api, auth } from "./api";
+import { api } from "./api";
 
 function unauthorizedResponse(
   config: InternalAxiosRequestConfig,
@@ -14,22 +14,59 @@ function unauthorizedResponse(
   };
 }
 
-describe("auth.getTokens", () => {
+describe("api request interceptor", () => {
   beforeEach(() => {
-    localStorage.clear();
+    document.cookie = "csrftoken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/";
     api.defaults.adapter = undefined;
   });
 
-  it("returns null for malformed token storage without throwing", () => {
-    localStorage.setItem("tokens", "{bad-json");
+  it("attaches X-CSRFToken from the csrftoken cookie on unsafe methods", async () => {
+    document.cookie = "csrftoken=test-csrf-token; path=/";
 
-    expect(() => auth.getTokens()).not.toThrow();
-    expect(auth.getTokens()).toBeNull();
+    let sentHeaders: Record<string, unknown> = {};
+    api.defaults.adapter = async (config) => {
+      sentHeaders = config.headers as unknown as Record<string, unknown>;
+      return {
+        data: {},
+        status: 200,
+        statusText: "OK",
+        headers: {},
+        config,
+      };
+    };
+
+    await api.post("/api/tickets/", { title: "test" });
+
+    expect(sentHeaders["X-CSRFToken"]).toBe("test-csrf-token");
   });
 
-  it("clears tokens when a 401 happens and no refresh token is available", async () => {
-    localStorage.setItem("tokens", JSON.stringify({ access: "access-only" }));
+  it("does not attach X-CSRFToken on safe methods", async () => {
+    document.cookie = "csrftoken=test-csrf-token; path=/";
 
+    let sentHeaders: Record<string, unknown> = {};
+    api.defaults.adapter = async (config) => {
+      sentHeaders = config.headers as unknown as Record<string, unknown>;
+      return {
+        data: {},
+        status: 200,
+        statusText: "OK",
+        headers: {},
+        config,
+      };
+    };
+
+    await api.get("/api/tickets/");
+
+    expect(sentHeaders["X-CSRFToken"]).toBeUndefined();
+  });
+});
+
+describe("api response interceptor", () => {
+  beforeEach(() => {
+    api.defaults.adapter = undefined;
+  });
+
+  it("rejects without retrying when a token endpoint itself returns 401", async () => {
     api.defaults.adapter = async (config) => {
       throw new AxiosError(
         "Unauthorized",
@@ -40,8 +77,6 @@ describe("auth.getTokens", () => {
       );
     };
 
-    await expect(api.get("/protected")).rejects.toBeDefined();
-    expect(auth.getTokens()).toBeNull();
-    expect(localStorage.getItem("tokens")).toBeNull();
+    await expect(api.get("/api/token/refresh/")).rejects.toBeDefined();
   });
 });
