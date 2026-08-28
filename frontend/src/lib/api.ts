@@ -9,6 +9,13 @@ const API_BASE_URL =
 
 type RetriableRequestConfig = InternalAxiosRequestConfig & { _retry?: boolean };
 
+// Fired when a request fails auth and the refresh attempt also fails.
+// The app listens for this to reset to the logged-out view. Deliberately
+// not a hard `window.location` redirect: that caused a reload loop for a
+// visitor with no session at all (fresh visit -> 401 -> failed refresh ->
+// reload -> bootstrap runs again -> 401 -> ...).
+export const SESSION_EXPIRED_EVENT = "auth:session-expired";
+
 const UNSAFE_METHODS = new Set(["post", "put", "patch", "delete"]);
 
 // Auth is handled entirely via httpOnly cookies set by the backend, so
@@ -84,7 +91,7 @@ api.interceptors.response.use(
         return api(originalRequest);
       } catch (e) {
         processQueue(false);
-        window.location.href = "/";
+        window.dispatchEvent(new Event(SESSION_EXPIRED_EVENT));
         return Promise.reject(e);
       } finally {
         isRefreshing = false;

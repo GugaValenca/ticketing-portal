@@ -1,5 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { api, auth } from "./lib/api";
+import { api, auth, SESSION_EXPIRED_EVENT } from "./lib/api";
+import {
+  formatUsDateInput,
+  isoToUsDate,
+  usToIsoDate,
+  usDateToBoundary,
+} from "./lib/dates";
 
 type Me = {
   id: number;
@@ -34,35 +40,6 @@ const COMPANY_TAGLINE =
 
 function cx(...classes: Array<string | false | null | undefined>) {
   return classes.filter(Boolean).join(" ");
-}
-
-function formatUsDateInput(value: string) {
-  const digits = value.replace(/\D/g, "").slice(0, 8);
-  if (digits.length <= 2) return digits;
-  if (digits.length <= 4) return `${digits.slice(0, 2)}/${digits.slice(2)}`;
-  return `${digits.slice(0, 2)}/${digits.slice(2, 4)}/${digits.slice(4)}`;
-}
-
-function isoToUsDate(value: string) {
-  if (!value) return "";
-  const [year, month, day] = value.split("-");
-  if (!year || !month || !day) return "";
-  return `${month}/${day}/${year}`;
-}
-
-function usToIsoDate(value: string) {
-  const m = value.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
-  if (!m) return "";
-  const [, mm, dd, yyyy] = m;
-  return `${yyyy}-${mm}-${dd}`;
-}
-
-function usDateToBoundary(value: string, boundary: "start" | "end") {
-  const iso = usToIsoDate(value);
-  if (!iso) return null;
-  const time = boundary === "start" ? "T00:00:00.000" : "T23:59:59.999";
-  const parsed = new Date(`${iso}${time}`);
-  return Number.isNaN(parsed.getTime()) ? null : parsed;
 }
 
 function BrandMark({ className = "h-12 w-12" }: { className?: string }) {
@@ -590,6 +567,17 @@ export default function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Fired by the axios interceptor when a request 401s and the refresh
+  // attempt also fails - reset to the logged-out view without a page reload.
+  useEffect(() => {
+    function handleSessionExpired() {
+      setMe(null);
+      setTickets([]);
+    }
+    window.addEventListener(SESSION_EXPIRED_EVENT, handleSessionExpired);
+    return () => window.removeEventListener(SESSION_EXPIRED_EVENT, handleSessionExpired);
+  }, []);
+
   if (bootstrapping) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-[#120825] text-sm text-indigo-200">
@@ -857,10 +845,11 @@ export default function App() {
                 </p>
                 <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-[minmax(0,200px)_minmax(0,220px)_minmax(0,220px)_auto]">
                   <div className="grid gap-1">
-                    <label className="text-xs font-semibold text-slate-600">
+                    <label htmlFor="report-date-field" className="text-xs font-semibold text-slate-600">
                       Date field
                     </label>
                     <select
+                      id="report-date-field"
                       value={reportDateField}
                       onChange={(e) =>
                         setReportDateField(e.target.value as ReportDateField)
@@ -872,11 +861,12 @@ export default function App() {
                     </select>
                   </div>
                   <div className="grid gap-1">
-                    <label className="text-xs font-semibold text-slate-600">
+                    <label htmlFor="report-start-date" className="text-xs font-semibold text-slate-600">
                       Start date (MM/DD/YYYY)
                     </label>
                     <div className="relative flex h-10 items-center rounded-lg border border-slate-300 bg-white px-2 focus-within:border-violet-400 focus-within:ring-2 focus-within:ring-violet-200">
                       <input
+                        id="report-start-date"
                         type="text"
                         inputMode="numeric"
                         placeholder="MM/DD/YYYY"
@@ -918,11 +908,12 @@ export default function App() {
                     </div>
                   </div>
                   <div className="grid gap-1">
-                    <label className="text-xs font-semibold text-slate-600">
+                    <label htmlFor="report-end-date" className="text-xs font-semibold text-slate-600">
                       End date (MM/DD/YYYY)
                     </label>
                     <div className="relative flex h-10 items-center rounded-lg border border-slate-300 bg-white px-2 focus-within:border-violet-400 focus-within:ring-2 focus-within:ring-violet-200">
                       <input
+                        id="report-end-date"
                         type="text"
                         inputMode="numeric"
                         placeholder="MM/DD/YYYY"
@@ -1001,10 +992,11 @@ export default function App() {
                 <div className="mt-4 rounded-xl border border-indigo-100 bg-indigo-50/40 p-3 sm:p-4">
                   <div className="grid gap-3 md:grid-cols-12">
                     <div className="md:col-span-5">
-                      <label className="text-xs font-semibold text-indigo-700">
+                      <label htmlFor="ticket-search" className="text-xs font-semibold text-indigo-700">
                         Search tickets
                       </label>
                       <input
+                        id="ticket-search"
                         value={query}
                         onChange={(e) => setQuery(e.target.value)}
                         placeholder="Search by title or description..."
@@ -1016,10 +1008,11 @@ export default function App() {
                     </div>
 
                     <div className="md:col-span-2">
-                      <label className="text-xs font-semibold text-indigo-700">
+                      <label htmlFor="ticket-status-filter" className="text-xs font-semibold text-indigo-700">
                         Status
                       </label>
                       <select
+                        id="ticket-status-filter"
                         value={statusFilter}
                         onChange={(e) => setStatusFilter(e.target.value as any)}
                         className="mt-1 h-11 w-full rounded-xl border border-slate-300 bg-white px-3 text-sm text-slate-900 outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-200"
@@ -1033,10 +1026,11 @@ export default function App() {
                     </div>
 
                     <div className="md:col-span-2">
-                      <label className="text-xs font-semibold text-indigo-700">
+                      <label htmlFor="ticket-priority-filter" className="text-xs font-semibold text-indigo-700">
                         Priority
                       </label>
                       <select
+                        id="ticket-priority-filter"
                         value={priorityFilter}
                         onChange={(e) => setPriorityFilter(e.target.value as any)}
                         className="mt-1 h-11 w-full rounded-xl border border-slate-300 bg-white px-3 text-sm text-slate-900 outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-200"
@@ -1050,10 +1044,11 @@ export default function App() {
                     </div>
 
                     <div className="md:col-span-3">
-                      <label className="text-xs font-semibold text-indigo-700">
+                      <label htmlFor="ticket-sort" className="text-xs font-semibold text-indigo-700">
                         Sort by
                       </label>
                       <select
+                        id="ticket-sort"
                         value={sortKey}
                         onChange={(e) => setSortKey(e.target.value as any)}
                         className="mt-1 h-11 w-full rounded-xl border border-slate-300 bg-white px-3 text-sm text-slate-900 outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-200"
@@ -1067,10 +1062,11 @@ export default function App() {
 
                     <div className="flex flex-col gap-2 md:col-span-12 sm:flex-row sm:items-center sm:justify-between">
                       <div className="flex items-center gap-2">
-                        <span className="text-xs font-semibold text-indigo-700">
+                        <label htmlFor="ticket-page-size" className="text-xs font-semibold text-indigo-700">
                           Page size
-                        </span>
+                        </label>
                         <select
+                          id="ticket-page-size"
                           value={pageSize}
                           onChange={(e) =>
                             setPageSize(Number(e.target.value) as any)
@@ -1227,10 +1223,11 @@ export default function App() {
       >
         <div className="grid gap-4">
           <div className="grid gap-1.5">
-            <label className="text-sm font-semibold text-slate-200">
+            <label htmlFor="new-ticket-title" className="text-sm font-semibold text-slate-200">
               Title
             </label>
             <input
+              id="new-ticket-title"
               value={newTitle}
               onChange={(e) => setNewTitle(e.target.value)}
               placeholder="Example: Fiber outage in Downtown region"
@@ -1239,10 +1236,11 @@ export default function App() {
           </div>
 
           <div className="grid gap-1.5">
-            <label className="text-sm font-semibold text-slate-200">
+            <label htmlFor="new-ticket-description" className="text-sm font-semibold text-slate-200">
               Description (optional)
             </label>
             <textarea
+              id="new-ticket-description"
               value={newDescription}
               onChange={(e) => setNewDescription(e.target.value)}
               placeholder="Describe the issue..."
@@ -1251,10 +1249,11 @@ export default function App() {
           </div>
 
           <div className="grid gap-1.5">
-            <label className="text-sm font-semibold text-slate-200">
+            <label htmlFor="new-ticket-priority" className="text-sm font-semibold text-slate-200">
               Priority
             </label>
             <select
+              id="new-ticket-priority"
               value={newPriority}
               onChange={(e) => setNewPriority(e.target.value as any)}
               className="dark-select h-11 rounded-xl border border-white/20 bg-white/10 px-3 text-sm font-semibold text-white outline-none transition focus:border-violet-300 focus:ring-2 focus:ring-violet-300/30"
@@ -1267,10 +1266,11 @@ export default function App() {
           </div>
 
           <div className="grid gap-1.5">
-            <label className="text-sm font-semibold text-slate-200">
+            <label htmlFor="new-ticket-assignee" className="text-sm font-semibold text-slate-200">
               Assignee (optional)
             </label>
             <select
+              id="new-ticket-assignee"
               value={newAssigneeId}
               onChange={(e) => setNewAssigneeId(e.target.value)}
               className="dark-select h-11 rounded-xl border border-white/20 bg-white/10 px-3 text-sm font-semibold text-white outline-none transition focus:border-violet-300 focus:ring-2 focus:ring-violet-300/30"
@@ -1351,10 +1351,11 @@ export default function App() {
 
               <div className="mt-4 grid gap-3 sm:grid-cols-2">
                 <div className="grid gap-1.5">
-                  <label className="text-xs font-semibold text-indigo-200">
+                  <label htmlFor="ticket-status" className="text-xs font-semibold text-indigo-200">
                     Status
                   </label>
                   <select
+                    id="ticket-status"
                     value={selected.status}
                     disabled={detailsSaving}
                     onChange={(e) => saveDetails({ status: e.target.value })}
@@ -1371,10 +1372,11 @@ export default function App() {
                 </div>
 
                 <div className="grid gap-1.5">
-                  <label className="text-xs font-semibold text-indigo-200">
+                  <label htmlFor="ticket-priority" className="text-xs font-semibold text-indigo-200">
                     Priority
                   </label>
                   <select
+                    id="ticket-priority"
                     value={selected.priority}
                     disabled={detailsSaving}
                     onChange={(e) => saveDetails({ priority: e.target.value })}
