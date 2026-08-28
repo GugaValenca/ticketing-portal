@@ -12,6 +12,9 @@ class UserSummarySerializer(serializers.ModelSerializer):
 
 
 class TicketSerializer(serializers.ModelSerializer):
+    # Mirrors the frontend's minimum-length check - the client-side check
+    # is a UX nicety, this is the actual enforcement.
+    title = serializers.CharField(max_length=140, min_length=3)
     requester_username = serializers.CharField(source="requester.username", read_only=True)
     assignee_username = serializers.CharField(source="assignee.username", read_only=True, allow_null=True, default=None)
     assignee = serializers.PrimaryKeyRelatedField(
