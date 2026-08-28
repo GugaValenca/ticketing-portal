@@ -7,6 +7,7 @@ export function TicketDetailsModal({
   ticket,
   saving,
   error,
+  canEditPriority,
   onClose,
   onStatusChange,
   onPriorityChange,
@@ -15,6 +16,7 @@ export function TicketDetailsModal({
   ticket: Ticket | null;
   saving: boolean;
   error: string | null;
+  canEditPriority: boolean;
   onClose: () => void;
   onStatusChange: (status: string) => void;
   onPriorityChange: (priority: string) => void;
@@ -74,18 +76,27 @@ export function TicketDetailsModal({
                 <label htmlFor="ticket-priority" className="text-xs font-semibold text-indigo-200">
                   Priority
                 </label>
-                <select
-                  id="ticket-priority"
-                  value={ticket.priority}
-                  disabled={saving}
-                  onChange={(e) => onPriorityChange(e.target.value)}
-                  className="dark-select h-11 rounded-xl border border-white/20 bg-white/10 px-3 text-sm font-semibold text-white outline-none transition focus:border-violet-300 focus:ring-2 focus:ring-violet-300/30 disabled:opacity-60"
-                >
-                  <option value="low">low</option>
-                  <option value="medium">medium</option>
-                  <option value="high">high</option>
-                  <option value="urgent">urgent</option>
-                </select>
+                {canEditPriority ? (
+                  <select
+                    id="ticket-priority"
+                    value={ticket.priority}
+                    disabled={saving}
+                    onChange={(e) => onPriorityChange(e.target.value)}
+                    className="dark-select h-11 rounded-xl border border-white/20 bg-white/10 px-3 text-sm font-semibold text-white outline-none transition focus:border-violet-300 focus:ring-2 focus:ring-violet-300/30 disabled:opacity-60"
+                  >
+                    <option value="low">low</option>
+                    <option value="medium">medium</option>
+                    <option value="high">high</option>
+                    <option value="urgent">urgent</option>
+                  </select>
+                ) : (
+                  <div
+                    id="ticket-priority"
+                    className="flex h-11 items-center rounded-xl border border-white/10 bg-white/5 px-3 text-xs text-slate-400"
+                  >
+                    Only staff can change priority
+                  </div>
+                )}
                 <div className="mt-1">
                   <PriorityBadge priority={ticket.priority} />
                 </div>

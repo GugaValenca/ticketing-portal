@@ -21,6 +21,13 @@ test("a user can log in, create a ticket, see it in the list, and sign out", asy
 
   await expect(page.getByRole("heading", { name: ticketTitle })).toBeVisible();
 
+  // e2e_user is a regular (non-staff) account - priority must show as
+  // read-only, not an editable select. Regression check for the
+  // reassignment/priority permission fix.
+  await page.getByRole("heading", { name: ticketTitle }).click();
+  await expect(page.getByText("Only staff can change priority")).toBeVisible();
+  await page.getByRole("button", { name: "Close", exact: true }).click();
+
   await page.getByRole("button", { name: "Sign out" }).click();
   await expect(page.getByLabel("Username or Email")).toBeVisible();
 });

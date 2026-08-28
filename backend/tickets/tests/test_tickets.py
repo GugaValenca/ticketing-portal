@@ -56,6 +56,49 @@ class TicketAccessTests(TestCase):
         self.alice_ticket.refresh_from_db()
         self.assertEqual(self.alice_ticket.status, "in_progress")
 
+    def test_non_staff_cannot_change_priority_on_an_existing_ticket(self):
+        self.client.force_authenticate(self.alice)
+        response = self.client.patch(
+            f"/api/tickets/{self.alice_ticket.id}/", {"priority": "urgent"}, format="json"
+        )
+
+        self.assertEqual(response.status_code, 400)
+        self.alice_ticket.refresh_from_db()
+        self.assertEqual(self.alice_ticket.priority, "medium")
+
+    def test_non_staff_cannot_reassign_an_existing_ticket_even_their_own(self):
+        self.client.force_authenticate(self.alice)
+        response = self.client.patch(
+            f"/api/tickets/{self.alice_ticket.id}/", {"assignee": self.bob.id}, format="json"
+        )
+
+        self.assertEqual(response.status_code, 400)
+        self.alice_ticket.refresh_from_db()
+        self.assertIsNone(self.alice_ticket.assignee_id)
+
+    def test_assignee_cannot_change_priority_either(self):
+        # Being the assignee (working the ticket) isn't the same as being
+        # staff - only status updates are allowed for them.
+        self.client.force_authenticate(self.alice)
+        response = self.client.patch(
+            f"/api/tickets/{self.assigned_to_alice.id}/", {"priority": "low"}, format="json"
+        )
+
+        self.assertEqual(response.status_code, 400)
+
+    def test_staff_can_change_priority_and_reassign(self):
+        self.client.force_authenticate(self.staff)
+        response = self.client.patch(
+            f"/api/tickets/{self.alice_ticket.id}/",
+            {"priority": "urgent", "assignee": self.bob.id},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.alice_ticket.refresh_from_db()
+        self.assertEqual(self.alice_ticket.priority, "urgent")
+        self.assertEqual(self.alice_ticket.assignee_id, self.bob.id)
+
 
 class TicketCreateTests(TestCase):
     def setUp(self):
@@ -100,6 +143,25 @@ class TicketCreateTests(TestCase):
         body = response.json()
         self.assertEqual(body["priority"], "medium")
         self.assertEqual(body["status"], "open")
+
+    def test_requester_can_set_priority_and_assignee_at_creation(self):
+        # Only *changing* priority/assignee after the fact is staff-only -
+        # a requester can still suggest both when filing a new ticket.
+        response = self.client.post(
+            "/api/tickets/",
+            {
+                "title": "Filed with priority and assignee",
+                "priority": "high",
+                "assignee": self.bob.id,
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, 201)
+        body = response.json()
+        self.assertEqual(body["priority"], "high")
+        ticket = Ticket.objects.get(id=body["id"])
+        self.assertEqual(ticket.assignee_id, self.bob.id)
 
 
 class MeEndpointTests(TestCase):
