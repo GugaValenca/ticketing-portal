@@ -1,5 +1,6 @@
 # NexaLink Telecom Service Desk
 
+[![CI](https://github.com/GugaValenca/ticketing-portal/actions/workflows/ci.yml/badge.svg)](https://github.com/GugaValenca/ticketing-portal/actions/workflows/ci.yml)
 ![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB)
 ![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white)
 ![Django](https://img.shields.io/badge/django-%23092E20.svg?style=for-the-badge&logo=django&logoColor=white)
@@ -275,11 +276,10 @@ ticketing-portal/
 
 ## Future Improvements
 
-- Add backend automated tests for auth and permission behavior
 - Expand ticket assignment and workflow controls in the UI
 - Add richer audit history for key ticket updates
-- Add CI checks for linting/tests on pull requests
 - Improve observability for API and frontend runtime errors
+- Broaden e2e coverage beyond the single critical-path test
 
 ## Contributing
 
