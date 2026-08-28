@@ -1,0 +1,6 @@
+-r requirements.txt
+
+black==26.5.1
+isort==9.0.1
+pip-audit==2.10.1
+ruff==0.16.5

@@ -1,12 +1,11 @@
+from django.contrib.auth import get_user_model
 from django.db.models import Q
-from rest_framework import viewsets
-from rest_framework import generics
+from rest_framework import generics, viewsets
 from rest_framework.permissions import IsAuthenticated
 
 from .models import Ticket
 from .permissions import IsRequesterOrAssigneeOrStaff
 from .serializers import TicketSerializer, UserSummarySerializer
-from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
