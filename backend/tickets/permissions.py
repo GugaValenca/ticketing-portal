@@ -3,10 +3,10 @@ from rest_framework.permissions import BasePermission
 
 class IsRequesterOrAssigneeOrStaff(BasePermission):
     """
-    Permite acesso se:
-    - usuário é staff/superuser
-    - OU é requester do ticket
-    - OU é assignee do ticket
+    Grants access if:
+    - the user is staff/superuser
+    - OR the user is the ticket's requester
+    - OR the user is the ticket's assignee
     """
 
     def has_object_permission(self, request, view, obj):
