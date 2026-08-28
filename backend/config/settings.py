@@ -27,13 +27,15 @@ def env_list(name: str, default: list[str] | None = None) -> list[str]:
 
 
 # SECURITY WARNING: keep the secret key used in production secret!
+# This fallback is for local development only. Production must set
+# DJANGO_SECRET_KEY as an environment variable (see README).
 SECRET_KEY = os.getenv(
     "DJANGO_SECRET_KEY",
-    "django-insecure-8z%*b+vlk6yu1golpf9q1@%c*owq%^@g&p*nx%_wj#ijb92ysr",
+    "django-insecure-local-dev-only-do-not-use-in-production",
 )
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env_bool("DEBUG", default=True)
+DEBUG = env_bool("DEBUG", default=False)
 
 ALLOWED_HOSTS = env_list(
     "ALLOWED_HOSTS",
