@@ -209,6 +209,18 @@ REST_FRAMEWORK = {
         "rest_framework.permissions.IsAuthenticated",
     ),
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+    "DEFAULT_THROTTLE_CLASSES": (
+        "rest_framework.throttling.AnonRateThrottle",
+        "rest_framework.throttling.UserRateThrottle",
+    ),
+    "DEFAULT_THROTTLE_RATES": {
+        "anon": "60/hour",
+        "user": "1000/hour",
+        # Tighter, dedicated limits for the auth endpoints (see
+        # tickets/auth.py), which are the most valuable brute-force target.
+        "login": "5/min",
+        "token_refresh": "20/min",
+    },
 }
 
 SIMPLE_JWT = {
@@ -224,7 +236,7 @@ SIMPLE_JWT = {
 # Access and refresh tokens are delivered as httpOnly cookies instead of in
 # the JSON response body, so they're never reachable from page JavaScript
 # (mitigates token theft via XSS). State-changing requests are protected by
-# Django's CSRF token instead (see tickets/auth.py CookieJWTAuthentication).
+# Django's CSRF token instead (see tickets/authentication.py CookieJWTAuthentication).
 #
 # The frontend and backend are deployed on separate Vercel subdomains, which
 # browsers treat as different sites, so production cookies need
