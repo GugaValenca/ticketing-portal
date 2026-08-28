@@ -219,8 +219,8 @@ export default function App() {
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [loading, setLoading] = useState(false);
 
-  const [username, setUsername] = useState("GugaTampa");
-  const [password, setPassword] = useState("@Tampa5000");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [rememberMe, setRememberMe] = useState(true);
 
