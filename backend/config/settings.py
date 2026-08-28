@@ -5,8 +5,15 @@ from datetime import timedelta
 from pathlib import Path
 from urllib.parse import urlparse
 
+from dotenv import load_dotenv
+
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Loads backend/.env for local development. Production (Vercel, Docker)
+# sets real environment variables instead, so there's nothing to load
+# there and this is a no-op if the file doesn't exist.
+load_dotenv(BASE_DIR / ".env")
 
 
 # Quick-start development settings - unsuitable for production

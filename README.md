@@ -32,9 +32,10 @@ The public demo is focused on the main user workflow. Administrative tools are r
 
 ## Features
 
-- JWT authentication with refresh token flow
+- JWT authentication delivered as httpOnly cookies (not readable by page JavaScript), with CSRF protection on state-changing requests
 - Login support using username or email
 - Automatic token refresh using Axios interceptors
+- Rate limiting on login and token refresh to slow down credential brute-forcing
 - Role-aware ticket access for requester, assignee, and staff/superuser rules
 - Ticket CRUD via DRF ModelViewSet
 - Status updates in the ticket details flow
@@ -88,11 +89,18 @@ Install backend dependencies:
 pip install -r requirements.txt
 ```
 
+Copy the env template and adjust if needed (the defaults already work for local dev):
+
+```bash
+cp .env.example .env
+```
+
 3. Frontend setup:
 
 ```bash
 cd ../frontend
 npm install
+cp .env.example .env
 ```
 
 ## Usage
@@ -100,17 +108,21 @@ npm install
 ### Public Demo Flow
 
 1. Open the main demo URL
-2. Sign in with safe public demo credentials when available
+2. Sign in with the demo account (see below)
 3. Create, filter, and update tickets to evaluate the full workflow
 
 ### Demo Access
 
-If demo access is required and no public credentials are documented, use placeholders:
-
-- Username or Email: `[DEMO_EMAIL_OR_USERNAME]`
-- Password: `[DEMO_PASSWORD]`
+The public demo doesn't ship with a fixed password - credentials are generated
+per environment instead of being hardcoded in source. To get a login for your
+own local instance, run the seed command below and use one of the printed
+accounts (`admin`, `LaisLany`, or `demo_agent`).
 
 ### Local Development
+
+Both the frontend and backend need to run on `localhost` (not `127.0.0.1`)
+for the JWT auth cookies to work - they're same-site on `localhost` regardless
+of port, but treated as different sites otherwise.
 
 Option A: Docker backend + PostgreSQL
 
@@ -125,7 +137,8 @@ Backend:
 ```bash
 cd backend
 python manage.py migrate
-python manage.py runserver
+python manage.py seed   # optional: creates demo users + sample tickets
+python manage.py runserver localhost:8001
 ```
 
 Frontend:
@@ -134,6 +147,31 @@ Frontend:
 cd frontend
 npm run dev
 ```
+
+## Environment Variables
+
+Both apps read config from `.env` locally (see `.env.example` in each
+folder) and from real environment variables in production (Vercel project
+settings, or `docker-compose.yml` for the Docker backend).
+
+**Backend** (`backend/.env`):
+
+| Variable | Required in production | Default |
+| --- | --- | --- |
+| `DJANGO_SECRET_KEY` | Yes | insecure local-only fallback |
+| `DEBUG` | No | `False` |
+| `ALLOWED_HOSTS` | Yes | `127.0.0.1,localhost,.vercel.app` |
+| `DATABASE_URL` | Yes (Postgres) | falls back to local SQLite if unset |
+| `CORS_ALLOWED_ORIGINS` | Yes | localhost + the deployed frontend origin |
+| `CSRF_TRUSTED_ORIGINS` | Yes | `http://localhost:5173`, `http://127.0.0.1:5173` |
+| `AUTH_COOKIE_SECURE` | No | `True` unless `DEBUG` is set |
+| `AUTH_COOKIE_SAMESITE` | No | `None` in production, `Lax` in dev |
+
+**Frontend** (`frontend/.env`):
+
+| Variable | Required | Default |
+| --- | --- | --- |
+| `VITE_API_BASE_URL` | No | the deployed API URL in production builds, `http://localhost:8001` in dev |
 
 ## Project Structure
 
@@ -170,7 +208,7 @@ ticketing-portal/
 
 ## Key Technical Highlights / What I Learned
 
-- Implementing end-to-end JWT auth with automatic refresh handling
+- Implementing end-to-end JWT auth as httpOnly cookies, with CSRF protection and automatic refresh handling
 - Building practical permission logic for role-aware access in DRF
 - Connecting frontend UX state to secure backend flows with resilient API handling
 - Structuring Vercel deployment for a monorepo with separate frontend/backend apps

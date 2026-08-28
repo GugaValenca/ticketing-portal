@@ -1,1 +1,6 @@
 .vercel
+
+# Env files (keep .env.example tracked as the template)
+.env
+.env.*
+!.env.example
