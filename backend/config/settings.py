@@ -123,10 +123,12 @@ if DATABASE_URL:
         }
     }
 else:
+    # SQLITE_DB_NAME lets e2e runs point at a disposable database
+    # (e.g. "e2e.sqlite3") instead of the developer's own db.sqlite3.
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.sqlite3",
-            "NAME": BASE_DIR / "db.sqlite3",
+            "NAME": BASE_DIR / os.getenv("SQLITE_DB_NAME", "db.sqlite3"),
         }
     }
 
