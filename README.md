@@ -232,10 +232,13 @@ ticketing-portal/
 |   |   |-- index.py
 |   |-- config/
 |   |   |-- settings.py
+|   |   |-- settings_test.py
 |   |   |-- urls.py
 |   |-- tickets/
-|   |   |-- management/commands/seed.py
-|   |   |-- auth.py
+|   |   |-- management/commands/  (seed.py, e2e_seed.py)
+|   |   |-- tests/  (test_auth.py, test_tickets.py)
+|   |   |-- auth.py            # login/refresh/logout views
+|   |   |-- authentication.py  # CookieJWTAuthentication
 |   |   |-- models.py
 |   |   |-- serializers.py
 |   |   |-- permissions.py
@@ -243,15 +246,22 @@ ticketing-portal/
 |   |   |-- me.py
 |   |   |-- admin.py
 |   |-- requirements.txt
+|   |-- requirements-dev.txt
+|   |-- ruff.toml / .isort.cfg
 |   |-- vercel.json
 |-- frontend/
 |   |-- src/
-|   |   |-- components/
-|   |   |-- lib/api.ts
+|   |   |-- components/  (ui/, LoginScreen, TicketList, modals, ...)
+|   |   |-- hooks/       (useWorkspace, useTicketFilters)
+|   |   |-- lib/         (api.ts, dates.ts, cx.ts)
+|   |   |-- types.ts
 |   |   |-- App.tsx
 |   |   |-- main.tsx
+|   |-- e2e/critical-flow.spec.ts
 |   |-- package.json
+|   |-- playwright.config.ts
 |   |-- vercel.json
+|-- .github/workflows/ci.yml
 |-- docker-compose.yml
 |-- README.md
 ```
@@ -263,13 +273,16 @@ ticketing-portal/
 - Connecting frontend UX state to secure backend flows with resilient API handling
 - Structuring Vercel deployment for a monorepo with separate frontend/backend apps
 - Improving backend performance with query optimization (`select_related`)
+- Testing across the stack: Django unit tests, Vitest for pure frontend
+  logic, and a Playwright e2e test for the critical user flow, all wired
+  into CI
 
 ## Technologies Used
 
 - **Frontend:** React 19, TypeScript, Vite, Axios, Tailwind CSS
 - **Backend:** Python 3.12+, Django 6, Django REST Framework, SimpleJWT, drf-spectacular
 - **Database:** PostgreSQL (production/Docker), SQLite (local fallback)
-- **Testing:** Vitest
+- **Testing:** Django test runner, Vitest, Playwright (e2e)
 - **Deployment:** Vercel
 - **Containerization:** Docker, Docker Compose
 - **Package Managers:** npm (frontend), pip (backend)
