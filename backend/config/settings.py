@@ -181,9 +181,16 @@ CORS_ALLOWED_ORIGINS = env_list(
     ],
 )
 
-CSRF_TRUSTED_ORIGINS = env_list("CSRF_TRUSTED_ORIGINS", default=[])
+CSRF_TRUSTED_ORIGINS = env_list(
+    "CSRF_TRUSTED_ORIGINS",
+    default=[
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+    ],
+)
 
-# (Opcional, mas deixa pronto caso use cookies/sessão no futuro)
+# Required for the browser to send/receive the httpOnly JWT cookies below
+# on cross-origin requests (frontend and backend live on separate hosts).
 CORS_ALLOW_CREDENTIALS = True
 
 
@@ -192,7 +199,11 @@ CORS_ALLOW_CREDENTIALS = True
 # -----------------------------------------------------------------------------
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
-        "rest_framework_simplejwt.authentication.JWTAuthentication",
+        # Points at tickets.authentication (not tickets.auth) - this
+        # module must stay free of any import that touches
+        # rest_framework.views, or DRF's own startup hits a circular
+        # import (see tickets/authentication.py docstring).
+        "tickets.authentication.CookieJWTAuthentication",
     ),
     "DEFAULT_PERMISSION_CLASSES": (
         "rest_framework.permissions.IsAuthenticated",
@@ -206,6 +217,28 @@ SIMPLE_JWT = {
     "ROTATE_REFRESH_TOKENS": True,
     "BLACKLIST_AFTER_ROTATION": True,
 }
+
+# -----------------------------------------------------------------------------
+# JWT auth cookies
+# -----------------------------------------------------------------------------
+# Access and refresh tokens are delivered as httpOnly cookies instead of in
+# the JSON response body, so they're never reachable from page JavaScript
+# (mitigates token theft via XSS). State-changing requests are protected by
+# Django's CSRF token instead (see tickets/auth.py CookieJWTAuthentication).
+#
+# The frontend and backend are deployed on separate Vercel subdomains, which
+# browsers treat as different sites, so production cookies need
+# SameSite=None (which in turn requires Secure). Local dev runs both on
+# "localhost" (different ports only), which is same-site, so Lax + non-Secure
+# works over plain HTTP.
+AUTH_COOKIE_ACCESS = "access_token"
+AUTH_COOKIE_REFRESH = "refresh_token"
+AUTH_COOKIE_SECURE = env_bool("AUTH_COOKIE_SECURE", default=not DEBUG)
+AUTH_COOKIE_SAMESITE = os.getenv("AUTH_COOKIE_SAMESITE", "None" if not DEBUG else "Lax")
+
+CSRF_COOKIE_SECURE = AUTH_COOKIE_SECURE
+CSRF_COOKIE_SAMESITE = AUTH_COOKIE_SAMESITE
+SESSION_COOKIE_SECURE = AUTH_COOKIE_SECURE
 
 
 SPECTACULAR_SETTINGS = {

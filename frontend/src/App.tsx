@@ -218,6 +218,7 @@ export default function App() {
   const [me, setMe] = useState<Me | null>(null);
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [loading, setLoading] = useState(false);
+  const [bootstrapping, setBootstrapping] = useState(true);
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -277,9 +278,9 @@ export default function App() {
     return () => clearTimeout(t);
   }, [query]);
 
-  async function loadMeAndTickets() {
+  async function loadMeAndTickets(options: { silent?: boolean } = {}) {
     setLoading(true);
-    setError(null);
+    if (!options.silent) setError(null);
     try {
       const [meRes, ticketsRes] = await Promise.all([
         api.get<Me>("/api/me/"),
@@ -295,10 +296,14 @@ export default function App() {
         setAssigneeOptions([]);
       }
     } catch {
-      setError("Failed to load workspace data. Please sign in again.");
       setMe(null);
       setTickets([]);
       setAssigneeOptions([]);
+      // A silent restore attempt failing just means there is no active
+      // session yet - that's expected for a fresh visitor, not an error.
+      if (!options.silent) {
+        setError("Failed to load workspace data. Please sign in again.");
+      }
     } finally {
       setLoading(false);
     }
@@ -317,8 +322,8 @@ export default function App() {
     }
   }
 
-  function handleLogout() {
-    auth.logout();
+  async function handleLogout() {
+    await auth.logout();
     setMe(null);
     setTickets([]);
   }
@@ -576,9 +581,22 @@ export default function App() {
   }
 
   useEffect(() => {
-    if (auth.getTokens()?.access) loadMeAndTickets();
+    async function bootstrap() {
+      await auth.ensureCsrfCookie();
+      await loadMeAndTickets({ silent: true });
+      setBootstrapping(false);
+    }
+    bootstrap();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  if (bootstrapping) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-[#120825] text-sm text-indigo-200">
+        Loading...
+      </div>
+    );
+  }
 
   if (!isLoggedIn) {
     return (
@@ -792,7 +810,7 @@ export default function App() {
               <div className="flex items-center gap-2">
                 <button
                   type="button"
-                  onClick={loadMeAndTickets}
+                  onClick={() => loadMeAndTickets()}
                   className="h-9 rounded-lg border border-white/20 bg-white/10 px-3 text-xs font-semibold text-slate-100 hover:bg-white/20"
                 >
                   Refresh
