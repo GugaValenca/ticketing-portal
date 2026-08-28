@@ -4,6 +4,7 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import ensure_csrf_cookie
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
+from rest_framework.throttling import ScopedRateThrottle
 from rest_framework.views import APIView
 from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
 from rest_framework_simplejwt.serializers import (
@@ -67,6 +68,8 @@ class UsernameOrEmailTokenObtainPairView(TokenObtainPairView):
     """Logs a user in and sets the access/refresh tokens as httpOnly cookies."""
 
     serializer_class = UsernameOrEmailTokenObtainPairSerializer
+    throttle_classes = [ScopedRateThrottle]
+    throttle_scope = "login"
 
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -82,6 +85,8 @@ class CookieTokenRefreshView(APIView):
     """Reads the refresh token from its cookie and rotates both cookies."""
 
     permission_classes = [AllowAny]
+    throttle_classes = [ScopedRateThrottle]
+    throttle_scope = "token_refresh"
 
     def post(self, request, *args, **kwargs):
         raw_refresh = request.COOKIES.get(settings.AUTH_COOKIE_REFRESH)
