@@ -1,4 +1,5 @@
 from django.contrib import admin
+
 from .models import Ticket
 
 
@@ -28,16 +29,8 @@ class TicketAdmin(admin.ModelAdmin):
     list_per_page = 20
 
     fieldsets = (
-        ("Ticket Details", {
-            "fields": ("title", "description")
-        }),
-        ("Workflow", {
-            "fields": ("status", "priority")
-        }),
-        ("People", {
-            "fields": ("requester", "assignee")
-        }),
-        ("Timestamps", {
-            "fields": ("created_at", "updated_at")
-        }),
+        ("Ticket Details", {"fields": ("title", "description")}),
+        ("Workflow", {"fields": ("status", "priority")}),
+        ("People", {"fields": ("requester", "assignee")}),
+        ("Timestamps", {"fields": ("created_at", "updated_at")}),
     )

@@ -30,7 +30,9 @@ def _cookie_kwargs() -> dict:
     }
 
 
-def set_auth_cookies(response: Response, *, access: str | None = None, refresh: str | None = None) -> None:
+def set_auth_cookies(
+    response: Response, *, access: str | None = None, refresh: str | None = None
+) -> None:
     if access is not None:
         response.set_cookie(
             settings.AUTH_COOKIE_ACCESS,

@@ -18,9 +18,7 @@ class Ticket(models.Model):
     title = models.CharField(max_length=140)
     description = models.TextField(blank=True)
 
-    priority = models.CharField(
-        max_length=20, choices=Priority.choices, default=Priority.MEDIUM
-    )
+    priority = models.CharField(max_length=20, choices=Priority.choices, default=Priority.MEDIUM)
     status = models.CharField(max_length=20, choices=Status.choices, default=Status.OPEN)
 
     requester = models.ForeignKey(

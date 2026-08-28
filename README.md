@@ -176,6 +176,23 @@ npx playwright install chromium   # first run only
 npm run test:e2e
 ```
 
+## Linting & Formatting
+
+Backend (black, isort, ruff - config lives in `pyproject.toml`):
+
+```bash
+cd backend
+pip install -r requirements-dev.txt
+black . && isort . && ruff check .
+```
+
+Frontend (eslint):
+
+```bash
+cd frontend
+npm run lint
+```
+
 ## Environment Variables
 
 Both apps read config from `.env` locally (see `.env.example` in each

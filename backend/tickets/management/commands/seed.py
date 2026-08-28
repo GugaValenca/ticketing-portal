@@ -93,7 +93,12 @@ class Command(BaseCommand):
             "Service drops every few minutes in one neighborhood. Inspect splitter path and distribution box.",
         ]
 
-        priorities = [Ticket.Priority.LOW, Ticket.Priority.MEDIUM, Ticket.Priority.HIGH, Ticket.Priority.URGENT]
+        priorities = [
+            Ticket.Priority.LOW,
+            Ticket.Priority.MEDIUM,
+            Ticket.Priority.HIGH,
+            Ticket.Priority.URGENT,
+        ]
         statuses = [Ticket.Status.OPEN, Ticket.Status.IN_PROGRESS, Ticket.Status.RESOLVED]
 
         created_count = 0

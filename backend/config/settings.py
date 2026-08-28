@@ -1,12 +1,9 @@
-
-
 import os
 from datetime import timedelta
 from pathlib import Path
 from urllib.parse import urlparse
 
 from dotenv import load_dotenv
-
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -18,6 +15,7 @@ load_dotenv(BASE_DIR / ".env")
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
+
 
 def env_bool(name: str, default: bool = False) -> bool:
     value = os.getenv(name)
@@ -63,15 +61,12 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-        # Third-party
+    # Third-party
     "rest_framework",
     "corsheaders",
     "drf_spectacular",
     "tickets",
     "rest_framework_simplejwt.token_blacklist",
-
-
-
 ]
 
 MIDDLEWARE = [
@@ -131,7 +126,6 @@ else:
             "NAME": BASE_DIR / os.getenv("SQLITE_DB_NAME", "db.sqlite3"),
         }
     }
-
 
 
 # Password validation
@@ -214,9 +208,7 @@ REST_FRAMEWORK = {
         # import (see tickets/authentication.py docstring).
         "tickets.authentication.CookieJWTAuthentication",
     ),
-    "DEFAULT_PERMISSION_CLASSES": (
-        "rest_framework.permissions.IsAuthenticated",
-    ),
+    "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
     "DEFAULT_THROTTLE_CLASSES": (
         "rest_framework.throttling.AnonRateThrottle",
@@ -267,4 +259,3 @@ SPECTACULAR_SETTINGS = {
     "DESCRIPTION": "API for Ticketing Portal (Django + DRF + JWT).",
     "VERSION": "1.0.0",
 }
-
