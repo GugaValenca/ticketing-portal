@@ -148,6 +148,34 @@ cd frontend
 npm run dev
 ```
 
+## Testing
+
+Backend (Django test runner; `settings_test` swaps in a fast password
+hasher so the suite runs in under a second instead of ~30s):
+
+```bash
+cd backend
+python manage.py test --settings=config.settings_test
+```
+
+Frontend unit tests (Vitest):
+
+```bash
+cd frontend
+npm run test
+```
+
+End-to-end test (Playwright - covers the critical path: log in, create a
+ticket, see it in the list, sign out). Boots its own frontend/backend dev
+servers against a disposable `backend/e2e.sqlite3` database, so nothing
+else needs to be running first:
+
+```bash
+cd frontend
+npx playwright install chromium   # first run only
+npm run test:e2e
+```
+
 ## Environment Variables
 
 Both apps read config from `.env` locally (see `.env.example` in each
