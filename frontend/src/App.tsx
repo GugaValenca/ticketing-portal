@@ -229,10 +229,7 @@ export default function App() {
                 onApply={filters.applyReportFilters}
               />
 
-              <section
-                id="tickets-section"
-                className="scroll-mt-20 rounded-xl border border-indigo-100 bg-white/95 p-4 shadow-sm"
-              >
+              <section className="rounded-xl border border-indigo-100 bg-white/95 p-4 shadow-sm">
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                   <div>
                     <h2 className="text-xl font-semibold text-slate-900">Tickets</h2>
