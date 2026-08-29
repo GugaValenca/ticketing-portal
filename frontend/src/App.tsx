@@ -2,6 +2,8 @@ import { useState } from "react";
 import { useWorkspace } from "./hooks/useWorkspace";
 import { useTicketFilters } from "./hooks/useTicketFilters";
 import { LoginScreen } from "./components/LoginScreen";
+import { ForgotPasswordModal } from "./components/ForgotPasswordModal";
+import { ResetPasswordScreen } from "./components/ResetPasswordScreen";
 import { Sidebar, MobileNavDrawer } from "./components/Sidebar";
 import { TopBar } from "./components/TopBar";
 import { DashboardSummary } from "./components/DashboardSummary";
@@ -18,6 +20,24 @@ export default function App() {
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(true);
+  const [isForgotPasswordOpen, setIsForgotPasswordOpen] = useState(false);
+
+  // The password reset link (from the email) points at /reset-password
+  // with ?uid=&token= - there's no router in this app, so this is read
+  // once from the URL directly instead.
+  const [resetPasswordParams, setResetPasswordParams] = useState(() => {
+    if (window.location.pathname !== "/reset-password") return null;
+    const params = new URLSearchParams(window.location.search);
+    const uid = params.get("uid");
+    const token = params.get("token");
+    return uid && token ? { uid, token } : null;
+  });
+
+  function leaveResetPasswordScreen() {
+    window.history.replaceState(null, "", "/");
+    setResetPasswordParams(null);
+  }
 
   // Create ticket modal
   const [isCreateOpen, setIsCreateOpen] = useState(false);
@@ -38,7 +58,7 @@ export default function App() {
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
-    await workspace.login(username, password);
+    await workspace.login(username, password, rememberMe);
   }
 
   function openCreateModal() {
@@ -101,6 +121,16 @@ export default function App() {
     }
   }
 
+  if (resetPasswordParams) {
+    return (
+      <ResetPasswordScreen
+        uid={resetPasswordParams.uid}
+        token={resetPasswordParams.token}
+        onDone={leaveResetPasswordScreen}
+      />
+    );
+  }
+
   if (workspace.bootstrapping) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-[#120825] text-sm text-indigo-200">
@@ -111,15 +141,24 @@ export default function App() {
 
   if (!workspace.isLoggedIn) {
     return (
-      <LoginScreen
-        username={username}
-        password={password}
-        loading={workspace.loading}
-        error={workspace.error}
-        onUsernameChange={setUsername}
-        onPasswordChange={setPassword}
-        onSubmit={handleLogin}
-      />
+      <>
+        <LoginScreen
+          username={username}
+          password={password}
+          rememberMe={rememberMe}
+          loading={workspace.loading}
+          error={workspace.error}
+          onUsernameChange={setUsername}
+          onPasswordChange={setPassword}
+          onRememberMeChange={setRememberMe}
+          onForgotPassword={() => setIsForgotPasswordOpen(true)}
+          onSubmit={handleLogin}
+        />
+        <ForgotPasswordModal
+          open={isForgotPasswordOpen}
+          onClose={() => setIsForgotPasswordOpen(false)}
+        />
+      </>
     );
   }
 

@@ -221,6 +221,9 @@ REST_FRAMEWORK = {
         # tickets/auth.py), which are the most valuable brute-force target.
         "login": "5/min",
         "token_refresh": "20/min",
+        # Password reset request is a classic spam/enumeration target -
+        # kept tight regardless of whether the email actually exists.
+        "password_reset": "5/hour",
     },
 }
 
@@ -252,6 +255,33 @@ AUTH_COOKIE_SAMESITE = os.getenv("AUTH_COOKIE_SAMESITE", "None" if not DEBUG els
 CSRF_COOKIE_SECURE = AUTH_COOKIE_SECURE
 CSRF_COOKIE_SAMESITE = AUTH_COOKIE_SAMESITE
 SESSION_COOKIE_SECURE = AUTH_COOKIE_SECURE
+
+
+# -----------------------------------------------------------------------------
+# Email (password reset)
+# -----------------------------------------------------------------------------
+# Defaults to printing emails to the console/log - fully testable locally
+# with no external service required. Set EMAIL_HOST (+ the other EMAIL_*
+# vars below) to send real emails via SMTP in production; until that's
+# configured, password reset works end to end but the "email" only shows
+# up in the server log, not an inbox.
+EMAIL_HOST = os.getenv("EMAIL_HOST")
+if EMAIL_HOST:
+    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+    EMAIL_PORT = int(os.getenv("EMAIL_PORT", "587"))
+    EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER", "")
+    EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", "")
+    EMAIL_USE_TLS = env_bool("EMAIL_USE_TLS", default=True)
+else:
+    EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+
+DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "no-reply@nexalink-telecom.example")
+
+# Used to build the link inside the password reset email.
+FRONTEND_URL = os.getenv(
+    "FRONTEND_URL",
+    "http://localhost:5173" if DEBUG else "https://ticketing-portal-web.vercel.app",
+)
 
 
 SPECTACULAR_SETTINGS = {

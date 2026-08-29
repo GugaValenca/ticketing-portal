@@ -35,8 +35,10 @@ The public demo is focused on the main user workflow. Administrative tools are r
 
 - JWT authentication delivered as httpOnly cookies (not readable by page JavaScript), with CSRF protection on state-changing requests
 - Login support using username or email
+- "Remember me" - persistent session across browser restarts when checked, a browser-session-only cookie when not
+- Forgot password: emails a time-limited reset link (3 days), never reveals whether an email has an account, and signs out every other session once the password changes
 - Automatic token refresh using Axios interceptors
-- Rate limiting on login and token refresh to slow down credential brute-forcing
+- Rate limiting on login, token refresh, and password reset to slow down credential brute-forcing and spam
 - Role-aware ticket access for requester, assignee, and staff/superuser rules
 - Ticket CRUD via DRF ModelViewSet
 - Status updates in the ticket details flow
@@ -216,6 +218,17 @@ settings, or `docker-compose.yml` for the Docker backend).
 | `CSRF_TRUSTED_ORIGINS` | Yes | `http://localhost:5173`, `http://127.0.0.1:5173` |
 | `AUTH_COOKIE_SECURE` | No | `True` unless `DEBUG` is set |
 | `AUTH_COOKIE_SAMESITE` | No | `None` in production, `Lax` in dev |
+| `FRONTEND_URL` | Yes | used to build the link in password reset emails |
+| `EMAIL_HOST` | No | unset = emails print to the server log instead of sending |
+| `EMAIL_PORT` | No | `587` |
+| `EMAIL_HOST_USER` / `EMAIL_HOST_PASSWORD` | Only if `EMAIL_HOST` is set | - |
+| `EMAIL_USE_TLS` | No | `True` |
+| `DEFAULT_FROM_EMAIL` | No | `no-reply@nexalink-telecom.example` |
+
+Password reset works end to end without any `EMAIL_*` variables set - the
+email just prints to the console/log instead of actually being delivered,
+which is enough to test the full flow locally. To send real emails (e.g. in
+production), set `EMAIL_HOST` and the credentials for an SMTP provider.
 
 **Frontend** (`frontend/.env`):
 

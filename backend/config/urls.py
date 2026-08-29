@@ -9,6 +9,7 @@ from tickets.auth import (
     UsernameOrEmailTokenObtainPairView,
     csrf_view,
 )
+from tickets.password_reset import PasswordResetConfirmView, PasswordResetRequestView
 
 # Admin branding (professional)
 admin.site.site_header = "Admin Control Center"
@@ -37,6 +38,16 @@ urlpatterns = [
     path("api/token/refresh/", CookieTokenRefreshView.as_view(), name="token_refresh"),
     path("api/logout/", LogoutView.as_view(), name="logout"),
     path("api/csrf/", csrf_view, name="csrf"),
+    path(
+        "api/password-reset/request/",
+        PasswordResetRequestView.as_view(),
+        name="password_reset_request",
+    ),
+    path(
+        "api/password-reset/confirm/",
+        PasswordResetConfirmView.as_view(),
+        name="password_reset_confirm",
+    ),
     # App APIs
     path("api/", include("tickets.urls")),
 ]
