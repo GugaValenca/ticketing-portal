@@ -56,7 +56,7 @@ export function LoginScreen({
               </label>
               <input
                 id="username"
-                className="h-11 w-full border-0 border-b border-white/60 bg-transparent px-1 text-base text-white outline-none placeholder:text-white/55 focus:border-white"
+                className="h-11 w-full rounded-sm border-0 border-b border-white/60 bg-transparent px-1 text-base text-white outline-none placeholder:text-white/55 focus:border-white focus-visible:ring-2 focus-visible:ring-violet-300/70"
                 value={username}
                 onChange={(e) => onUsernameChange(e.target.value)}
                 autoComplete="username"
@@ -79,7 +79,7 @@ export function LoginScreen({
               <input
                 id="password"
                 type="password"
-                className="h-11 w-full border-0 border-b border-white/60 bg-transparent px-1 text-base text-white outline-none placeholder:text-white/55 focus:border-white"
+                className="h-11 w-full rounded-sm border-0 border-b border-white/60 bg-transparent px-1 text-base text-white outline-none placeholder:text-white/55 focus:border-white focus-visible:ring-2 focus-visible:ring-violet-300/70"
                 value={password}
                 onChange={(e) => onPasswordChange(e.target.value)}
                 autoComplete="current-password"
