@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useWorkspace } from "./hooks/useWorkspace";
 import { useTicketFilters } from "./hooks/useTicketFilters";
 import { LoginScreen } from "./components/LoginScreen";
-import { Sidebar } from "./components/Sidebar";
+import { Sidebar, MobileNavDrawer } from "./components/Sidebar";
 import { TopBar } from "./components/TopBar";
 import { DashboardSummary } from "./components/DashboardSummary";
 import { ReportFilters } from "./components/ReportFilters";
@@ -18,7 +18,6 @@ export default function App() {
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [rememberMe, setRememberMe] = useState(true);
 
   // Create ticket modal
   const [isCreateOpen, setIsCreateOpen] = useState(false);
@@ -34,6 +33,8 @@ export default function App() {
   const [selected, setSelected] = useState<Ticket | null>(null);
   const [detailsSaving, setDetailsSaving] = useState(false);
   const [detailsError, setDetailsError] = useState<string | null>(null);
+
+  const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
@@ -113,12 +114,10 @@ export default function App() {
       <LoginScreen
         username={username}
         password={password}
-        rememberMe={rememberMe}
         loading={workspace.loading}
         error={workspace.error}
         onUsernameChange={setUsername}
         onPasswordChange={setPassword}
-        onRememberMeChange={setRememberMe}
         onSubmit={handleLogin}
       />
     );
@@ -145,11 +144,29 @@ export default function App() {
           onSelect={filters.applySidebarFilter}
         />
 
+        <MobileNavDrawer
+          open={isMobileNavOpen}
+          onClose={() => setIsMobileNavOpen(false)}
+          username={workspace.me?.username}
+          active={filters.sidebarFilter}
+          counts={{
+            inbox: filters.dashboardStats.inbox,
+            my_tickets: filters.dashboardStats.my_tickets,
+            unassigned: filters.dashboardStats.unassigned,
+            overdue: filters.dashboardStats.overdue,
+          }}
+          onSelect={(filter) => {
+            filters.applySidebarFilter(filter);
+            setIsMobileNavOpen(false);
+          }}
+        />
+
         <div className="flex min-w-0 flex-1 flex-col">
           <TopBar
             onRefresh={workspace.refresh}
             onNewTicket={openCreateModal}
             onSignOut={workspace.logout}
+            onOpenMobileNav={() => setIsMobileNavOpen(true)}
           />
 
           <main className="flex-1 p-4 sm:p-6">
@@ -173,7 +190,10 @@ export default function App() {
                 onApply={filters.applyReportFilters}
               />
 
-              <section className="rounded-xl border border-indigo-100 bg-white/95 p-4 shadow-sm">
+              <section
+                id="tickets-section"
+                className="scroll-mt-20 rounded-xl border border-indigo-100 bg-white/95 p-4 shadow-sm"
+              >
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                   <div>
                     <h2 className="text-xl font-semibold text-slate-900">Tickets</h2>
@@ -182,7 +202,7 @@ export default function App() {
                     </p>
                   </div>
 
-                  <div className="text-sm text-slate-500">
+                  <div className="text-sm text-slate-600">
                     {workspace.loading
                       ? "Loading tickets..."
                       : filters.total === 0

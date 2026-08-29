@@ -1,4 +1,6 @@
+import { useId, useRef } from "react";
 import { cx } from "../lib/cx";
+import { useDialogBehavior } from "../hooks/useDialogBehavior";
 import { BrandMark } from "./BrandMark";
 import { COMPANY_NAME } from "../branding";
 import type { SidebarFilter } from "../types";
@@ -10,19 +12,16 @@ const NAV_ITEMS: Array<{ key: SidebarFilter; label: string }> = [
   { key: "overdue", label: "Overdue" },
 ];
 
-export function Sidebar({
-  username,
-  active,
-  counts,
-  onSelect,
-}: {
+type SidebarNavProps = {
   username?: string;
   active: SidebarFilter;
   counts: Record<SidebarFilter, number>;
   onSelect: (filter: SidebarFilter) => void;
-}) {
+};
+
+function SidebarNavContent({ username, active, counts, onSelect }: SidebarNavProps) {
   return (
-    <aside className="hidden w-64 shrink-0 border-r border-white/10 bg-[#160c2d]/90 md:flex md:flex-col">
+    <>
       <div className="border-b border-white/10 px-4 py-3">
         <div className="flex items-center gap-2">
           <BrandMark className="h-7 w-7" />
@@ -65,6 +64,56 @@ export function Sidebar({
           ))}
         </nav>
       </div>
+    </>
+  );
+}
+
+/** Static sidebar shown from the md breakpoint up. */
+export function Sidebar(props: SidebarNavProps) {
+  return (
+    <aside className="hidden w-64 shrink-0 border-r border-white/10 bg-[#160c2d]/90 md:flex md:flex-col">
+      <SidebarNavContent {...props} />
     </aside>
+  );
+}
+
+/**
+ * Slide-in drawer with the same navigation, for viewports below md where
+ * the static Sidebar is hidden - without this, Inbox/My tickets/Unassigned/
+ * Overdue filtering was simply unreachable on mobile.
+ */
+export function MobileNavDrawer({
+  open,
+  onClose,
+  ...navProps
+}: SidebarNavProps & { open: boolean; onClose: () => void }) {
+  const drawerRef = useRef<HTMLDivElement | null>(null);
+  const titleId = useId();
+
+  useDialogBehavior(open, onClose, drawerRef);
+
+  if (!open) return null;
+
+  return (
+    <div className="fixed inset-0 z-[100] md:hidden">
+      <h2 id={titleId} className="sr-only">
+        Navigation menu
+      </h2>
+      <button
+        onClick={onClose}
+        className="absolute inset-0 h-full w-full bg-slate-950/65"
+        aria-label="Close menu"
+      />
+      <div
+        ref={drawerRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={titleId}
+        tabIndex={-1}
+        className="relative flex h-full w-72 max-w-[85vw] flex-col bg-[#160c2d] shadow-2xl shadow-[#100723]/60 outline-none"
+      >
+        <SidebarNavContent {...navProps} />
+      </div>
+    </div>
   );
 }

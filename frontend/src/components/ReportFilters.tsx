@@ -35,7 +35,10 @@ export function ReportFilters({
   const endPickerRef = useRef<HTMLInputElement | null>(null);
 
   return (
-    <section className="rounded-xl border border-indigo-100 bg-white/95 p-4 shadow-sm">
+    <section
+      id="report-section"
+      className="scroll-mt-20 rounded-xl border border-indigo-100 bg-white/95 p-4 shadow-sm"
+    >
       <h2 className="text-sm font-semibold uppercase tracking-wide text-indigo-600">Report</h2>
       <p className="mt-1 text-xs text-slate-600">
         Select a date field, define a period, and apply the filter.

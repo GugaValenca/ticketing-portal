@@ -62,7 +62,7 @@ export function IdPill({ id }: { id: number }) {
 export function StatTile({ label, value }: { label: string; value: string | number }) {
   return (
     <div className="rounded-xl border border-indigo-100 bg-white px-3 py-2 shadow-sm">
-      <div className="text-[11px] font-semibold uppercase tracking-wide text-indigo-500">
+      <div className="text-[11px] font-semibold uppercase tracking-wide text-indigo-600">
         {label}
       </div>
       <div className="mt-0.5 text-base font-semibold text-slate-900">{value}</div>
