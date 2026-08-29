@@ -55,7 +55,7 @@ export function TicketToolbar({
             placeholder="Search by title or description..."
             className="mt-1 h-11 w-full rounded-xl border border-slate-300 bg-white px-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-500 focus:border-violet-400 focus:ring-2 focus:ring-violet-200"
           />
-          <div className="mt-1 text-[11px] text-slate-500">
+          <div className="mt-1 text-[11px] text-slate-600">
             Results update after 300ms to keep interactions smooth.
           </div>
         </div>

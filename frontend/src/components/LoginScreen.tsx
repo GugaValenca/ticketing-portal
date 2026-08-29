@@ -4,22 +4,18 @@ import { COMPANY_NAME } from "../branding";
 export function LoginScreen({
   username,
   password,
-  rememberMe,
   loading,
   error,
   onUsernameChange,
   onPasswordChange,
-  onRememberMeChange,
   onSubmit,
 }: {
   username: string;
   password: string;
-  rememberMe: boolean;
   loading: boolean;
   error: string | null;
   onUsernameChange: (value: string) => void;
   onPasswordChange: (value: string) => void;
-  onRememberMeChange: (value: boolean) => void;
   onSubmit: (e: React.FormEvent) => void;
 }) {
   return (
@@ -85,24 +81,6 @@ export function LoginScreen({
                 autoComplete="current-password"
                 placeholder="Password"
               />
-            </div>
-
-            <div className="flex items-center justify-between gap-4 text-white/80">
-              <label className="inline-flex items-center gap-2 text-base">
-                <input
-                  type="checkbox"
-                  checked={rememberMe}
-                  onChange={(e) => onRememberMeChange(e.target.checked)}
-                  className="h-4 w-4 accent-slate-900"
-                />
-                Remember me
-              </label>
-              <button
-                type="button"
-                className="text-base italic text-white/70 transition hover:text-white"
-              >
-                Forgot Password?
-              </button>
             </div>
 
             <button

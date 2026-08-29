@@ -2,20 +2,34 @@ export function TopBar({
   onRefresh,
   onNewTicket,
   onSignOut,
+  onOpenMobileNav,
 }: {
   onRefresh: () => void;
   onNewTicket: () => void;
   onSignOut: () => void;
+  onOpenMobileNav: () => void;
 }) {
   return (
     <header className="border-b border-white/10 bg-[#1d1236]/85">
       <div className="flex h-14 items-center justify-between gap-3 px-4 sm:px-6">
         <div className="flex items-center gap-4 text-sm text-indigo-100">
+          <button
+            type="button"
+            onClick={onOpenMobileNav}
+            aria-label="Open navigation menu"
+            className="flex h-9 w-9 items-center justify-center rounded-lg border border-white/20 bg-white/10 hover:bg-white/20 md:hidden"
+          >
+            <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2">
+              <path strokeLinecap="round" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
           <span className="font-semibold">Service Desk</span>
-          <span className="hidden text-slate-300 md:inline">Users</span>
-          <span className="hidden text-slate-300 md:inline">Tickets</span>
-          <span className="hidden text-slate-300 md:inline">Tools</span>
-          <span className="hidden text-slate-300 md:inline">Report</span>
+          <a href="#tickets-section" className="hidden text-slate-300 hover:text-white md:inline">
+            Tickets
+          </a>
+          <a href="#report-section" className="hidden text-slate-300 hover:text-white md:inline">
+            Report
+          </a>
         </div>
 
         <div className="flex items-center gap-2">
