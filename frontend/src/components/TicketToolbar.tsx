@@ -43,8 +43,8 @@ export function TicketToolbar({
 }) {
   return (
     <div className="mt-4 rounded-xl border border-indigo-100 bg-indigo-50/40 p-3 sm:p-4">
-      <div className="grid gap-3 md:grid-cols-12">
-        <div className="md:col-span-5">
+      <div className="grid gap-3 lg:grid-cols-12">
+        <div className="lg:col-span-5">
           <label htmlFor="ticket-search" className="text-xs font-semibold text-indigo-700">
             Search tickets
           </label>
@@ -60,7 +60,7 @@ export function TicketToolbar({
           </div>
         </div>
 
-        <div className="md:col-span-2">
+        <div className="lg:col-span-2">
           <label htmlFor="ticket-status-filter" className="text-xs font-semibold text-indigo-700">
             Status
           </label>
@@ -78,7 +78,7 @@ export function TicketToolbar({
           </select>
         </div>
 
-        <div className="md:col-span-2">
+        <div className="lg:col-span-2">
           <label htmlFor="ticket-priority-filter" className="text-xs font-semibold text-indigo-700">
             Priority
           </label>
@@ -96,7 +96,7 @@ export function TicketToolbar({
           </select>
         </div>
 
-        <div className="md:col-span-3">
+        <div className="lg:col-span-3">
           <label htmlFor="ticket-sort" className="text-xs font-semibold text-indigo-700">
             Sort by
           </label>
@@ -113,7 +113,7 @@ export function TicketToolbar({
           </select>
         </div>
 
-        <div className="flex flex-col gap-2 md:col-span-12 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-2 lg:col-span-12 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex items-center gap-2">
             <label htmlFor="ticket-page-size" className="text-xs font-semibold text-indigo-700">
               Page size
