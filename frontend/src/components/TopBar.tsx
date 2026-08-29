@@ -24,12 +24,6 @@ export function TopBar({
             </svg>
           </button>
           <span className="font-semibold">Service Desk</span>
-          <a href="#tickets-section" className="hidden text-slate-300 hover:text-white md:inline">
-            Tickets
-          </a>
-          <a href="#report-section" className="hidden text-slate-300 hover:text-white md:inline">
-            Report
-          </a>
         </div>
 
         <div className="flex items-center gap-2">
