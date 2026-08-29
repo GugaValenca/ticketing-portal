@@ -103,10 +103,26 @@ api.interceptors.response.use(
 );
 
 export const auth = {
-  async login(username: string, password: string) {
+  async login(username: string, password: string, rememberMe: boolean) {
     // Ensure the CSRF cookie exists before the first unsafe request.
     await plainAxios.get("/api/csrf/");
-    await plainAxios.post("/api/token/", { username, password });
+    await plainAxios.post("/api/token/", {
+      username,
+      password,
+      remember_me: rememberMe,
+    });
+  },
+  async requestPasswordReset(email: string) {
+    await plainAxios.get("/api/csrf/");
+    await plainAxios.post("/api/password-reset/request/", { email });
+  },
+  async confirmPasswordReset(uid: string, token: string, newPassword: string) {
+    await plainAxios.get("/api/csrf/");
+    await plainAxios.post("/api/password-reset/confirm/", {
+      uid,
+      token,
+      new_password: newPassword,
+    });
   },
   async logout() {
     try {

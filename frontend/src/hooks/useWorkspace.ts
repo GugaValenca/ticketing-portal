@@ -47,11 +47,11 @@ export function useWorkspace() {
     }
   }
 
-  async function login(username: string, password: string) {
+  async function login(username: string, password: string, rememberMe: boolean) {
     setError(null);
     setLoading(true);
     try {
-      await auth.login(username, password);
+      await auth.login(username, password, rememberMe);
       await loadMeAndTickets();
     } catch {
       setError("Login failed. Check your username and password.");
